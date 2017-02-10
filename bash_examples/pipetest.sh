@@ -2,25 +2,17 @@
 
 pipe=/tmp/testpipe
 
-COUNTER=0
-
 reader() {
 	while true
 	do
 	    if read line <$pipe; then
-	        echo -n $line " "
-	        let COUNTER+=1
-	        echo $COUNTER
+	        echo $line " "
 	    fi
 	done
 }
 
 writer() {
-	while true
-	do
-		date >$pipe
-		sleep 1
-	done
+	./chat.sh >$pipe
 }
 
 trap "rm -f $pipe" EXIT
@@ -32,6 +24,6 @@ fi
 reader &
 writer &
 
-echo setup done
+echo "setup done"
 
 wait
