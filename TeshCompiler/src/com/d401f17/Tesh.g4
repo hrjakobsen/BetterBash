@@ -1,145 +1,66 @@
 grammar Tesh;
-
 import TeshTokens;
 
-prog
-    : definition* ;
-definition
-    : record
-    | function
-    | statement
-    ;
-
-record
-    : RECORD_DECLARATION SIMPLE_IDENTIFIER START_BLOCK varDef* END_BLOCK  #recordID
-    ;
-
-varDef
-    : type identifierDeclaration (ASSIGN valueStatement)?
-    ;
-
-function
-    : FUNCTION_DECLARATION SIMPLE_IDENTIFIER START_PAR formalArguments* END_PAR type? START_BLOCK statement* END_BLOCK;
-
-formalArguments
-    : formalArgument (COMMA formalArgument)*
-    ;
-
-formalArgument
-    : type SIMPLE_IDENTIFIER
-    ;
-
-type
-    : arrayType
-    | simpleType
-    ;
-arrayType
-    : simpleType ARRAY_IDENTIFIER*
-    ;
-
-
-
-simpleType
-    : INT_DECLARATION
-    | FLOAT_DECLARATION
-    | CHAR_DECLARATION
-    | STRING_DECLARATION
-    | BOOL_DECLARATION
-    | RECORD_DECLARATION identifierDeclaration
-    ;
-
+compileUnit
+    : statement EOF;
 
 statement
-    : varDef
-    | valueStatement
-    | identifier ASSIGN valueStatement
-    | controlStructure
+    : statement EOS statement
+    | IF expression START_BLOCK statement END_BLOCK ELSE START_BLOCK statement END_BLOCK
+    | WHILE expression START_BLOCK statement END_BLOCK
+    | FOR identifier IN identifier START_BLOCK statement END_BLOCK
+    | identifier ASSIGN expression
+    | arrayAccess ASSIGN expression
+    | identifier ASSIGN SQUARE_BRACKET_START identifier IN identifier PIPE expression SQUARE_BRACKET_END
+    | identifier CHANNEL_OP SIMPLE_IDENTIFIER
+    | SIMPLE_IDENTIFIER CHANNEL_OP expression
+    | RETURN identifier
+    | VAR identifier ASSIGN expression
+    | identifier PARENTHESIS_START (expression (COMMA expression)*)? PARENTHESIS_END
+    | variableDelcaration (ASSIGN expression)?
+    | recordDeclaration
+    | functionDeclaration
+    | channelDeclaration
+    | identifier (OP_INCREMENT | OP_DECREMENT)
+    |
     ;
 
-controlStructure
-    : ifStatement
-    | whileLoop
-    | forLoop
-    ;
-
-whileLoop
-    : WHILE valueStatement START_BLOCK statement* END_BLOCK
-    ;
-
-forLoop
-    : FOR varDef COMMA valueStatement COMMA (varDef|valueStatement|identifier ASSIGN valueStatement) START_BLOCK statement* END_BLOCK
-    ;
-
-ifStatement
-    : IF valueStatement START_BLOCK statement* END_BLOCK (ELSEIF valueStatement START_BLOCK statement* END_BLOCK)* (ELSE START_BLOCK statement* END_BLOCK)?
-    ;
-
-functionCall
-    : identifier START_PAR actualArguments* END_PAR
-    ;
-
-valueStatement
-    : functionCall
-    | math LESS_THAN  valueStatement
-    | math GREATER_THAN  valueStatement
-    | math EQUAL valueStatement
-    | math GREATER_OR_EQUAL valueStatement
-    | math LESS_OR_EQUAL valueStatement
-    | math NOT_EQUAL valueStatement
-    | math
-    | arrayLiteral
-    ;
-
-math
-    : term ADD valueStatement
-    | term SUB valueStatement
-    | term
-    ;
-
-
-term
-    : constant DIV term
-    | constant MULT term
+expression
+    : identifier
+    | identifier PARENTHESIS_START (expression (COMMA expression)*)? PARENTHESIS_END
+    | arrayAccess
+    | PARENTHESIS_START expression PARENTHESIS_END
+    | NOT expression
+    | expression (OP_MUL | OP_DIV | OP_MOD) expression
+    | expression (OP_ADD | OP_SUB) expression
+    | expression (OP_EQ | OP_NEQ | OP_LT | OP_GT | OP_LEQ | OP_GEQ) expression
+    | expression (OP_AND | OP_OR) expression
     | constant
     ;
 
-constant
-    : identifier arrayAccess*
-    | START_PAR valueStatement END_PAR
-    | intLiteral | floatLiteral | stringLiteral | charLiteral | boolLiteral
+identifier
+    : SIMPLE_IDENTIFIER
+    | IDENTIFIER
     ;
+
+recordDeclaration: RECORD SIMPLE_IDENTIFIER START_BLOCK (variableDelcaration)+ END_BLOCK;
+
+variableDelcaration: type SIMPLE_IDENTIFIER;
+
+functionDeclaration: FUNCTION SIMPLE_IDENTIFIER PARENTHESIS_START (type SIMPLE_IDENTIFIER (COMMA type SIMPLE_IDENTIFIER)*)? PARENTHESIS_END type? START_BLOCK statement END_BLOCK;
+
+channelDeclaration: CHANNEL SIMPLE_IDENTIFIER;
 
 arrayAccess
-    : START_ARR identifier END_ARR
+    : identifier (SQUARE_BRACKET_START expression SQUARE_BRACKET_END)+
     ;
 
-arrayLiteral
-    : START_ARR type identifierDeclaration IN identifier (WHERE valueStatement)? END_ARR
-    | START_ARR (valueStatement (COMMA valueStatement)*)? END_ARR
+constant
+    : INT_LITERAL
+    | FLOAT_LITERAL
+    | STRING_LITERAL
+    | CHAR_LITERAL
     ;
 
-intLiteral: INT_LITERAL;
-floatLiteral: FLOAT_LITERAL;
-stringLiteral: STRING_LITERAL;
-charLiteral: CHAR_LITERAL;
-boolLiteral: BOOL_LITERAL;
-
-
-identifierDeclaration
-    : SIMPLE_IDENTIFIER
-    ;
-
-identifier
-    : SIMPLE_IDENTIFIER arrayAccess*
-    | SIMPLE_IDENTIFIER (DOT SIMPLE_IDENTIFIER)*
-    ;
-
-
-actualArguments
-    : actualArgument (COMMA actualArgument)*
-    ;
-
-actualArgument
-    : identifier
-    | valueStatement
-    ;
+type
+    : (SIMPLE_TYPE | RECORD SIMPLE_IDENTIFIER)ARRAY_IDENTIFIER*;

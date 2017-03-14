@@ -1,69 +1,71 @@
 lexer grammar TeshTokens;
 
-RECORD_DECLARATION: 'record';
-FUNCTION_DECLARATION: 'func';
-WHILE: 'while';
-FOR: 'for';
-IF: 'if';
-ELSEIF: 'else if';
-ELSE: 'else';
 
 IN: 'in';
-WHERE: '|';
+IF: 'if';
+ELSE: 'else';
+WHILE: 'while';
+RETURN: 'return';
+FOR: 'for';
+VAR: 'var';
+RECORD: 'record';
+FUNCTION: 'func';
+CHANNEL: 'channel';
+START_BLOCK: '{';
+END_BLOCK: '}';
+ARRAY_IDENTIFIER:'[]';
+SQUARE_BRACKET_START: '[';
+SQUARE_BRACKET_END: ']';
+CHANNEL_OP: '<<';
+NOT: '!';
+PARENTHESIS_START:'(';
+PARENTHESIS_END:')';
+OP_INCREMENT: '++';
+OP_DECREMENT: '--';
+OP_ADD: '+';
+OP_SUB: '-';
+OP_MUL: '*';
+OP_DIV: '/';
+OP_AND: '&&';
+OP_OR: '||';
+OP_EQ: '==';
+OP_NEQ: '!=';
+OP_LT: '<';
+OP_GT: '>';
+OP_GEQ: '>=';
+OP_LEQ: '<=';
+OP_MOD: 'mod';
+ASSIGN: '=';
+PIPE: '|';
+COMMA: ',';
+SIMPLE_TYPE: ('string'|'int'|'float'|'char');
+CHAR_LITERAL: '\''.?'\'';
 
-
-
-INT_LITERAL: [0-9]+;
 STRING_LITERAL :  '"' (ESC | ~["\\])* '"' ;
-
 
 fragment ESC :   '\\' (["\\/bfnrt] | UNICODE) ;
 fragment UNICODE : 'u' HEX HEX HEX HEX ;
 fragment HEX : [0-9a-fA-F] ;
 
-LINE_COMMENT : '#' ~'\n'* '\n' -> channel(HIDDEN) ;
 
-FLOAT_LITERAL: [0-9]+'.'[0-9]+;
-CHAR_LITERAL: '\''[a-zA-Z0-9]'\'';
-BOOL_LITERAL: 'true' | 'false';
+FLOAT_LITERAL
+    :   '-'? INT_LITERAL '.' INT_LITERAL EXP?   // 1.35, 1.35E-9, 0.3, -4.5
+    |   '-'? INT_LITERAL EXP            // 1e10 -3e4
+    |   '-'? INT_LITERAL                // -3, 45
+    ;
 
-INT_DECLARATION: 'int';
-FLOAT_DECLARATION: 'float';
-CHAR_DECLARATION: 'char';
-STRING_DECLARATION: 'string';
-BOOL_DECLARATION: 'bool';
+INT_LITERAL :   '0' | [1-9] [0-9]* ; // no leading zeros
+fragment EXP :   [Ee] [+\-]? INT_LITERAL ;
+
+
+
+IDENTIFIER: SIMPLE_IDENTIFIER('.'SIMPLE_IDENTIFIER)+;
 
 SIMPLE_IDENTIFIER
     : [a-zA-Z_][a-zA-Z0-9_]*;
-WS :  [ \r\n]+ -> skip ; // skip spaces, tabs, newlines
-EOS : [;] ;
-
-START_BLOCK: '{';
-END_BLOCK: '}';
-START_PAR: '(';
-END_PAR: ')';
-
-ASSIGN: '=';
 
 
-COMMA: ',';
+WS :  [ \r]+ -> skip ; // skip spaces, tabs, newlines
 
-START_ARR: '[';
-END_ARR : ']';
+EOS: [\n];
 
-ARRAY_IDENTIFIER: START_ARR END_ARR;
-
-
-LESS_THAN: '<';
-GREATER_THAN: '>';
-LESS_OR_EQUAL: '<=';
-GREATER_OR_EQUAL: '>=';
-EQUAL: '==';
-NOT_EQUAL: '!=';
-
-ADD: '+';
-SUB: '-';
-MULT: '*';
-DIV: '/';
-
-DOT: '.';
