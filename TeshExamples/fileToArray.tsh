@@ -11,20 +11,20 @@ channel file = openFile("test.txt", READ)
 
 #Check if file exists
 if file.exists() {
-	#While the channel has lines
-	#read them and add them to the array
-	while file.hasContent() {
-		lines[numLines] << file
-		numLines++
-	}
+    #While the channel has lines
+    #read them and add them to the array
+    while file.hasContent() {
+        lines[numLines] << file
+        numLines++
+    }
 
-	#Output the number of elements in the file/array
-	stdio << "Number of elements: " + lines.length()
+    #Output the number of elements in the file/array
+    stdio << "Number of elements: " + lines.length()
 
-	#Output the contents of the array
-	for line in lines {
-		stdio << line	
-	}
+    #Output the contents of the array
+    for line in lines {
+        stdio << line   
+    }
 
-	file.close()
+    file.close()
 }

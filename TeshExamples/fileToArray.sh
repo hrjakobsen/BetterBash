@@ -12,7 +12,7 @@ FILE="test.txt"
 #While there are lines in the file, 
 #read them and add them to the array
 while read LINE; do
-	((NUMLINES++))
+    ((NUMLINES++))
     LINES+=($LINE)
 done < $FILE
 
