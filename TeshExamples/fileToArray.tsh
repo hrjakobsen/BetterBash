@@ -7,24 +7,21 @@ string[] lines
 var numLines = 0
 
 #Declare a channel we can read from
-channel file = openFile("test.txt", READ)
+file f = openFile(fileName, READ)
 
-#Check if file exists
-if file.exists() {
-    #While the channel has lines
-    #read them and add them to the array
-    while file.hasContent() {
-        lines[numLines] << file
-        numLines++
-    }
-
-    #Output the number of elements in the file/array
-    stdio << "Number of elements: " + lines.length()
-
-    #Output the contents of the array
-    for line in lines {
-        stdio << line   
-    }
-
-    file.close()
+#While the channel has lines
+#read them and add them to the array
+while file.hasContent() {
+    lines[numLines] << file
+    numLines += 1
 }
+
+#Output the number of elements in the file/array
+stdio << "Number of elements: " + lines.length()
+
+#Output the contents of the array
+for line in lines {
+    stdio << line   
+}
+
+file.close()
