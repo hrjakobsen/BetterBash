@@ -1,0 +1,6 @@
+#!/bin/tesh
+#Declare a string variable
+string str = "Hello, World!"
+
+#Write the variable to standard output
+stdio << str
