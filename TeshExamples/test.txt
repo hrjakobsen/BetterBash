@@ -1,0 +1,9 @@
+hej
+med
+dig
+dette
+er
+en test
+af 
+BASH og TESH!
+!

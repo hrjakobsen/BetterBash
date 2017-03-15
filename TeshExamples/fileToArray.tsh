@@ -1,21 +1,30 @@
-#!/bin/bash
-# Declare array
-declare -a ARRAY
-# Link filedescriptor 10 with stdin
-exec 10<&0
-# stdin replaced with a file supplied as a first argument
-exec < $1
-let count=0
+#!/bin/tesh
 
-while read LINE; do
+#Declare an array
+string[] lines
 
-    ARRAY[$count]=$LINE
-    ((count++))
-done
+#Declare a counter
+var numLines = 0
 
-echo Number of elements: ${#ARRAY[@]}
-# echo array's content
-echo ${ARRAY[@]}
-# restore stdin from filedescriptor 10
-# and close filedescriptor 10
-exec 0<&10 10<&-
+#Declare a channel we can read from
+channel file = openFile("test.txt", READ)
+
+#Check if file exists
+if file.exists() {
+	#While the channel has lines
+	#read them and add them to the array
+	while file.hasContent() {
+		lines[numLines] << file
+		numLines++
+	}
+
+	#Output the number of elements in the file/array
+	stdio << "Number of elements: " + lines.length()
+
+	#Output the contents of the array
+	for line in lines {
+		stdio << line	
+	}
+
+	file.close()
+}

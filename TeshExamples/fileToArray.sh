@@ -1,21 +1,23 @@
 #!/bin/bash
-# Declare array
-declare -a ARRAY
-# Link filedescriptor 10 with stdin
-exec 10<&0
-# stdin replaced with a file supplied as a first argument
-exec < $1
-let count=0
 
+#Declare an array
+declare -a LINES
+
+#Declare a counter
+NUMLINES=0
+
+#Declare filename of file to read from
+FILE="test.txt"
+
+#While there are lines in the file, 
+#read them and add them to the array
 while read LINE; do
+	((NUMLINES++))
+    LINES+=($LINE)
+done < $FILE
 
-    ARRAY[$count]=$LINE
-    ((count++))
-done
+#Output the number of elements in the file/array
+echo Number of elements: ${#LINES[@]}
 
-echo Number of elements: ${#ARRAY[@]}
-# echo array's content
-echo ${ARRAY[@]}
-# restore stdin from filedescriptor 10
-# and close filedescriptor 10
-exec 0<&10 10<&-
+#Output the content of the array
+echo ${LINES[@]}
