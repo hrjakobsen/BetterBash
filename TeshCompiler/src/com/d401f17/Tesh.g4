@@ -12,8 +12,9 @@ statement
     | identifier ASSIGN expression                                                                                      #assignmentStatement
     | arrayAccess ASSIGN expression                                                                                     #arrayElementAssignmentStatement
     | newArrayName=identifier ASSIGN SQUARE_BRACKET_START variableName=identifier IN arrayName=identifier PIPE expression SQUARE_BRACKET_END      #arrayBuilderStatement
-    | identifier CHANNEL_OP SIMPLE_IDENTIFIER                                                                           #writeToChannelStatement
-    | SIMPLE_IDENTIFIER CHANNEL_OP expression                                                                           #readFromChannelStatement
+    | identifier CHANNEL_OP SIMPLE_IDENTIFIER                                                                           #readFromChannelStatementToVariable
+    | arrayAccess CHANNEL_OP SIMPLE_IDENTIFIER                                                                          #readFromChannelStatementToArray
+    | SIMPLE_IDENTIFIER CHANNEL_OP expression                                                                           #writeToChannelStatement
     | RETURN expression                                                                                                 #returnStatement
     | VAR identifier ASSIGN expression                                                                                  #varStatement
     | identifier PARENTHESIS_START (expression (COMMA expression)*)? PARENTHESIS_END                                    #functionCallStatement
@@ -21,8 +22,8 @@ statement
     | recordDeclaration                                                                                                 #recordDeclarationStatement
     | functionDeclaration                                                                                               #functionDeclarationStatement
     | channelDeclaration                                                                                                #channelDeclarationStatement
-    | identifier op=(OP_INCREMENT | OP_DECREMENT | OP_SCALE | OP_DIVIDE | OP_REM) expression                               #compoundStatement
-    | arrayAccess op=(OP_INCREMENT | OP_DECREMENT | OP_SCALE | OP_DIVIDE | OP_REM) expression                              #compoundArrayStatement
+    | identifier op=(OP_INCREMENT | OP_DECREMENT | OP_SCALE | OP_DIVIDE | OP_REM) expression                            #compoundStatement
+    | arrayAccess op=(OP_INCREMENT | OP_DECREMENT | OP_SCALE | OP_DIVIDE | OP_REM) expression                           #compoundArrayStatement
     |                                                                                                                   #emptyStatement
     ;
 
@@ -31,28 +32,28 @@ expression
     ;
 
 boolm
-    : boolm op=(OP_AND | OP_OR) boolc                                                                                      #logicalComparison
+    : boolm op=(OP_AND | OP_OR) boolc                                                                                   #logicalComparison
     | boolc                                                                                                             #singleComparison
     ;
 
 boolc
-    : boolc op=(OP_EQ | OP_NEQ | OP_LT | OP_GT | OP_LEQ | OP_GEQ) arithmeticExpression                                     #boolComparison
+    : boolc op=(OP_EQ | OP_NEQ | OP_LT | OP_GT | OP_LEQ | OP_GEQ) arithmeticExpression                                  #boolComparison
     | arithmeticExpression                                                                                              #singleArithmeticExpr
     ;
 
 
 arithmeticExpression
-    : arithmeticExpression op=(OP_ADD | OP_SUB) term                                                                       #arithmeticExpr
+    : arithmeticExpression op=(OP_ADD | OP_SUB) term                                                                    #arithmeticExpr
     | term                                                                                                              #singleTerm
     ;
 
 term
-    : term op=(OP_MUL | OP_DIV | OP_MOD) value                                                                             #termExpr
+    : term op=(OP_MUL | OP_DIV | OP_MOD) value                                                                          #termExpr
     | value                                                                                                             #singleValue
     ;
 
 value
-    : op=(OP_ADD | OP_SUB) value                                                                                           #unaryOperator
+    : op=(OP_ADD | OP_SUB) value                                                                                        #unaryOperator
     | NOT finalValue                                                                                                    #negateOperator
     | finalValue                                                                                                        #singleFinal
     ;
