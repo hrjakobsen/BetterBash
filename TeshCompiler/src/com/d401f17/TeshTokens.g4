@@ -20,8 +20,11 @@ CHANNEL_OP: '<<';
 NOT: '!';
 PARENTHESIS_START:'(';
 PARENTHESIS_END:')';
-OP_INCREMENT: '++';
-OP_DECREMENT: '--';
+OP_INCREMENT: '+=';
+OP_DECREMENT: '-=';
+OP_SCALE: '*=';
+OP_DIVIDE: '/=';
+OP_REM: '/=';
 OP_ADD: '+';
 OP_SUB: '-';
 OP_MUL: '*';
@@ -38,8 +41,9 @@ OP_MOD: 'mod';
 ASSIGN: '=';
 PIPE: '|';
 COMMA: ',';
-SIMPLE_TYPE: ('string'|'int'|'float'|'char');
+SIMPLE_TYPE: ('string'|'int'|'float'|'char'|'bool');
 CHAR_LITERAL: '\''.?'\'';
+BOOL_LITERAL: 'true' | 'false';
 
 STRING_LITERAL :  '"' (ESC | ~["\\])* '"' ;
 
@@ -49,9 +53,9 @@ fragment HEX : [0-9a-fA-F] ;
 
 
 FLOAT_LITERAL
-    :   '-'? INT_LITERAL '.' INT_LITERAL EXP?   // 1.35, 1.35E-9, 0.3, -4.5
-    |   '-'? INT_LITERAL EXP            // 1e10 -3e4
-    |   '-'? INT_LITERAL                // -3, 45
+    :    INT_LITERAL '.' INT_LITERAL EXP?   // 1.35, 1.35E-9, 0.3, -4.5
+    |    INT_LITERAL EXP            // 1e10 -3e4
+    |    INT_LITERAL                // -3, 45
     ;
 
 INT_LITERAL :   '0' | [1-9] [0-9]* ; // no leading zeros
