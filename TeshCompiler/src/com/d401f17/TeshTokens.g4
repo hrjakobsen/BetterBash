@@ -42,7 +42,7 @@ OP_MOD: 'mod';
 ASSIGN: '=';
 PIPE: '|';
 COMMA: ',';
-SIMPLE_TYPE: ('string'|'int'|'float'|'char'|'bool');
+SIMPLE_TYPE: ('string'|'int'|'float'|'char'|'bool'|'file');
 CHAR_LITERAL: '\''.?'\'';
 BOOL_LITERAL: 'true' | 'false';
 

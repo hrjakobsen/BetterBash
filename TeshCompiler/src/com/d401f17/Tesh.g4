@@ -12,8 +12,9 @@ statement
     | identifier ASSIGN expression                                                                                      #assignmentStatement
     | arrayAccess ASSIGN expression                                                                                     #arrayElementAssignmentStatement
     | newArrayName=identifier ASSIGN SQUARE_BRACKET_START variableName=identifier IN arrayName=identifier PIPE expression SQUARE_BRACKET_END      #arrayBuilderStatement
-    | identifier CHANNEL_OP SIMPLE_IDENTIFIER                                                                           #writeToChannelStatement
-    | SIMPLE_IDENTIFIER CHANNEL_OP expression                                                                           #readFromChannelStatement
+    | identifier CHANNEL_OP SIMPLE_IDENTIFIER                                                                           #readFromChannelStatementToVariable
+    | arrayAccess CHANNEL_OP SIMPLE_IDENTIFIER                                                                          #readFromChannelStatementToArray
+    | SIMPLE_IDENTIFIER CHANNEL_OP expression                                                                           #writeToChannelStatement
     | RETURN expression                                                                                                 #returnStatement
     | VAR identifier ASSIGN expression                                                                                  #varStatement
     | identifier PARENTHESIS_START (expression (COMMA expression)*)? PARENTHESIS_END                                    #functionCallStatement
