@@ -1,5 +1,6 @@
 lexer grammar TeshTokens;
 
+LINE_COMMENT : '#' ~[\r\n]* -> skip ;
 
 IN: 'in';
 IF: 'if';
@@ -63,13 +64,13 @@ fragment EXP :   [Ee] [+\-]? INT_LITERAL ;
 
 
 
+
 IDENTIFIER: SIMPLE_IDENTIFIER('.'SIMPLE_IDENTIFIER)+;
 
 SIMPLE_IDENTIFIER
     : [a-zA-Z_][a-zA-Z0-9_]*;
 
 
-WS :  [ \r]+ -> skip ; // skip spaces, tabs, newlines
+WS :  [ \r\t]+ -> skip ; // skip spaces, tabs, newlines
 
 EOS: [\n];
-
