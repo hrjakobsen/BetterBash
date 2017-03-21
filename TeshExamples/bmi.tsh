@@ -7,8 +7,6 @@ int unitChoice = 0
 int height
 int weight
 
-void
-
 #Print to stdout
 stdio << "Please choose which unit you would like to use"
 stdio << "1. Metric"
@@ -85,6 +83,7 @@ float BMI = weight / ((height / 100) * (height / 100))
 if unitChoice == 2 {
     BMI = BMI * 703
 } else {}
+
 
 #Declare a variable to hold the category of the BMI
 string category
