@@ -1,6 +1,6 @@
 lexer grammar TeshTokens;
 
-LINE_COMMENT : '#' ~[\r\n]* -> skip ;
+LINE_COMMENT: '#' ~[\r\n]* -> skip ;
 
 IN: 'in';
 IF: 'if';
@@ -12,6 +12,10 @@ VAR: 'var';
 RECORD: 'record';
 FUNCTION: 'func';
 CHANNEL: 'channel';
+FORK: 'fork';
+BREAK: 'break';
+CONTINUE: 'continue';
+DOLLAR: '$';
 START_BLOCK: '{';
 END_BLOCK: '}';
 ARRAY_IDENTIFIER:'[]';
@@ -38,11 +42,12 @@ OP_LT: '<';
 OP_GT: '>';
 OP_GEQ: '>=';
 OP_LEQ: '<=';
+OP_PAT: '?=';
 OP_MOD: 'mod';
 ASSIGN: '=';
 PIPE: '|';
 COMMA: ',';
-SIMPLE_TYPE: ('string'|'int'|'float'|'char'|'bool'|'file');
+SIMPLE_TYPE: ('string'|'int'|'float'|'char'|'bool'|'file'|'void');
 CHAR_LITERAL: '\''.?'\'';
 BOOL_LITERAL: 'true' | 'false';
 
@@ -73,4 +78,4 @@ SIMPLE_IDENTIFIER
 
 WS :  [ \r\t]+ -> skip ; // skip spaces, tabs, newlines
 
-EOS: [\n];
+NEWLINE: [\n];

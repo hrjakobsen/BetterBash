@@ -2,29 +2,60 @@ grammar Tesh;
 import TeshTokens;
 
 compileUnit
-    : statement EOF;
+    : statement* EOF;
 
 statement
-    : first=statement EOS second=statement                                                                              #multiStatement
-    | IF expression START_BLOCK trueBranch=statement END_BLOCK ELSE START_BLOCK falseBranch=statement END_BLOCK         #ifStatement
-    | WHILE expression START_BLOCK statement END_BLOCK                                                                  #whileStatement
-    | FOR variablename=identifier IN array=identifier START_BLOCK statement END_BLOCK                                   #forStatement
-    | identifier ASSIGN expression                                                                                      #assignmentStatement
+    : simpleStatement
+    | compoundStatement
+    | NEWLINE
+    ;
+
+simpleStatement
+    : identifier ASSIGN expression                                                                                      #assignmentStatement
     | arrayAccess ASSIGN expression                                                                                     #arrayElementAssignmentStatement
     | newArrayName=identifier ASSIGN SQUARE_BRACKET_START variableName=identifier IN arrayName=identifier PIPE expression SQUARE_BRACKET_END      #arrayBuilderStatement
     | identifier CHANNEL_OP SIMPLE_IDENTIFIER                                                                           #readFromChannelStatementToVariable
     | arrayAccess CHANNEL_OP SIMPLE_IDENTIFIER                                                                          #readFromChannelStatementToArray
     | SIMPLE_IDENTIFIER CHANNEL_OP expression                                                                           #writeToChannelStatement
-    | RETURN expression                                                                                                 #returnStatement
     | VAR identifier ASSIGN expression                                                                                  #varStatement
-    | identifier PARENTHESIS_START (expression (COMMA expression)*)? PARENTHESIS_END                                    #functionCallStatement
+    | functionCall                                                                                                      #functionCallStatement
+    | DOLLAR expression                                                                                                 #executeShellCommandStatement
+    | FORK DOLLAR expression                                                                                            #backgroundExecuteShellCommandStatement
+    | SIMPLE_IDENTIFIER CHANNEL_OP DOLLAR expression                                                                    #executeShellCommandIntoChannelStatement
+    | FORK SIMPLE_IDENTIFIER CHANNEL_OP DOLLAR expression                                                               #backgroundExecuteShellCommandIntoChannelStatement
+    | DOLLAR expression                                                                                                 #executeShellCommandStatement
     | variableDeclaration (ASSIGN expression)?                                                                          #variableDeclarationStatement
+    | channelDeclaration                                                                                                #channelDeclarationStatement
+    | identifier op=(OP_INCREMENT | OP_DECREMENT | OP_SCALE | OP_DIVIDE | OP_REM) expression                            #compoundAssignment
+    | arrayAccess op=(OP_INCREMENT | OP_DECREMENT | OP_SCALE | OP_DIVIDE | OP_REM) expression                           #compoundArrayStatement
+    | flow                                                                                                              #flowStatement
+    ;
+
+flow
+    : CONTINUE                                                                                                          #continueStatement
+    | BREAK                                                                                                             #breakStatement
+    | RETURN expression                                                                                                 #returnStatement
+    | FORK functionCall                                                                                                 #backgroundFunctionCallStatement
+    ;
+
+block:
+    NEWLINE* START_BLOCK multipleStatements END_BLOCK NEWLINE*
+    ;
+
+multipleStatements
+    : NEWLINE* ((statement NEWLINE) | NEWLINE)* NEWLINE*
+    ;
+
+functionCall
+    : identifier PARENTHESIS_START (expression (COMMA expression)*)? PARENTHESIS_END
+    ;
+
+compoundStatement
+    : IF expression trueBranch=block ELSE falseBranch=block       #ifStatement
+    | WHILE expression block                                                                 #whileStatement
+    | FOR SIMPLE_IDENTIFIER IN identifier block                                              #forStatement
     | recordDeclaration                                                                                                 #recordDeclarationStatement
     | functionDeclaration                                                                                               #functionDeclarationStatement
-    | channelDeclaration                                                                                                #channelDeclarationStatement
-    | identifier op=(OP_INCREMENT | OP_DECREMENT | OP_SCALE | OP_DIVIDE | OP_REM) expression                            #compoundStatement
-    | arrayAccess op=(OP_INCREMENT | OP_DECREMENT | OP_SCALE | OP_DIVIDE | OP_REM) expression                           #compoundArrayStatement
-    |                                                                                                                   #emptyStatement
     ;
 
 expression
@@ -37,7 +68,7 @@ boolm
     ;
 
 boolc
-    : boolc op=(OP_EQ | OP_NEQ | OP_LT | OP_GT | OP_LEQ | OP_GEQ) arithmeticExpression                                  #boolComparison
+    : boolc op=(OP_EQ | OP_NEQ | OP_LT | OP_GT | OP_LEQ | OP_GEQ | OP_PAT) arithmeticExpression                         #boolComparison
     | arithmeticExpression                                                                                              #singleArithmeticExpr
     ;
 
@@ -61,27 +92,43 @@ value
 finalValue
     : constant                                                                                                          #singleConstant
     | identifier                                                                                                        #singleIdentifier
-    | identifier PARENTHESIS_START (expression (COMMA expression)*)? PARENTHESIS_END                                    #functionCallExpr
+    | functionCall                                                                                                      #functionCallExpr
     | arrayAccess                                                                                                       #arrayAccessExpr
     | PARENTHESIS_START arithmeticExpression PARENTHESIS_END                                                            #parenthesisExpr
     ;
 
 
 
-identifier : (SIMPLE_IDENTIFIER | IDENTIFIER);
+identifier
+    : (SIMPLE_IDENTIFIER | IDENTIFIER)
+    ;
 
-recordDeclaration: RECORD SIMPLE_IDENTIFIER START_BLOCK (variableDeclaration)+ END_BLOCK;
+recordDeclaration
+    : RECORD SIMPLE_IDENTIFIER NEWLINE* START_BLOCK (NEWLINE | variableDeclaration NEWLINE)* END_BLOCK
+    ;
 
-variableDeclaration: type SIMPLE_IDENTIFIER;
+variableDeclaration
+    : type SIMPLE_IDENTIFIER
+    ;
 
-functionDeclaration: FUNCTION SIMPLE_IDENTIFIER PARENTHESIS_START (type SIMPLE_IDENTIFIER (COMMA type SIMPLE_IDENTIFIER)*)? PARENTHESIS_END type? START_BLOCK statement END_BLOCK;
+functionDeclaration
+    : FUNCTION SIMPLE_IDENTIFIER PARENTHESIS_START (type SIMPLE_IDENTIFIER (COMMA type SIMPLE_IDENTIFIER)*)? PARENTHESIS_END type? returntype=type START_BLOCK statement* END_BLOCK
+    ;
 
-channelDeclaration: CHANNEL SIMPLE_IDENTIFIER;
+channelDeclaration
+    : CHANNEL SIMPLE_IDENTIFIER
+    ;
 
-arrayAccess: identifier (SQUARE_BRACKET_START expression SQUARE_BRACKET_END)+;
+arrayAccess
+    : identifier (SQUARE_BRACKET_START expression SQUARE_BRACKET_END)+
+    ;
 
-constant: (INT_LITERAL | FLOAT_LITERAL | STRING_LITERAL | CHAR_LITERAL | BOOL_LITERAL);
+constant
+    : (INT_LITERAL | FLOAT_LITERAL | STRING_LITERAL | CHAR_LITERAL | BOOL_LITERAL)
+    ;
 
-type: (SIMPLE_TYPE | RECORD SIMPLE_IDENTIFIER)ARRAY_IDENTIFIER*;
+type
+    : (SIMPLE_TYPE | RECORD SIMPLE_IDENTIFIER)ARRAY_IDENTIFIER*
+    ;
 
 
