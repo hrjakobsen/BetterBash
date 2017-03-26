@@ -3,25 +3,33 @@
 #Declare an array
 string[] lines
 
+#Declare filename of file to read from
+var fileName = "test.txt"
+
 #Declare a counter
 var numLines = 0
 
 #Declare a channel we can read from
 file f = openFile(fileName, READ)
 
-#While the channel has lines
-#read them and add them to the array
-while file.hasContent() {
-    lines[numLines] << file
-    numLines += 1
+#Check to see if file exists
+if f.exists() {
+    #While the channel has lines
+    #read them and add them to the array
+    while f.hasContent() {
+        lines[numLines] << f
+        numLines += 1
+    }
+
+    #Output the number of elements in the file/array
+    stdio << "Number of elements: " + lines.length()
+
+    #Output the contents of the array
+    for line in lines {
+        stdio << line   
+    }
+
+    file.close()
+} else {
+    stderr << "The file " + fileName + " does not exist!"
 }
-
-#Output the number of elements in the file/array
-stdio << "Number of elements: " + lines.length()
-
-#Output the contents of the array
-for line in lines {
-    stdio << line   
-}
-
-file.close()
