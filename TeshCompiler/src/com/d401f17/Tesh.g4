@@ -43,7 +43,7 @@ block:
     ;
 
 multipleStatements
-    : NEWLINE* ((statement NEWLINE) | NEWLINE)* NEWLINE*
+    : NEWLINE* ((statement NEWLINE) | NEWLINE)*
     ;
 
 functionCall
@@ -112,7 +112,7 @@ variableDeclaration
     ;
 
 functionDeclaration
-    : FUNCTION SIMPLE_IDENTIFIER PARENTHESIS_START (type SIMPLE_IDENTIFIER (COMMA type SIMPLE_IDENTIFIER)*)? PARENTHESIS_END type? returntype=type START_BLOCK statement* END_BLOCK
+    : FUNCTION SIMPLE_IDENTIFIER PARENTHESIS_START (type SIMPLE_IDENTIFIER (COMMA type SIMPLE_IDENTIFIER)*)? PARENTHESIS_END type? returntype=type block
     ;
 
 channelDeclaration
