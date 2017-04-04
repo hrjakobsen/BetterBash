@@ -5,27 +5,27 @@ compileUnit
     : statement* EOF;
 
 statement
-    : simpleStatement
-    | compoundStatement
-    | NEWLINE
+    : simpleStatement                                                                                                   #simpStatement
+    | compoundStatement                                                                                                 #compStatement
+    | NEWLINE                                                                                                           #newlineStatement
     ;
 
 simpleStatement
-    : identifier ASSIGN expression                                                                                      #assignmentStatement
+    : FORK simpleStatement                                                                                              #forkSimpleStatement
+    | identifier ASSIGN expression                                                                                      #assignmentStatement
     | arrayAccess ASSIGN expression                                                                                     #arrayElementAssignmentStatement
-    | newArrayName=identifier ASSIGN SQUARE_BRACKET_START variableName=identifier IN arrayName=identifier PIPE expression SQUARE_BRACKET_END      #arrayBuilderStatement
+    | newArrayName=identifier ASSIGN SQUARE_BRACKET_START
+          variableName=identifier IN arrayName=identifier PIPE expression SQUARE_BRACKET_END                            #arrayBuilderStatement
     | identifier CHANNEL_OP SIMPLE_IDENTIFIER                                                                           #readFromChannelStatementToVariable
     | arrayAccess CHANNEL_OP SIMPLE_IDENTIFIER                                                                          #readFromChannelStatementToArray
     | SIMPLE_IDENTIFIER CHANNEL_OP expression                                                                           #writeToChannelStatement
     | VAR identifier ASSIGN expression                                                                                  #varStatement
     | functionCall                                                                                                      #functionCallStatement
-    | DOLLAR expression                                                                                                 #executeShellCommandStatement
-    | FORK DOLLAR expression                                                                                            #backgroundExecuteShellCommandStatement
+    | DOLLAR expression                                                                                                 #backgroundExecuteShellCommandStatement
     | SIMPLE_IDENTIFIER CHANNEL_OP DOLLAR expression                                                                    #executeShellCommandIntoChannelStatement
-    | FORK SIMPLE_IDENTIFIER CHANNEL_OP DOLLAR expression                                                               #backgroundExecuteShellCommandIntoChannelStatement
     | DOLLAR expression                                                                                                 #executeShellCommandStatement
     | variableDeclaration (ASSIGN expression)?                                                                          #variableDeclarationStatement
-    | channelDeclaration                                                                                                #channelDeclarationStatement
+    //| channelDeclaration                                                                                                #channelDeclarationStatement
     | identifier op=(OP_INCREMENT | OP_DECREMENT | OP_SCALE | OP_DIVIDE | OP_REM) expression                            #compoundAssignment
     | arrayAccess op=(OP_INCREMENT | OP_DECREMENT | OP_SCALE | OP_DIVIDE | OP_REM) expression                           #compoundArrayStatement
     | flow                                                                                                              #flowStatement
@@ -35,7 +35,6 @@ flow
     : CONTINUE                                                                                                          #continueStatement
     | BREAK                                                                                                             #breakStatement
     | RETURN expression                                                                                                 #returnStatement
-    | FORK functionCall                                                                                                 #backgroundFunctionCallStatement
     ;
 
 block:
@@ -51,11 +50,12 @@ functionCall
     ;
 
 compoundStatement
-    : IF expression trueBranch=block ELSE falseBranch=block       #ifStatement
-    | WHILE expression block                                                                 #whileStatement
-    | FOR SIMPLE_IDENTIFIER IN identifier block                                              #forStatement
+    : IF expression trueBranch=block ELSE falseBranch=block                                                             #ifStatement
+    | WHILE expression block                                                                                            #whileStatement
+    | FOR SIMPLE_IDENTIFIER IN identifier block                                                                         #forStatement
     | recordDeclaration                                                                                                 #recordDeclarationStatement
     | functionDeclaration                                                                                               #functionDeclarationStatement
+    | FORK compoundStatement                                                                                            #forkCompoundStatement
     ;
 
 expression
@@ -112,7 +112,7 @@ variableDeclaration
     ;
 
 functionDeclaration
-    : FUNCTION SIMPLE_IDENTIFIER PARENTHESIS_START (type SIMPLE_IDENTIFIER (COMMA type SIMPLE_IDENTIFIER)*)? PARENTHESIS_END type? returntype=type block
+    : FUNCTION name=SIMPLE_IDENTIFIER PARENTHESIS_START (type SIMPLE_IDENTIFIER (COMMA type SIMPLE_IDENTIFIER)*)? PARENTHESIS_END returntype=type block
     ;
 
 channelDeclaration

@@ -1,29 +1,31 @@
 package com.d401f17.AST.Nodes;
 
+import com.d401f17.Visitors.ASTVisitor;
+
 /**
  * Created by mathias on 3/15/17.
  */
-public class InfixExpressionNode {
-    private AST left;
-    private AST right;
+public abstract class InfixExpressionNode extends ArithmeticExpressionNode {
+    private ArithmeticExpressionNode left;
+    private ArithmeticExpressionNode right;
 
-    public AST getLeft() {
+    public ArithmeticExpressionNode getLeft() {
         return left;
     }
 
-    public AST getRight() {
+    public ArithmeticExpressionNode getRight() {
         return right;
     }
 
-    public void setRight(AST right) {
+    public void setRight(ArithmeticExpressionNode right) {
         this.right = right;
     }
 
-    public void setLeft(AST left) {
+    public void setLeft(ArithmeticExpressionNode left) {
         this.left = left;
     }
 
-    public InfixExpressionNode(AST left, AST right) {
+    public InfixExpressionNode(ArithmeticExpressionNode left, ArithmeticExpressionNode right) {
         this.left = left;
         this.right = right;
     }
