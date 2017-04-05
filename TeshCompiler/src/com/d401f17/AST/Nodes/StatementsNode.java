@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by mathias on 3/15/17.
  */
-public class StatementsNode extends AST {
+public class StatementsNode extends StatementNode {
     private List<StatementNode> children;
 
     public StatementsNode(StatementNode ... children) {

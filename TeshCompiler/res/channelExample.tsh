@@ -2,12 +2,13 @@
 
 channel chn
 
-func chatHandler() void {
+func chatHandler(int number) void {
     fork chn << $ "./chat.sh"
 
     int p1Count = 0
     int p2Count = 0
     string line
+    file f = makeFile("hej")
 
     while true {
         line << chn

@@ -11,7 +11,6 @@ FOR: 'for';
 VAR: 'var';
 RECORD: 'record';
 FUNCTION: 'func';
-CHANNEL: 'channel';
 FORK: 'fork';
 BREAK: 'break';
 CONTINUE: 'continue';
@@ -47,7 +46,7 @@ OP_MOD: 'mod';
 ASSIGN: '=';
 PIPE: '|';
 COMMA: ',';
-SIMPLE_TYPE: ('string'|'int'|'float'|'char'|'bool'|'file'|'void');
+SIMPLE_TYPE: ('string'|'int'|'float'|'char'|'bool'|'file'|'void'|'channel');
 CHAR_LITERAL: '\''.?'\'';
 BOOL_LITERAL: 'true' | 'false';
 
@@ -61,7 +60,6 @@ fragment HEX : [0-9a-fA-F] ;
 FLOAT_LITERAL
     :    INT_LITERAL '.' INT_LITERAL EXP?   // 1.35, 1.35E-9, 0.3, -4.5
     |    INT_LITERAL EXP            // 1e10 -3e4
-    |    INT_LITERAL                // -3, 45
     ;
 
 INT_LITERAL :   '0' | [1-9] [0-9]* ; // no leading zeros

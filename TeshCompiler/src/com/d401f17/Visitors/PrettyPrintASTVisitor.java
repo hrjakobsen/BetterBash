@@ -121,7 +121,7 @@ public class PrettyPrintASTVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(FunctionCallNode node) {
-        makeNode("call " + node.getName().toString());
+        makeNode("call " + node.getName().toString(), node.getArguments().toArray(new ArithmeticExpressionNode[0]));
         return null;
     }
 
@@ -248,7 +248,7 @@ public class PrettyPrintASTVisitor extends BaseVisitor<Void> {
         for (AST child : node.getChildren()) {
             sb.append(id).append(" -- ");
             child.accept(this);
-            sb.append(id).append("[label=\"mul\"]\n");
+            sb.append(id).append("[label=\"...\"]\n");
         }
         return null;
     }
@@ -267,7 +267,7 @@ public class PrettyPrintASTVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(VariableDeclarationNode node) {
-        makeNode("create", node.getName(), node.getType());
+        makeNode("vardef", node.getName(), node.getType());
         return null;
     }
 

@@ -171,10 +171,10 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
     public AST visitVariableDeclarationStatement(TeshParser.VariableDeclarationStatementContext ctx) {
         VariableDeclarationNode node = (VariableDeclarationNode)visit(ctx.variableDeclaration());
         if (ctx.expression() != null) {
-            return new AssignmentNode(
+            return new StatementsNode(node, new AssignmentNode(
                     new SimpleIdentifierNode(node.getName().getName()),
                     (ArithmeticExpressionNode)visit(ctx.expression())
-            );
+            ));
         }
         return node;
     }
@@ -195,7 +195,12 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
             for (ParseTree subtree : ctx.children) {
                 StatementNode child = (StatementNode) visit(subtree);
                 if (child != null) {
-                    node.getChildren().add(child);
+                    if (child instanceof StatementsNode) {
+                        StatementsNode childNodes = (StatementsNode) child;
+                        node.getChildren().addAll(childNodes.getChildren());
+                    } else {
+                        node.getChildren().add(child);
+                    }
                 }
             }
         }
@@ -322,10 +327,13 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
     public AST visitFunctionDeclaration(TeshParser.FunctionDeclarationContext ctx) {
         List<VariableDeclarationNode> formalArgs = new ArrayList<>();
         int numberOfArgs = ctx.SIMPLE_IDENTIFIER().size();
-        for (int i = 0; i < numberOfArgs; i++) {
+        // Skip first simpleIdentifier as the name of the function is the first element
+        for (int i = 1; i < numberOfArgs; i++) {
             formalArgs.add(new VariableDeclarationNode(
                             new SimpleIdentifierNode(ctx.SIMPLE_IDENTIFIER(i).getText()),
-                            new TypeNode(ctx.type(i).getText())
+                            //The return type of the function is the last element of the type list
+                            //so we need to subtract one access this array as 0-indexed
+                            new TypeNode(ctx.type(i - 1).getText())
                     )
             );
         }
@@ -360,7 +368,7 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
         } else if (ctx.INT_LITERAL() != null) {
             return new ConstantNode(Integer.parseInt(ctx.INT_LITERAL().getText()), Types.INT);
         } else {
-            return new ConstantNode(ctx.STRING_LITERAL().getText().substring(1, ctx.STRING_LITERAL().getText().length() - 2), Types.STRING);
+            return new ConstantNode(ctx.STRING_LITERAL().getText().substring(1, ctx.STRING_LITERAL().getText().length() - 1), Types.STRING);
         }
     }
 
