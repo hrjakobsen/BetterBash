@@ -1,4 +1,4 @@
-package com.d401f17.AST.Nodes;
+package com.d401f17.AST.Types;
 
 /**
  * Created by mathias on 4/4/17.
