@@ -3,7 +3,7 @@ package com.d401f17.Visitors;
 import com.d401f17.AST.Nodes.*;
 import com.d401f17.TeshBaseVisitor;
 import com.d401f17.TeshParser;
-import com.d401f17.AST.Types.Types;
+import com.d401f17.AST.TypeSystem.Types;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.ArrayList;

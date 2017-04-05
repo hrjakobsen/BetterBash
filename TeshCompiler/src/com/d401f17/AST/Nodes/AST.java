@@ -1,6 +1,6 @@
 package com.d401f17.AST.Nodes;
 
-import com.d401f17.AST.Types.Type;
+import com.d401f17.AST.TypeSystem.Type;
 import com.d401f17.Visitors.ASTVisitor;
 
 /**

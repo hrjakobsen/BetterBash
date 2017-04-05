@@ -1,4 +1,4 @@
-package com.d401f17.AST.Types;
+package com.d401f17.AST.TypeSystem;
 
 /**
  * Created by hense on 4/5/17.

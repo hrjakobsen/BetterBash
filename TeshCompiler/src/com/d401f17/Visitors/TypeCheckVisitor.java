@@ -1,14 +1,16 @@
 package com.d401f17.Visitors;
 
 import com.d401f17.AST.Nodes.*;
-import com.d401f17.AST.Types.Type;
-import com.d401f17.AST.Types.Types;
-import com.d401f17.TypeException;
+import com.d401f17.AST.TypeSystem.Type;
+import com.d401f17.AST.TypeSystem.Types;
+import com.d401f17.AST.TypeSystem.TypeException;
 
 /**
  * Created by hense on 4/5/17.
  */
 public class TypeCheckVisitor extends BaseVisitor<Void> {
+    //private SymbolTable st = new SymbolTable();
+
     @Override
     public Void visit(AdditionNode node) throws TypeException {
         node.getLeft().accept(this);

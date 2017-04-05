@@ -1,6 +1,6 @@
 package com.d401f17.AST.Nodes;
 
-import com.d401f17.AST.Types.Types;
+import com.d401f17.AST.TypeSystem.Types;
 import com.d401f17.Visitors.ASTVisitor;
 
 public class ConstantNode extends ArithmeticExpressionNode {
