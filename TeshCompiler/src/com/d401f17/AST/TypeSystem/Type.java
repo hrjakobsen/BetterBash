@@ -5,10 +5,15 @@ package com.d401f17.AST.TypeSystem;
  */
 public class Type {
     private Types primitiveType;
+    private String errorMessage;
 
     public Type(Types primitiveType) {
+        this(primitiveType, null);
+    }
 
+    public Type(Types primitiveType, String errorMessage) {
         this.primitiveType = primitiveType;
+        this.errorMessage = errorMessage;
     }
 
     public Types getPrimitiveType() {

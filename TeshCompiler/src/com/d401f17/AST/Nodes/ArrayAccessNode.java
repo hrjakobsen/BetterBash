@@ -8,8 +8,8 @@ import java.util.List;
  * Created by mathias on 4/4/17.
  */
 public class ArrayAccessNode extends IdentifierNode {
-    public IdentifierNode array;
-    public List<ArithmeticExpressionNode> indices;
+    private IdentifierNode array;
+    private List<ArithmeticExpressionNode> indices;
 
     public IdentifierNode getArray() {
         return array;
