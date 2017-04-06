@@ -9,7 +9,7 @@ import com.d401f17.AST.TypeSystem.TypeException;
  * Created by hense on 4/5/17.
  */
 public class TypeCheckVisitor extends BaseVisitor<Void> {
-    //private SymbolTable st = new SymbolTable();
+    //private SymTab st = new SymbolTable();
 
     @Override
     public Void visit(AdditionNode node) throws TypeException {
@@ -32,10 +32,10 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             if (rightType.getPrimitiveType() == Types.INT || rightType.getPrimitiveType() == Types.FLOAT || rightType.getPrimitiveType() == Types.STRING) {
                 node.setType(leftType);
             } else {
-                throw new TypeException("Right node expected to be of type int, float or string, was " + rightType);
+                throw new TypeException("Right node in addition node expected to be of type int, float or string, was " + rightType);
             }
         } else {
-            node.setType(implicitIntToFloat(leftType, rightType));
+            node.setType(implicitIntToFloat(leftType, rightType, "Addition node"));
         }
 
         return null;
@@ -43,13 +43,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(AndNode node) throws TypeException {
-        node.getLeft().accept(this);
-        node.getRight().accept(this);
-
-        Type leftType = node.getLeft().getType();
-        Type rightType = node.getRight().getType();
-
-        node.setType(booleanExpression(leftType, rightType));
+        node.setType(booleanComparison(node));
         return null;
     }
 
@@ -115,16 +109,16 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             } else if (rightType.getPrimitiveType() == Types.FLOAT) {
                 node.setType(rightType);
             } else {
-                throw new TypeException("Right node expected to be of type int or float, was " + rightType);
+                throw new TypeException("Right node in division node expected to be of type int or float, was " + rightType);
             }
         } else if (leftType.getPrimitiveType() == Types.FLOAT) {
             if (rightType.getPrimitiveType() == Types.INT || rightType.getPrimitiveType() == Types.FLOAT) {
                 node.setType(leftType);
             } else {
-                throw new TypeException("Right node expected to be of type int or float, was " + rightType);
+                throw new TypeException("Right node in division node expected to be of type int or float, was " + rightType);
             }
         } else {
-            throw new TypeException("Left node expected to be of type int or float, was " + leftType);
+            throw new TypeException("Left node in division node expected to be of type int or float, was " + leftType);
         }
 
         return null;
@@ -132,19 +126,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(EqualsNode node) throws TypeException {
-        node.getLeft().accept(this);
-        node.getRight().accept(this);
-
-        Type leftType = node.getLeft().getType();
-        Type rightType = node.getRight().getType();
-
-        if (leftType.equals(rightType)) {
-            node.setType(leftType);
-            return null;
-        }
-
-        node.setType(implicitIntToFloat(leftType, rightType));
-
+        node.setType(equalComparison(node, "Equal node"));
         return null;
     }
 
@@ -154,7 +136,20 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(ForNode node) {
+    public Void visit(ForNode node) throws TypeException {
+        node.getVariable().accept(this);
+        node.getArray().accept(this);
+        node.getStatements().accept(this);
+
+        Type variableType = node.getVariable().getType();
+        Type arrayType = node.getArray().getType();
+        Type statementsType = node.getStatements().getType();
+
+        if (variableType.getPrimitiveType() != arrayType.getPrimitiveType()) {
+            throw new TypeException("For node expected variable to of type " + arrayType + ", was " + variableType);
+        }
+
+        node.setType(statementsType);
         return null;
     }
 
@@ -170,43 +165,13 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(GreaterThanNode node) throws TypeException {
-        node.getLeft().accept(this);
-        node.getRight().accept(this);
-
-        Type leftType = node.getLeft().getType();
-        Type rightType = node.getRight().getType();
-
-        if (leftType.equals(rightType)) {
-            if (leftType.getPrimitiveType() != Types.INT && leftType.getPrimitiveType() != Types.FLOAT) {
-                throw new TypeException("Greater than node expected int or float, got " + leftType);
-            }
-            node.setType(leftType);
-            return null;
-        }
-
-        node.setType(implicitIntToFloat(leftType, rightType));
-
+        node.setType(binaryNumberType(node, "Greater than node"));
         return null;
     }
 
     @Override
     public Void visit(GreaterThanOrEqualNode node) throws TypeException {
-        node.getLeft().accept(this);
-        node.getRight().accept(this);
-
-        Type leftType = node.getLeft().getType();
-        Type rightType = node.getRight().getType();
-
-        if (leftType.equals(rightType)) {
-            if (leftType.getPrimitiveType() != Types.INT && leftType.getPrimitiveType() != Types.FLOAT) {
-                throw new TypeException("Greater than or equal node expected int or float, got " + leftType);
-            }
-            node.setType(leftType);
-            return null;
-        }
-
-        node.setType(implicitIntToFloat(leftType, rightType));
-
+        node.setType(binaryNumberType(node, "Greater than or equal node"));
         return null;
     }
 
@@ -221,11 +186,11 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         Type falseBranchType = node.getFalseBranch().getType();
 
         if (predicateType.getPrimitiveType() != Types.BOOL) {
-            throw new TypeException("Predicate expected bool, got " + predicateType);
+            throw new TypeException("If node expected predicate to be of type bool, was " + predicateType);
         }
 
         if (!trueBranchType.equals(falseBranchType)) {
-            throw new TypeException("False-branch expected " + trueBranchType + ", got " + falseBranchType);
+            throw new TypeException("If node expected false branch to be of type " + trueBranchType + ", was " + falseBranchType);
         }
 
         node.setType(trueBranchType);
@@ -239,43 +204,13 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(LessThanNode node) throws TypeException {
-        node.getLeft().accept(this);
-        node.getRight().accept(this);
-
-        Type leftType = node.getLeft().getType();
-        Type rightType = node.getRight().getType();
-
-        if (leftType.equals(rightType)) {
-            if (leftType.getPrimitiveType() != Types.INT && leftType.getPrimitiveType() != Types.FLOAT) {
-                throw new TypeException("Less than node expected int or float, got " + leftType);
-            }
-            node.setType(leftType);
-            return null;
-        }
-
-        node.setType(implicitIntToFloat(leftType, rightType));
-
+        node.setType(binaryNumberType(node, "Less than node"));
         return null;
     }
 
     @Override
     public Void visit(LessThanOrEqualNode node) throws TypeException {
-        node.getLeft().accept(this);
-        node.getRight().accept(this);
-
-        Type leftType = node.getLeft().getType();
-        Type rightType = node.getRight().getType();
-
-        if (leftType.equals(rightType)) {
-            if (leftType.getPrimitiveType() != Types.INT && leftType.getPrimitiveType() != Types.FLOAT) {
-                throw new TypeException("Less than or equal node expected int or float, got " + leftType);
-            }
-            node.setType(leftType);
-            return null;
-        }
-
-        node.setType(implicitIntToFloat(leftType, rightType));
-
+        node.setType(binaryNumberType(node, "Less than or equal node"));
         return null;
     }
 
@@ -286,30 +221,19 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(MultiplicationNode node) throws TypeException {
-        node.getLeft().accept(this);
-        node.getRight().accept(this);
-
-        Type leftType = node.getLeft().getType();
-        Type rightType = node.getRight().getType();
-
-        if (leftType.equals(rightType)) {
-            if (leftType.getPrimitiveType() != Types.INT && leftType.getPrimitiveType() != Types.FLOAT) {
-                throw new TypeException("Multiplication node expected int or float, got " + leftType);
-            }
-            node.setType(leftType);
-
-            return null;
-        }
-
-        node.setType(implicitIntToFloat(leftType, rightType));
+        node.setType(binaryNumberType(node, "Multiplication node"));
         return null;
     }
 
     @Override
-    public Void visit(NegationNode node) {
+    public Void visit(NegationNode node) throws TypeException {
         node.getExpression().accept(this);
 
         Type expressionType = node.getExpression().getType();
+
+        if (expressionType.getPrimitiveType() != Types.BOOL) {
+            throw new TypeException("Negation node expected to be of type bool, was " + expressionType);
+        }
 
         node.setType(expressionType);
 
@@ -318,31 +242,13 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(NotEqualsNode node) throws TypeException {
-        node.getLeft().accept(this);
-        node.getRight().accept(this);
-
-        Type leftType = node.getLeft().getType();
-        Type rightType = node.getRight().getType();
-
-        if (leftType.equals(rightType)) {
-            node.setType(leftType);
-            return null;
-        }
-
-        node.setType(implicitIntToFloat(leftType, rightType));
-
+        node.setType(equalComparison(node, "Not equal node"));
         return null;
     }
 
     @Override
     public Void visit(OrNode node) throws TypeException {
-        node.getLeft().accept(this);
-        node.getRight().accept(this);
-
-        Type leftType = node.getLeft().getType();
-        Type rightType = node.getRight().getType();
-
-        node.setType(booleanExpression(leftType, rightType));
+        node.setType(booleanComparison(node));
         return null;
     }
 
@@ -383,22 +289,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(SubtractionNode node) throws TypeException {
-        node.getLeft().accept(this);
-        node.getRight().accept(this);
-
-        Type leftType = node.getLeft().getType();
-        Type rightType = node.getRight().getType();
-
-        if (leftType.equals(rightType)) {
-            if (leftType.getPrimitiveType() != Types.INT && leftType.getPrimitiveType() != Types.FLOAT) {
-                throw new TypeException("Subtraction node expected int or float, got " + leftType);
-            }
-            node.setType(leftType);
-
-            return null;
-        }
-
-        node.setType(implicitIntToFloat(leftType, rightType));
+        node.setType(binaryNumberType(node, "Subtraction node"));
         return null;
     }
 
@@ -413,7 +304,18 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(WhileNode node) {
+    public Void visit(WhileNode node) throws TypeException {
+        node.getPredicate().accept(this);
+        node.getStatements().accept(this);
+
+        Type predicateType = node.getPredicate().getType();
+        Type statementsType = node.getStatements().getType();
+
+        if (predicateType.getPrimitiveType() != Types.BOOL) {
+            throw new TypeException("While node expected predicate to be of type bool, was " + predicateType);
+        }
+
+        node.setType(statementsType);
         return null;
     }
 
@@ -432,33 +334,71 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         return null;
     }
 
-    private Type implicitIntToFloat(Type left, Type right) throws TypeException {
+    private Type equalComparison(InfixExpressionNode node, String nodeName) throws TypeException {
+        node.getLeft().accept(this);
+        node.getRight().accept(this);
+
+        Type leftType = node.getLeft().getType();
+        Type rightType = node.getRight().getType();
+
+        if (leftType.equals(rightType)) {
+            return leftType;
+        }
+
+        return implicitIntToFloat(leftType, rightType, nodeName);
+    }
+
+
+    private Type binaryNumberType(InfixExpressionNode node, String nodeName) throws TypeException {
+        node.getLeft().accept(this);
+        node.getRight().accept(this);
+
+        Type leftType = node.getLeft().getType();
+        Type rightType = node.getRight().getType();
+
+        if (leftType.equals(rightType)) {
+            if (leftType.getPrimitiveType() != Types.INT && leftType.getPrimitiveType() != Types.FLOAT) {
+                throw new TypeException(nodeName + " expected int or float, got " + leftType);
+            }
+            return leftType;
+        }
+
+        return implicitIntToFloat(leftType, rightType, nodeName);
+    }
+
+    private Type implicitIntToFloat(Type left, Type right, String nodeName) throws TypeException {
         if (left.getPrimitiveType() == Types.INT) {
             if (right.getPrimitiveType() == Types.INT || right.getPrimitiveType() == Types.FLOAT) {
                 return right;
             } else {
-                throw new TypeException("Right node expected to be of type int or float, was " + right);
+                throw new TypeException("Right node in " + nodeName + " expected to be of type int or float, was " + right);
             }
         } else if (left.getPrimitiveType() == Types.FLOAT) {
             if (right.getPrimitiveType() == Types.INT || right.getPrimitiveType() == Types.FLOAT) {
                 return left;
             } else {
-                throw new TypeException("Right node expected to be of type int or float, was " + right);
+                throw new TypeException("Right node in " + nodeName + " expected to be of type int or float, was " + right);
             }
         } else {
-            throw new TypeException("Left node expected to be of type int or float, was " + left);
+            throw new TypeException("Left node in " + nodeName + " expected to be of type int or float, was " + left);
         }
     }
 
-    private Type booleanExpression(Type left, Type right) throws TypeException {
-        if (left.getPrimitiveType() != Types.BOOL) {
-            throw new TypeException("Left node expected bool, got " + left);
+    private Type booleanComparison(InfixExpressionNode node) throws TypeException {
+        node.getLeft().accept(this);
+        node.getRight().accept(this);
+
+        Type leftType = node.getLeft().getType();
+        Type rightType = node.getRight().getType();
+
+        if (leftType.getPrimitiveType() != Types.BOOL) {
+            throw new TypeException("Left node expected bool, got " + leftType);
         }
 
-        if (right.getPrimitiveType() != Types.BOOL) {
-            throw new TypeException("Right node expected bool, got " + right);
+        if (rightType.getPrimitiveType() != Types.BOOL) {
+            throw new TypeException("Right node expected bool, got " + rightType);
         }
 
-        return left;
+        return leftType;
     }
 }
