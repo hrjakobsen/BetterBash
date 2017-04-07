@@ -1,7 +1,6 @@
 package com.d401f17.Visitors;
 
 import com.d401f17.AST.Nodes.*;
-import com.d401f17.AST.TypeSystem.TypeException;
 
 /**
  * Created by mathias on 4/4/17.

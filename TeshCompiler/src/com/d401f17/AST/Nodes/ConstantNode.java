@@ -1,15 +1,15 @@
 package com.d401f17.AST.Nodes;
 
+import com.d401f17.AST.TypeSystem.Type;
 import com.d401f17.AST.TypeSystem.Types;
 import com.d401f17.Visitors.ASTVisitor;
 
 public class ConstantNode extends ArithmeticExpressionNode {
     private Object value;
-    private Types type;
 
-    public ConstantNode(Object value, Types type) {
+    public ConstantNode(Object value, Types primitiveType) {
         this.value = value;
-        this.type = type;
+        this.setType(new Type(primitiveType));
     }
 
     public Object getValue() {
@@ -18,14 +18,6 @@ public class ConstantNode extends ArithmeticExpressionNode {
 
     public void setValue(Object value) {
         this.value = value;
-    }
-
-    public Types getType() {
-        return type;
-    }
-
-    public void setType(Types type) {
-        this.type = type;
     }
 
     @Override

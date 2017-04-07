@@ -1,0 +1,30 @@
+#!/bin/tesh
+
+channel chn
+
+func chatHandler(int number) void {
+    fork chn << $ "./chat.sh"
+
+    int p1Count = 0
+    int p2Count = 0
+    string line
+    file f = makeFile("hej")
+
+    while true {
+        line << chn
+        if line ?= "Person 1.*" {
+            p1Count += 1
+        } else {
+            p2Count += 1
+        }
+        stdio << "Person 1: " + p1Count + "\nPerson 2: " + p2Count + "\n"
+    }
+}
+
+fork chatHandler()
+
+#Do other work
+#...
+
+#Wait for function to finish
+wait()

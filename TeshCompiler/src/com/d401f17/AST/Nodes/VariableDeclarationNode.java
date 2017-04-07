@@ -7,7 +7,7 @@ import com.d401f17.Visitors.ASTVisitor;
  */
 public class VariableDeclarationNode extends StatementNode {
     private SimpleIdentifierNode name;
-    private TypeNode type;
+    private TypeNode typeNode;
 
     public SimpleIdentifierNode getName() {
         return name;
@@ -17,17 +17,17 @@ public class VariableDeclarationNode extends StatementNode {
         this.name = name;
     }
 
-    public TypeNode getType() {
-        return type;
+    public TypeNode getTypeNode() {
+        return typeNode;
     }
 
-    public void setType(TypeNode type) {
-        this.type = type;
+    public void setTypeNode(TypeNode type) {
+        this.typeNode = type;
     }
 
     public VariableDeclarationNode(SimpleIdentifierNode name, TypeNode type) {
         this.name = name;
-        this.type = type;
+        this.typeNode = type;
     }
 
     @Override

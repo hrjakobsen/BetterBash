@@ -11,6 +11,10 @@ public class Type {
         this(primitiveType, null);
     }
 
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
     public Type(Types primitiveType, String errorMessage) {
         this.primitiveType = primitiveType;
         this.errorMessage = errorMessage;

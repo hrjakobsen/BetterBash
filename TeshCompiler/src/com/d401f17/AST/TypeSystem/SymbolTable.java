@@ -6,39 +6,54 @@ import java.util.HashMap;
  * Created by Henrik on 05-04-2017.
  */
 public class SymbolTable implements SymTab {
-    private SymTab currentTable;
+    private SymbolTable currentTable = this;
+    private SymbolTable parentTable = null;
 
     private HashMap<String, Symbol> table = new HashMap<>();
-    private SymTab parentTable;
-    private int scopeLevel;
 
-    public SymbolTable(SymTab parentTable, int scopeLevel) {
+    public SymbolTable getParentTable() {
+        return parentTable;
+    }
+
+
+    public HashMap<String, Symbol> getTable() {
+        return table;
+    }
+
+    public void setTable(HashMap<String, Symbol> table) {
+        this.table = table;
+    }
+
+    public SymbolTable() {
+    }
+
+    public void setParentTable(SymbolTable parentTable) {
         this.parentTable = parentTable;
-        this.scopeLevel = scopeLevel;
     }
 
     public void openScope() {
-        currentTable = new SymbolTable(this, scopeLevel++);
+        SymbolTable newTable = new SymbolTable();
+        newTable.setParentTable(currentTable);
+        currentTable = newTable;
     }
 
     public void closeScope() {
-        currentTable = this;
-        scopeLevel--;
-    }
-
-    public int getScopeLevel() {
-        return scopeLevel;
+        currentTable = currentTable.getParentTable();
     }
 
     public void insert(String id, Symbol s) {
-        table.put(id, s);
+        currentTable.getTable().put(id, s);
     }
 
-    public Symbol lookup(String id) {
+    public Symbol lookup(String id) throws VariableNotDeclaredException {
         if (table.containsKey(id)) {
             return table.get(id);
         } else {
-            return parentTable.lookup(id);
+            if (parentTable == null) {
+                throw new VariableNotDeclaredException("Variable " + id + " not declared");
+            } else {
+                return parentTable.lookup(id);
+            }
         }
     }
 }

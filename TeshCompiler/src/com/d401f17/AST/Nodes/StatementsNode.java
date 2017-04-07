@@ -10,17 +10,17 @@ import java.util.List;
  * Created by mathias on 3/15/17.
  */
 public class StatementsNode extends StatementNode {
-    private List<StatementNode> children;
+    private ArrayList<StatementNode> children;
 
     public StatementsNode(StatementNode ... children) {
         this.children = new ArrayList<>(Arrays.asList(children));
     }
 
-    public List<StatementNode> getChildren() {
+    public ArrayList<StatementNode> getChildren() {
         return children;
     }
 
-    public void setChildren(List<StatementNode> children) {
+    public void setChildren(ArrayList<StatementNode> children) {
         this.children = children;
     }
 

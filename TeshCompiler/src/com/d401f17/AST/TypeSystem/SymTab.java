@@ -6,8 +6,7 @@ package com.d401f17.AST.TypeSystem;
 public interface SymTab {
     public void openScope();
     public void closeScope();
-    public int getScopeLevel();
 
     public void insert(String id, Symbol s);
-    public Symbol lookup(String id);
+    public Symbol lookup(String id) throws VariableNotDeclaredException;
 }
