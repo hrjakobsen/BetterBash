@@ -293,8 +293,12 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         //If return is same type as function, create it in the symbol table
         if (funcType.equals(statementsType)) {
-            st.insert(funcName, new Symbol(new FunctionType(funcType.getPrimitiveType(), argumentTypes), node));
-            node.setType(funcType);
+            try {
+                st.insert(funcName, new Symbol(new FunctionType(funcType.getPrimitiveType(), argumentTypes), node));
+                node.setType(funcType);
+            } catch (VariableAlreadyDeclaredException e) {
+                node.setType(new Type(Types.ERROR, e.getMessage()));
+            }
         } else {
             node.setType(new Type(Types.ERROR, "Return type expected to be " + funcType + ", was " + statementsType));
         }
@@ -504,8 +508,13 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         String varName = node.getName().getName();
         Type varType = node.getTypeNode().getType();
 
-        node.setType(varType);
-        st.insert(varName, new Symbol(varType, node));
+        try {
+            st.insert(varName, new Symbol(varType, node));
+            node.setType(varType);
+        } catch (VariableAlreadyDeclaredException e) {
+            node.setType(new Type(Types.ERROR, e.getMessage()));
+        }
+
         return null;
     }
 

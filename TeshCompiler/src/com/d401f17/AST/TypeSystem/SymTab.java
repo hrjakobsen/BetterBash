@@ -7,6 +7,6 @@ public interface SymTab {
     public void openScope();
     public void closeScope();
 
-    public void insert(String id, Symbol s);
+    public void insert(String id, Symbol s) throws VariableAlreadyDeclaredException;
     public Symbol lookup(String id) throws VariableNotDeclaredException;
 }

@@ -41,8 +41,12 @@ public class SymbolTable implements SymTab {
         currentTable = currentTable.getParentTable();
     }
 
-    public void insert(String id, Symbol s) {
-        currentTable.getTable().put(id, s);
+    public void insert(String id, Symbol s) throws VariableAlreadyDeclaredException {
+        if (currentTable.getTable().containsKey(id)) {
+            throw new VariableAlreadyDeclaredException("Variable " + id + " already declared in this scope");
+        } else {
+            currentTable.getTable().put(id, s);
+        }
     }
 
     public Symbol lookup(String id) throws VariableNotDeclaredException {

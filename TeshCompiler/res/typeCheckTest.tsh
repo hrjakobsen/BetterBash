@@ -4,6 +4,8 @@ string s = "hej"
 char c = 'a'
 
 func myFun(int a, string b) int {
+	int i = 10
+
 	if true == false {
 		if true == false {
 			while true {
