@@ -13,10 +13,8 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     private SymTab st = new SymbolTable();
     private ArrayList<Type> errors = new ArrayList<>();
 
-    public void printErrors() {
-        for (Type err : errors) {
-            System.out.println(err.getErrorMessage());
-        }
+    public ArrayList<Type> getErrors() {
+        return errors;
     }
 
     @Override
@@ -260,7 +258,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     public Void visit(FunctionNode node) {
         st.openScope();
 
-        //Visit formal arguments
+        //Visit argument nodes
         List<VariableDeclarationNode> arguments = node.getFormalArguments();
         Type[] argumentTypes = new Type[arguments.size()];
 
@@ -520,11 +518,15 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(WhileNode node) {
+        st.openScope();
+
         node.getPredicate().accept(this);
         node.getStatements().accept(this);
 
         Type predicateType = node.getPredicate().getType();
         Type statementsType = node.getStatements().getType();
+
+        st.closeScope();
 
         if (invalidChildren(predicateType, statementsType)) {
             node.setType(new Type(Types.IGNORE));

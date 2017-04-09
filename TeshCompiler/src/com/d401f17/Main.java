@@ -1,6 +1,7 @@
 package com.d401f17;
 
 import com.d401f17.AST.Nodes.*;
+import com.d401f17.AST.TypeSystem.Type;
 import com.d401f17.Visitors.BuildAstVisitor;
 import com.d401f17.Visitors.PrettyPrintASTVisitor;
 import com.d401f17.Visitors.TypeCheckVisitor;
@@ -25,7 +26,10 @@ public class Main {
 
         TypeCheckVisitor typeCheck = new TypeCheckVisitor();
         ast.accept(typeCheck);
-        typeCheck.printErrors();
+
+        for (Type err : typeCheck.getErrors()) {
+            System.out.println(err.getErrorMessage());
+        }
 
 /*
         PrettyPrintASTVisitor p = new PrettyPrintASTVisitor();

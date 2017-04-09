@@ -22,3 +22,14 @@ func myFun(int a, string b) int {
 		return i
 	}
 }
+
+int count = 0
+while true {
+	count = count + 1
+	int i = count
+	int count
+	while true {
+		int i 
+
+	}
+}
