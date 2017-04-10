@@ -97,8 +97,6 @@ finalValue
     | PARENTHESIS_START arithmeticExpression PARENTHESIS_END                                                            #parenthesisExpr
     ;
 
-
-
 identifier
     : (SIMPLE_IDENTIFIER | IDENTIFIER)
     ;
