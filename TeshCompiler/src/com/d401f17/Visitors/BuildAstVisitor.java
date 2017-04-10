@@ -85,6 +85,7 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
 
     @Override
     public AST visitIfStatement(TeshParser.IfStatementContext ctx) {
+        System.out.println(ctx.start.getLine() - 1);
         return new IfNode((ArithmeticExpressionNode) visit(ctx.expression()),
                           (StatementsNode) visit(ctx.trueBranch),
                           (StatementsNode) visit(ctx.falseBranch));
