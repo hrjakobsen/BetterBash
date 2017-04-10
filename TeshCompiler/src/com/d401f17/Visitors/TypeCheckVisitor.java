@@ -34,7 +34,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             if (leftType.getPrimitiveType() == Types.INT || leftType.getPrimitiveType() == Types.FLOAT || leftType.getPrimitiveType() == Types.STRING || leftType.getPrimitiveType() == Types.CHAR) {
                 node.setType(leftType); //Int, float, string or char
             } else {
-                node.setType(new Type(Types.ERROR, "Addition node expected int, float or string, got " + leftType));
+                node.setType(new Type(Types.ERROR, "Addition node on line " + node.getLine() +  " expected int, float or string, got " + leftType));
             }
 
             return null;
@@ -44,19 +44,19 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             if (rightType.getPrimitiveType() == Types.STRING || rightType.getPrimitiveType() == Types.CHAR) {
                 node.setType(rightType); //String or char
             } else {
-                node.setType(implicitIntToFloatCheck(leftType, rightType, "Addition node")); //Int or float
+                node.setType(implicitIntToFloatCheck(leftType, rightType, "Addition node", node.getLine())); //Int or float
             }
         } else if (leftType.getPrimitiveType() == Types.FLOAT) {
             if (rightType.getPrimitiveType() == Types.STRING) {
                 node.setType(rightType); //String
             } else {
-                node.setType(implicitIntToFloatCheck(leftType, rightType, "Addition node")); //Int or float
+                node.setType(implicitIntToFloatCheck(leftType, rightType, "Addition node", node.getLine())); //Int or float
             }
         } else if (leftType.getPrimitiveType() == Types.STRING) {
             if (rightType.getPrimitiveType() == Types.INT || rightType.getPrimitiveType() == Types.FLOAT || rightType.getPrimitiveType() == Types.CHAR || rightType.getPrimitiveType() == Types.BOOL) {
                 node.setType(leftType); //String
             } else {
-                node.setType(new Type(Types.ERROR, "Addition node expected int, float, string, char or bool got " + rightType));
+                node.setType(new Type(Types.ERROR, "Addition node on line " + node.getLine() +  " expected int, float, string, char or bool got " + rightType));
             }
         } else if (leftType.getPrimitiveType() == Types.CHAR) {
             if (rightType.getPrimitiveType() == Types.STRING) {
@@ -64,16 +64,16 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             } else if (rightType.getPrimitiveType() == Types.INT || rightType.getPrimitiveType() == Types.CHAR) {
                 node.setType(leftType); //Char
             } else {
-                node.setType(new Type(Types.ERROR, "Addition node expected int, float, string, char or bool got " + rightType));
+                node.setType(new Type(Types.ERROR, "Addition node on line " + node.getLine() +  " expected int, float, string, char or bool got " + rightType));
             }
         } else if (leftType.getPrimitiveType() == Types.BOOL) {
             if (rightType.getPrimitiveType() == Types.STRING) {
                 node.setType(rightType); //String
             } else {
-                node.setType(new Type(Types.ERROR, "Addition node expected int, float, string, char or bool got " + rightType));
+                node.setType(new Type(Types.ERROR, "Addition node on line " + node.getLine() +  " expected int, float, string, char or bool got " + rightType));
             }
         } else {
-            node.setType(new Type(Types.ERROR, "Addition node expected int, float, string, char or bool got " + leftType));
+            node.setType(new Type(Types.ERROR, "Addition node on line " + node.getLine() +  " expected int, float, string, char or bool got " + leftType));
         }
 
         return null;
@@ -105,7 +105,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             }
 
             if (indexType.getPrimitiveType() != Types.INT) {
-                node.setType(new Type(Types.ERROR, "Index " + count + " was expected to have type int, was " + indexType));
+                node.setType(new Type(Types.ERROR, "Index " + count + " on line " + node.getLine() +  " was expected to have type int, was " + indexType));
             }
             count++;
         }
@@ -127,7 +127,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         Type varType = node.getElement().getType();
         Type expType = node.getExpression().getType();
 
-        node.setType(assignment(varType, expType));
+        node.setType(assignment(varType, expType, node.getLine()));
 
         return null;
     }
@@ -140,7 +140,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         Type varType = node.getVariable().getType();
         Type expType = node.getExpression().getType();
 
-        node.setType(assignment(varType, expType));
+        node.setType(assignment(varType, expType, node.getLine()));
 
         return null;
     }
@@ -179,7 +179,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             if (leftType.getPrimitiveType() == Types.INT || leftType.getPrimitiveType() == Types.FLOAT) {
                 node.setType(leftType);
             } else {
-                node.setType(new Type(Types.ERROR, "Division node expected int or float, got " + leftType));
+                node.setType(new Type(Types.ERROR, "Division node on line " + node.getLine() +  " expected int or float, got " + leftType));
             }
             return null;
         }
@@ -188,16 +188,16 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             if (rightType.getPrimitiveType() == Types.FLOAT) {
                 node.setType(new Type(Types.FLOAT));
             } else {
-                node.setType(new Type(Types.ERROR, "Right node in division node expected to be of type int or float, was " + rightType));
+                node.setType(new Type(Types.ERROR, "Right node in division node on line " + node.getLine() +  " expected to be of type int or float, was " + rightType));
             }
         } else if (leftType.getPrimitiveType() == Types.FLOAT) {
             if (rightType.getPrimitiveType() == Types.INT) {
                 node.setType(new Type(Types.FLOAT));
             } else {
-                node.setType(new Type(Types.ERROR, "Right node in division node expected to be of type int or float, was " + rightType));
+                node.setType(new Type(Types.ERROR, "Right node in division node on line " + node.getLine() +  " expected to be of type int or float, was " + rightType));
             }
         } else {
-            node.setType(new Type(Types.ERROR, "Left node in division node expected to be of type int or float, was " + leftType));
+            node.setType(new Type(Types.ERROR, "Left node in division node on line " + node.getLine() +  " expected to be of type int or float, was " + leftType));
         }
 
         return null;
@@ -245,7 +245,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         if (variableType.getPrimitiveType() != arrayType.getPrimitiveType()) {
-            node.setType(new Type(Types.ERROR, "For node expected variable to of type " + arrayType + ", was " + variableType));
+            node.setType(new Type(Types.ERROR, "For node on line " + node.getLine() +  " expected variable of type " + arrayType + ", was " + variableType));
             return null;
         }
 
@@ -302,7 +302,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
                 node.setType(new Type(Types.ERROR, e.getMessage()));
             }
         } else {
-            node.setType(new Type(Types.ERROR, "Return type expected to be " + funcType + ", was " + statementsType));
+            node.setType(new Type(Types.ERROR, "Return type of function  on line " + node.getLine() +  " expected to be " + funcType + ", was " + statementsType));
         }
 
         return null;
@@ -388,7 +388,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         if (expressionType.getPrimitiveType() != Types.BOOL) {
-            node.setType(new Type(Types.ERROR, "Negation node expected to be of type bool, was " + expressionType));
+            node.setType(new Type(Types.ERROR, "Negation node on line " + node.getLine() +  " expected to be of type bool, was " + expressionType));
         }
 
         node.setType(expressionType);
@@ -480,9 +480,11 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         //If we found any typed children, make sure they are all of same type
         if (typedStatementNodes.size() > 1) {
+            int firstLine = typedStatementNodes.get(0).getLine();
+            int lastLine = typedStatementNodes.get(typedStatementNodes.size() - 1).getLine();
             for (int i = 1; i < typedStatementNodes.size(); i++) {
                 if (!typedStatementNodes.get(i).getType().equals(typedStatementNodes.get(i - 1).getType())) {
-                    node.setType(new Type(Types.ERROR, "Return types do not match"));
+                    node.setType(new Type(Types.ERROR, "Return types on lines " + firstLine + "-" + lastLine + " do not match"));
                     return null;
                 }
             }
@@ -539,7 +541,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         if (predicateType.getPrimitiveType() != Types.BOOL) {
-            node.setType(new Type(Types.ERROR, "While node expected predicate to be of type bool, was " + predicateType));
+            node.setType(new Type(Types.ERROR, "While node on line " + node.getLine() +  " expected predicate to be of type bool, was " + predicateType));
         }
 
         node.setType(statementsType);
@@ -566,9 +568,9 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         if (idType.getPrimitiveType() == Types.CHANNEL) {
-            node.setType(implicitIntFloatStringToString(expType, "Expression node in write to channel node"));
+            node.setType(implicitIntFloatStringToString(expType, "Expression node in write to channel node", node.getLine()));
         } else {
-            node.setType(new Type(Types.ERROR, "Identifier node in write to channel node expected to be of type channel, was " + idType));
+            node.setType(new Type(Types.ERROR, "Identifier node in write to channel node on line " + node.getLine() +  " expected to be of type channel, was " + idType));
         }
 
         return null;
@@ -585,7 +587,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         if (leftType.getPrimitiveType() == Types.STRING && rightType.getPrimitiveType() == Types.STRING) {
             node.setType(new Type(Types.STRING));
         } else {
-            node.setType(new Type(Types.ERROR, "Pattern matching node expected both children to be of type string, was " + leftType + " and " + rightType));
+            node.setType(new Type(Types.ERROR, "Pattern matching node on line " + node.getLine() +  " expected both children to be of type string, was " + leftType + " and " + rightType));
         }
 
         return null;
@@ -607,7 +609,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         return invalid;
     }
 
-    private Type assignment(Type var, Type exp) {
+    private Type assignment(Type var, Type exp, int lineNum) {
         if (invalidChildren(var, exp)) {
             return new Type(Types.IGNORE);
         }
@@ -615,7 +617,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         if (var.equals(exp) || (var.getPrimitiveType() == Types.FLOAT && exp.getPrimitiveType() == Types.INT)) {
             return new Type(Types.OK);
         } else {
-            return new Type(Types.ERROR, "Assignment expected expression to be of type " + var + ", was " + exp);
+            return new Type(Types.ERROR, "Assignment on line " + lineNum +  " expected expression to be of type " + var + ", was " + exp);
         }
     }
 
@@ -634,7 +636,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             return leftType;
         }
 
-        return implicitIntToFloatCheck(leftType, rightType, nodeName);
+        return implicitIntToFloatCheck(leftType, rightType, nodeName, node.getLine());
     }
 
     private Type binaryIntFloat(InfixExpressionNode node, String nodeName) {
@@ -652,36 +654,36 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             if (leftType.getPrimitiveType() == Types.INT || leftType.getPrimitiveType() == Types.FLOAT) {
                 return leftType;
             } else {
-                return new Type(Types.ERROR, nodeName + " expected int or float, got " + leftType);
+                return new Type(Types.ERROR, nodeName + " on line " + node.getLine() +  " expected int or float, got " + leftType);
             }
         }
 
-        return implicitIntToFloatCheck(leftType, rightType, nodeName);
+        return implicitIntToFloatCheck(leftType, rightType, nodeName, node.getLine());
     }
 
-    private Type implicitIntToFloatCheck(Type left, Type right, String nodeName) {
+    private Type implicitIntToFloatCheck(Type left, Type right, String nodeName, int lineNum) {
         if (left.getPrimitiveType() == Types.INT) {
             if (right.getPrimitiveType() == Types.INT || right.getPrimitiveType() == Types.FLOAT) {
                 return right;//Int or float
             } else {
-                return new Type(Types.ERROR, "Right node in " + nodeName + " expected to be of type int or float, was " + right);
+                return new Type(Types.ERROR, "Right node in " + nodeName + " on line " + lineNum +  " expected to be of type int or float, was " + right);
             }
         } else if (left.getPrimitiveType() == Types.FLOAT) {
             if (right.getPrimitiveType() == Types.INT || right.getPrimitiveType() == Types.FLOAT) {
                 return left;//Float
             } else {
-                return new Type(Types.ERROR, "Right node in " + nodeName + " expected to be of type int or float, was " + right);
+                return new Type(Types.ERROR, "Right node in " + nodeName + " on line " + lineNum +  " expected to be of type int or float, was " + right);
             }
         } else {
-            return new Type(Types.ERROR, "Left node in " + nodeName + " expected to be of type int or float, was " + left);
+            return new Type(Types.ERROR, "Left node in " + nodeName + " on line " + lineNum +  " expected to be of type int or float, was " + left);
         }
     }
 
-    private Type implicitIntFloatStringToString(Type t, String nodeName) {
+    private Type implicitIntFloatStringToString(Type t, String nodeName, int lineNum) {
         if (t.getPrimitiveType() == Types.INT || t.getPrimitiveType() == Types.FLOAT || t.getPrimitiveType() == Types.STRING) {
             return new Type(Types.STRING);
         } else {
-            return new Type(Types.ERROR, nodeName + " expected to be of type int, float or string, was " + t);
+            return new Type(Types.ERROR, nodeName + " on line " + lineNum +  " expected to be of type int, float or string, was " + t);
         }
     }
 
@@ -697,11 +699,11 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         if (leftType.getPrimitiveType() != Types.BOOL) {
-            return new Type(Types.ERROR, "Left node in " + nodeName + " expected bool, got " + leftType);
+            return new Type(Types.ERROR, "Left node in " + nodeName + " on line " + node.getLine() +  " expected bool, got " + leftType);
         }
 
         if (rightType.getPrimitiveType() != Types.BOOL) {
-            return new Type(Types.ERROR, "Right node in " + nodeName + " expected bool, got " + rightType);
+            return new Type(Types.ERROR, "Right node in " + nodeName + " on line " + node.getLine() +  " expected bool, got " + rightType);
         }
 
         return new Type(Types.BOOL);
