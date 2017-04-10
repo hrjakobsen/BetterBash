@@ -6,6 +6,8 @@ import com.d401f17.Visitors.BuildAstVisitor;
 import com.d401f17.Visitors.PrettyPrintASTVisitor;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
 import java.io.*;
@@ -16,7 +18,8 @@ public class Main {
         //InputStream is = new ByteArrayInputStream( "int a\nstring b\na = b".getBytes() );
         //InputStream is = Main.class.getResourceAsStream("/channelExample.tsh");
         InputStream is = Main.class.getResourceAsStream("/typeCheckTest.tsh");
-        ANTLRInputStream input = new ANTLRInputStream(is);
+
+        CharStream input = CharStreams.fromStream(is);
         TeshLexer lexer = new TeshLexer(input);
         CommonTokenStream tokenStream =new CommonTokenStream(lexer);
         TeshParser parser = new TeshParser(tokenStream);
