@@ -5,7 +5,7 @@ import com.d401f17.Visitors.ASTVisitor;
 /**
  * Created by mathias on 3/16/17.
  */
-public class ForNode extends StatementNode {
+public class ForNode extends TypedStatementNode {
     private SimpleIdentifierNode variable;
     private AST array;
     private AST statements;

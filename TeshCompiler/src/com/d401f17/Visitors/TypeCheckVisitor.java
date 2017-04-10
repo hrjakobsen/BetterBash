@@ -227,6 +227,8 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ForNode node) {
+        st.openScope();
+
         node.getVariable().accept(this);
         node.getArray().accept(this);
         node.getStatements().accept(this);
@@ -234,6 +236,8 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         Type variableType = node.getVariable().getType();
         Type arrayType = node.getArray().getType();
         Type statementsType = node.getStatements().getType();
+
+        st.closeScope();
 
         if (invalidChildren(variableType, arrayType, statementsType)) {
             node.setType(new Type(Types.IGNORE));
@@ -466,14 +470,15 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             return null;
         }
 
-        //
+        //Collect all typed children
         ArrayList<StatementNode> typedStatementNodes = new ArrayList<>();
         for (StatementNode statementNode : childNodes) {
-            if (statementNode instanceof ReturnNode || statementNode instanceof IfNode || statementNode instanceof WhileNode || statementNode instanceof ForNode) {
+            if (statementNode instanceof TypedStatementNode) {
                 typedStatementNodes.add(statementNode);
             }
         }
 
+        //If we found any typed children, make sure they are all of same type
         if (typedStatementNodes.size() > 1) {
             for (int i = 1; i < typedStatementNodes.size(); i++) {
                 if (!typedStatementNodes.get(i).getType().equals(typedStatementNodes.get(i - 1).getType())) {

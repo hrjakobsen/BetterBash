@@ -5,7 +5,7 @@ import com.d401f17.Visitors.ASTVisitor;
 /**
  * Created by mathias on 3/31/17.
  */
-public class ReturnNode extends StatementNode {
+public class ReturnNode extends TypedStatementNode {
     private ArithmeticExpressionNode expresssion;
 
     public ReturnNode(ArithmeticExpressionNode expresssion) {
