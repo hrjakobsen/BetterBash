@@ -453,6 +453,7 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
     public AST visitFunctionDeclaration(TeshParser.FunctionDeclarationContext ctx) {
         List<VariableDeclarationNode> formalArgs = new ArrayList<>();
         int numberOfArgs = ctx.SIMPLE_IDENTIFIER().size();
+        int lineNum = ctx.start.getLine();
         // Skip first simpleIdentifier as the name of the function is the first element
         for (int i = 1; i < numberOfArgs; i++) {
             formalArgs.add(
@@ -464,7 +465,7 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
                         //The return type of the function is the last element of the type list
                         //so we need to subtract one access this array as 0-indexed
                         new TypeNode(ctx.type(i - 1).getText()),
-                        ctx.start.getLine()
+                        lineNum
                     )
             );
         }
@@ -472,12 +473,12 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
         return new FunctionNode(
                 new SimpleIdentifierNode(
                         ctx.name.getText(),
-                        ctx.start.getLine()
+                        lineNum
                 ),
                 new TypeNode(ctx.returntype.getText()),
                 formalArgs,
                 (StatementsNode)visit(ctx.block()),
-                ctx.start.getLine()
+                lineNum
         );
 
     }

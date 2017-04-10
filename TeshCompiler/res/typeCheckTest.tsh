@@ -6,7 +6,7 @@ char c = 'a'
 func myFun(int a, string b) int {
 	int i = 10
 
-	if f {
+	if true {
 		if true == false {
 			while true {
 				if false {
@@ -21,6 +21,31 @@ func myFun(int a, string b) int {
 	} else {
 		return i
 	}
+
+	if true {
+		return i
+	} else {
+		float f = 2.3
+		b = "" + f + a + 2 + c
+		return 42
+	}
+
+	if false {
+		return a
+	} else {
+		float f2 = 2
+		return i + a
+	}
+
+	#return b
+}
+
+func myFun2(int a, string b) float {
+	return 2.0
+}
+
+func myFun2(string b) float {
+	return 2.0
 }
 
 int count = 0
@@ -30,6 +55,10 @@ while true {
 	int count
 	while true {
 		int i 
-
+		string q
+		q = s
+		s = q
+		q = c
+		s = c
 	}
 }

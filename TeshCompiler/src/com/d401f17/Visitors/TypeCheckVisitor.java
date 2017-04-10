@@ -158,7 +158,6 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     @Override
     public Void visit(ConstantNode node) {
         node.setType(node.getType());
-
         return null;
     }
 
@@ -255,6 +254,33 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(FunctionCallNode node) {
+        List<ArithmeticExpressionNode> arguments = node.getArguments();
+        Type[] argumentTypes = new Type[arguments.size()];
+
+        //Visit argument nodes
+        for (int i = 0; i < arguments.size(); i++) {
+            arguments.get(i).accept(this);
+            argumentTypes[i] = arguments.get(i).getType();
+        }
+
+        //Check if arguments were ok
+        if (invalidChildren(argumentTypes)) {
+            node.setType(new Type(Types.IGNORE));
+            return null;
+        }
+
+        //Visit identifier node
+        node.getName().accept(this);
+
+        Type nameType = node.getName().getType();
+
+        //Check if identifier node is ok
+        if (invalidChildren(nameType)) {
+            node.setType(new Type(Types.IGNORE));
+            return null;
+        }
+
+        node.setType(nameType);
         return null;
     }
 
@@ -302,7 +328,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
                 node.setType(new Type(Types.ERROR, e.getMessage()));
             }
         } else {
-            node.setType(new Type(Types.ERROR, "Return type of function  on line " + node.getLine() +  " expected to be " + funcType + ", was " + statementsType));
+            node.setType(new Type(Types.ERROR, "Return type of function on line " + node.getLine() +  " expected to be " + funcType + ", was " + statementsType));
         }
 
         return null;
@@ -367,6 +393,23 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ModuloNode node) {
+        node.getLeft().accept(this);
+        node.getRight().accept(this);
+
+        Type leftType = node.getLeft().getType();
+        Type rightType = node.getRight().getType();
+
+        if (invalidChildren(leftType, rightType)) {
+            node.setType(new Type(Types.IGNORE));
+            return null;
+        }
+
+        if (leftType.getPrimitiveType() == Types.INT && rightType.getPrimitiveType() == Types.INT) {
+            node.setType(leftType);//Int
+        } else {
+            node.setType(new Type(Types.ERROR, "Both children of modulo node on line " + node.getLine() +  " expected to be of type int, was " + leftType + " and " + rightType));
+        }
+
         return null;
     }
 
@@ -435,11 +478,47 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ShellNode node) {
+        node.getCommand().accept(this);
+
+        Type commandType = node.getCommand().getType();
+
+        if (invalidChildren(commandType)) {
+            node.setType(new Type(Types.IGNORE));
+            return null;
+        }
+
+        if (commandType.getPrimitiveType() == Types.STRING) {
+            node.setType(commandType); //String
+        } else {
+            node.setType(new Type(Types.ERROR, "Shell node on line " + node.getLine() +  " expected to be of type string, was " + commandType));
+        }
+
         return null;
     }
 
     @Override
     public Void visit(ShellToChannelNode node) {
+        node.getChannel().accept(this);
+        node.getCommand().accept(this);
+
+        Type channelType = node.getChannel().getType();
+        Type commandType = node.getCommand().getType();
+
+        if (invalidChildren(channelType, commandType)) {
+            node.setType(new Type(Types.IGNORE));
+            return null;
+        }
+
+        if (channelType.getPrimitiveType() == Types.CHANNEL && commandType.getPrimitiveType() == Types.STRING) {
+            node.setType(commandType); //String
+        } else {
+            if (channelType.getPrimitiveType() == Types.CHANNEL) {
+                node.setType(new Type(Types.ERROR, "Shell to channel node on line " + node.getLine() + " expected command to be of type string, was " + commandType));
+            } else {
+                node.setType(new Type(Types.ERROR, "Shell to channel node on line " + node.getLine() +  " expected channel to be of type channel, was " + channelType));
+            }
+        }
+
         return null;
     }
 
@@ -480,11 +559,11 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         //If we found any typed children, make sure they are all of same type
         if (typedStatementNodes.size() > 1) {
-            int firstLine = typedStatementNodes.get(0).getLine();
-            int lastLine = typedStatementNodes.get(typedStatementNodes.size() - 1).getLine();
             for (int i = 1; i < typedStatementNodes.size(); i++) {
                 if (!typedStatementNodes.get(i).getType().equals(typedStatementNodes.get(i - 1).getType())) {
-                    node.setType(new Type(Types.ERROR, "Return types on lines " + firstLine + "-" + lastLine + " do not match"));
+                    int firstLine = typedStatementNodes.get(i - 1).getLine();
+                    int lastLine = typedStatementNodes.get(i).getLine();
+                    node.setType(new Type(Types.ERROR, "Return types of statements on lines " + firstLine + " and " + lastLine + " do not match"));
                     return null;
                 }
             }
@@ -550,7 +629,33 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ProcedureCallNode node) {
+        List<ArithmeticExpressionNode> arguments = node.getArguments();
+        Type[] argumentTypes = new Type[arguments.size()];
+
+        //Visit argument nodes
+        for (int i = 0; i < arguments.size(); i++) {
+            arguments.get(i).accept(this);
+            argumentTypes[i] = arguments.get(i).getType();
+        }
+
+        //Check if arguments were ok
+        if (invalidChildren(argumentTypes)) {
+            node.setType(new Type(Types.IGNORE));
+            return null;
+        }
+
+        //Visit identifier node
         node.getName().accept(this);
+
+        Type nameType = node.getName().getType();
+
+        //Check if identifier node is ok
+        if (invalidChildren(nameType)) {
+            node.setType(new Type(Types.IGNORE));
+            return null;
+        }
+
+        node.setType(new Type(Types.OK));
         return null;
     }
 
