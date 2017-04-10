@@ -11,9 +11,10 @@ public class RecordDeclarationNode extends StatementNode {
     private String name;
     List<VariableDeclarationNode> variables;
 
-    public RecordDeclarationNode(String name, List<VariableDeclarationNode> variables) {
+    public RecordDeclarationNode(String name, List<VariableDeclarationNode> variables, int lineNum) {
         this.name = name;
         this.variables = variables;
+        this.setLine(lineNum);
     }
 
     public List<VariableDeclarationNode> getVariables() {

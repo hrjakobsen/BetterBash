@@ -12,7 +12,8 @@ import java.util.List;
 public class StatementsNode extends StatementNode {
     private ArrayList<StatementNode> children;
 
-    public StatementsNode(StatementNode ... children) {
+    public StatementsNode(int lineNum, StatementNode ... children) {
+        this.setLine(lineNum);
         this.children = new ArrayList<>(Arrays.asList(children));
     }
 

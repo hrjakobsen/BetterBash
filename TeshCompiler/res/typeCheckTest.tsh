@@ -6,7 +6,7 @@ char c = 'a'
 func myFun(int a, string b) int {
 	int i = 10
 
-	if true == false {
+	if f {
 		if true == false {
 			while true {
 				if false {

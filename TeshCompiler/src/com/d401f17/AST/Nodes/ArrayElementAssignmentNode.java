@@ -28,10 +28,10 @@ public class ArrayElementAssignmentNode extends StatementNode {
         this.element = element;
     }
 
-    public ArrayElementAssignmentNode(ArrayAccessNode element, ArithmeticExpressionNode expression) {
-
+    public ArrayElementAssignmentNode(ArrayAccessNode element, ArithmeticExpressionNode expression, int lineNum) {
         this.element = element;
         this.expression = expression;
+        this.setLine(lineNum);
     }
 
     @Override

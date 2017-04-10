@@ -29,9 +29,9 @@ public class ProcedureCallNode extends StatementNode {
         this.arguments = arguments;
     }
 
-    public ProcedureCallNode(IdentifierNode name, ArithmeticExpressionNode ... arguments) {
-
+    public ProcedureCallNode(IdentifierNode name, int lineNum, ArithmeticExpressionNode ... arguments) {
         this.name = name;
+        this.setLine(lineNum);
         this.arguments = new ArrayList<>(Arrays.asList(arguments));
     }
 

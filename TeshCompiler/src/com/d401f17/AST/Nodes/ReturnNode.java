@@ -8,8 +8,9 @@ import com.d401f17.Visitors.ASTVisitor;
 public class ReturnNode extends TypedStatementNode {
     private ArithmeticExpressionNode expresssion;
 
-    public ReturnNode(ArithmeticExpressionNode expresssion) {
+    public ReturnNode(ArithmeticExpressionNode expresssion, int lineNum) {
         this.expresssion = expresssion;
+        this.setLine(lineNum);
     }
 
     public ArithmeticExpressionNode getExpresssion() {

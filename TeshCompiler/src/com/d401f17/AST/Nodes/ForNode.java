@@ -34,10 +34,11 @@ public class ForNode extends TypedStatementNode {
         this.array = array;
     }
 
-    public ForNode(SimpleIdentifierNode variable, AST array, AST statements) {
+    public ForNode(SimpleIdentifierNode variable, AST array, AST statements, int lineNum) {
         this.variable = variable;
         this.array = array;
         this.statements = statements;
+        this.setLine(lineNum);
     }
 
     @Override

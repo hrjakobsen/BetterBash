@@ -336,14 +336,14 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         if (predicateType.getPrimitiveType() != Types.BOOL) {
-            node.setType(new Type(Types.ERROR, "If node expected predicate to be of type bool, was " + predicateType));
+            node.setType(new Type(Types.ERROR, "If node on line " + node.getLine() + " expected predicate to be of type bool, was " + predicateType));
             return null;
         }
 
         if (trueBranchType.equals(falseBranchType)) {
             node.setType(trueBranchType);
         } else {
-            node.setType(new Type(Types.ERROR, "If node expected false branch to be of type " + trueBranchType + ", was " + falseBranchType));
+            node.setType(new Type(Types.ERROR, "If node on line " + node.getLine() + " expected false branch to be of type " + trueBranchType + ", was " + falseBranchType));
         }
         return null;
     }

@@ -7,8 +7,8 @@ import com.d401f17.Visitors.ASTVisitor;
  */
 public class PatternMatchNode extends InfixExpressionNode {
 
-    public PatternMatchNode(ArithmeticExpressionNode left, ArithmeticExpressionNode right) {
-        super(left, right);
+    public PatternMatchNode(ArithmeticExpressionNode left, ArithmeticExpressionNode right, int lineNum) {
+        super(left, right, lineNum);
     }
 
     @Override

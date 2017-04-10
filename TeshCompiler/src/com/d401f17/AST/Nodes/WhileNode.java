@@ -9,9 +9,10 @@ public class WhileNode extends TypedStatementNode {
     private AST predicate;
     private AST statements;
 
-    public WhileNode(AST predicate, AST statements) {
+    public WhileNode(AST predicate, AST statements, int lineNum) {
         this.predicate = predicate;
         this.statements = statements;
+        this.setLine(lineNum);
     }
 
     public AST getPredicate() {

@@ -8,8 +8,9 @@ import com.d401f17.Visitors.ASTVisitor;
 public class NegationNode extends AST {
     private AST expression;
 
-    public NegationNode(AST expression) {
+    public NegationNode(AST expression, int lineNum) {
         this.expression = expression;
+        this.setLine(lineNum);
     }
 
     @Override

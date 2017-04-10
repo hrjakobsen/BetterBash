@@ -25,9 +25,10 @@ public class VariableDeclarationNode extends StatementNode {
         this.typeNode = type;
     }
 
-    public VariableDeclarationNode(SimpleIdentifierNode name, TypeNode type) {
+    public VariableDeclarationNode(SimpleIdentifierNode name, TypeNode type, int lineNum) {
         this.name = name;
         this.typeNode = type;
+        this.setLine(lineNum);
     }
 
     @Override

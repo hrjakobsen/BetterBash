@@ -10,10 +10,11 @@ public class ArrayBuilderNode extends StatementNode {
     public ArithmeticExpressionNode expression;
     public IdentifierNode array;
 
-    public ArrayBuilderNode(SimpleIdentifierNode variable, IdentifierNode array, ArithmeticExpressionNode expression) {
+    public ArrayBuilderNode(SimpleIdentifierNode variable, IdentifierNode array, ArithmeticExpressionNode expression, int lineNum) {
         this.variable = variable;
         this.expression = expression;
         this.array = array;
+        this.setLine(lineNum);
     }
 
     public SimpleIdentifierNode getVariable() {

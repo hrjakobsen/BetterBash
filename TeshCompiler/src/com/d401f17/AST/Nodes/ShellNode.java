@@ -8,8 +8,9 @@ import com.d401f17.Visitors.ASTVisitor;
 public class ShellNode extends StatementNode {
     ArithmeticExpressionNode command;
 
-    public ShellNode(ArithmeticExpressionNode command) {
+    public ShellNode(ArithmeticExpressionNode command, int lineNum) {
         this.command = command;
+        this.setLine(lineNum);
     }
 
     public ArithmeticExpressionNode getCommand() {

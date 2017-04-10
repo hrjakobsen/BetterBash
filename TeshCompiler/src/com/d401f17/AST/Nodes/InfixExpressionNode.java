@@ -25,8 +25,9 @@ public abstract class InfixExpressionNode extends ArithmeticExpressionNode {
         this.left = left;
     }
 
-    public InfixExpressionNode(ArithmeticExpressionNode left, ArithmeticExpressionNode right) {
+    public InfixExpressionNode(ArithmeticExpressionNode left, ArithmeticExpressionNode right, int lineNum) {
         this.left = left;
         this.right = right;
+        this.setLine(lineNum);
     }
 }

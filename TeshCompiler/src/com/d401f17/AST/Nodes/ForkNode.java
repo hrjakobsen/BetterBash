@@ -16,8 +16,9 @@ public class ForkNode extends StatementNode {
         this.child = child;
     }
 
-    public ForkNode(StatementNode child) {
+    public ForkNode(StatementNode child, int lineNum) {
         this.child = child;
+        this.setLine(lineNum);
     }
 
     @Override
