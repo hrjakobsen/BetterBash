@@ -622,6 +622,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         if (leftType.getPrimitiveType() == Types.CHAR && rightType.getPrimitiveType() == Types.INT) {
             node.setType(leftType); //Char
+            return null;
         }
 
         node.setType(implicitIntToFloatCheck(leftType, rightType, "Multiplication node", node.getLine()));
