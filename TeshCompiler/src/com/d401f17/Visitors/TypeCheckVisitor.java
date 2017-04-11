@@ -625,7 +625,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             return null;
         }
 
-        node.setType(implicitIntToFloatCheck(leftType, rightType, "Multiplication node", node.getLine()));
+        node.setType(implicitIntToFloatCheck(leftType, rightType, "Subtraction node", node.getLine()));
         return null;
     }
 
@@ -766,11 +766,17 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             return new Type(Types.IGNORE);
         }
 
-        if (var.equals(exp) || (var.getPrimitiveType() == Types.FLOAT && exp.getPrimitiveType() == Types.INT)) {
+        if (var.equals(exp)) {
             return new Type(Types.OK);
-        } else {
-            return new Type(Types.ERROR, "Assignment on line " + lineNum +  " expected expression to be of type " + var + ", was " + exp);
         }
+
+        if (exp.getPrimitiveType() == Types.INT) {
+            if (var.getPrimitiveType() == Types.FLOAT || var.getPrimitiveType() == Types.CHAR) {
+                return new Type(Types.OK);
+            }
+        }
+
+        return new Type(Types.ERROR, "Assignment on line " + lineNum + " expected expression to be of type " + var + ", was " + exp);
     }
 
     private Type equalComparison(InfixExpressionNode node, String nodeName) {

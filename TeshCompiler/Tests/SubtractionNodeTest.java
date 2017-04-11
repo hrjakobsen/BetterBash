@@ -1,10 +1,12 @@
 import com.d401f17.AST.Nodes.ConstantNode;
 import com.d401f17.AST.Nodes.SubtractionNode;
+import com.d401f17.AST.TypeSystem.Type;
 import com.d401f17.AST.TypeSystem.Types;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.*;
 
@@ -18,10 +20,10 @@ import java.util.Collection;
 public class SubtractionNodeTest {
 
     @Parameter(value = 0)
-    public Types rightType;
+    public Types leftType;
 
     @Parameter(value = 1)
-    public Types leftType;
+    public Types rightType;
 
     @Parameter(value = 2)
     public Types expectedType;
@@ -110,7 +112,6 @@ public class SubtractionNodeTest {
                 {Types.FILE, Types.CHANNEL, Types.ERROR},
                 {Types.FILE, Types.RECORD, Types.ERROR},
                 {Types.FILE, Types.FILE, Types.ERROR},
-
         });
     }
 
@@ -120,6 +121,6 @@ public class SubtractionNodeTest {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
         SubtractionNode node = new SubtractionNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType),0);
         node.accept(typeCheckVisitor);
-        Assert.assertEquals(expectedType, node.getType().getPrimitiveType());
+        Assert.assertEquals(node.getType().getErrorMessage(), expectedType, node.getType().getPrimitiveType());
     }
 }

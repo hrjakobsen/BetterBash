@@ -1,7 +1,4 @@
-import com.d401f17.AST.Nodes.ConstantNode;
-import com.d401f17.AST.Nodes.AssignmentNode;
-import com.d401f17.AST.Nodes.IdentifierNode;
-import com.d401f17.AST.Nodes.SimpleIdentifierNode;
+import com.d401f17.AST.Nodes.*;
 import com.d401f17.AST.TypeSystem.Type;
 import com.d401f17.AST.TypeSystem.Types;
 import com.d401f17.Visitors.TypeCheckVisitor;
@@ -21,10 +18,10 @@ import java.util.Collection;
 public class AssignmentNodeTest {
 
     @Parameter(value = 0)
-    public Types rightType;
+    public Types leftType;
 
     @Parameter(value = 1)
-    public Types leftType;
+    public Types rightType;
 
     @Parameter(value = 2)
     public Types expectedType;
@@ -32,8 +29,8 @@ public class AssignmentNodeTest {
     @Parameters
     public static Collection<Object[]> data(){
         return Arrays.asList(new Object[][]{
-                {Types.INT, Types.INT, Types.IGNORE},
-                {Types.INT, Types.FLOAT, Types.IGNORE},
+                {Types.INT, Types.INT, Types.OK},
+                {Types.INT, Types.FLOAT, Types.ERROR},
                 {Types.INT, Types.CHAR, Types.ERROR},
                 {Types.INT, Types.STRING, Types.ERROR},
                 {Types.INT, Types.BOOL, Types.ERROR},
@@ -41,7 +38,7 @@ public class AssignmentNodeTest {
                 {Types.INT, Types.CHANNEL, Types.ERROR},
                 {Types.INT, Types.RECORD, Types.ERROR},
                 {Types.INT, Types.FILE, Types.ERROR},
-                {Types.FLOAT, Types.INT, Types.FLOAT},
+                {Types.FLOAT, Types.INT, Types.OK},
                 {Types.FLOAT, Types.FLOAT, Types.OK},
                 {Types.FLOAT, Types.CHAR, Types.ERROR},
                 {Types.FLOAT, Types.STRING, Types.ERROR},
@@ -50,7 +47,7 @@ public class AssignmentNodeTest {
                 {Types.FLOAT, Types.CHANNEL, Types.ERROR},
                 {Types.FLOAT, Types.RECORD, Types.ERROR},
                 {Types.FLOAT, Types.FILE, Types.ERROR},
-                {Types.CHAR, Types.INT, Types.CHAR},
+                {Types.CHAR, Types.INT, Types.OK},
                 {Types.CHAR, Types.FLOAT, Types.ERROR},
                 {Types.CHAR, Types.STRING, Types.ERROR},
                 {Types.CHAR, Types.BOOL, Types.ERROR},
@@ -120,11 +117,16 @@ public class AssignmentNodeTest {
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void AssignmentNode_typeCheckWithParameters_expected() {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
-        IdentifierNode identifierNode = new SimpleIdentifierNode("a", 0);
-        identifierNode.setType(new Type(leftType));
-        AssignmentNode node = new AssignmentNode(identifierNode, new ConstantNode(1, rightType),0);
+
+        SimpleIdentifierNode idNode = new SimpleIdentifierNode("a", 0);
+        idNode.setType(new Type(leftType));
+        TypeNode typeNode = new TypeNode(leftType.toString().toLowerCase());
+        VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode, 0);
+        varNode.accept(typeCheckVisitor);
+
+        AssignmentNode node = new AssignmentNode(idNode, new ConstantNode(1, rightType),0);
         node.accept(typeCheckVisitor);
-        Assert.assertEquals(expectedType, node.getType().getPrimitiveType());
+        Assert.assertEquals(node.getType().getErrorMessage(), expectedType, node.getType().getPrimitiveType());
     }
 }
 

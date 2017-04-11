@@ -13,14 +13,16 @@ public class TypeNode extends AST {
             this.setType(new Type(Types.INT));
         } else if (primitiveType.equals("float")) {
             this.setType(new Type(Types.FLOAT));
-        } else if (primitiveType.equals("string")) {
-            this.setType(new Type(Types.STRING));
         } else if (primitiveType.equals("char")) {
             this.setType(new Type(Types.CHAR));
+        } else if (primitiveType.equals("string")) {
+            this.setType(new Type(Types.STRING));
         } else if (primitiveType.equals("bool")) {
             this.setType(new Type(Types.BOOL));
         } else if (primitiveType.equals("array")) {
             this.setType(new Type(Types.ARRAY));
+        } else if (primitiveType.equals("channel")) {
+            this.setType(new Type(Types.CHANNEL));
         } else if (primitiveType.equals("record")) {
             this.setType(new Type(Types.RECORD));
         } else if (primitiveType.equals("file")) {
