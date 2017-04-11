@@ -17,6 +17,7 @@ import java.util.Collection;
 @RunWith(value = Parameterized.class)
 public class AssignmentNodeTest {
 
+
     @Parameter(value = 0)
     public Types leftType;
 

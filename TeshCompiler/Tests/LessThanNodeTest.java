@@ -1,5 +1,5 @@
-import com.d401f17.AST.Nodes.AdditionNode;
 import com.d401f17.AST.Nodes.ConstantNode;
+import com.d401f17.AST.Nodes.LessThanNode;
 import com.d401f17.AST.TypeSystem.Types;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
@@ -11,17 +11,18 @@ import org.junit.runners.Parameterized.*;
 import java.util.Arrays;
 import java.util.Collection;
 
+
 /**
- * Created by tessa on 4/10/17.
+ * Created by tessa on 4/11/17.
  */
 @RunWith(value = Parameterized.class)
-public class AdditionNodeTest {
+public class LessThanNodeTest {
 
     @Parameter(value = 0)
-    public Types leftType;
+    public Types rightType;
 
     @Parameter(value = 1)
-    public Types rightType;
+    public Types leftType;
 
     @Parameter(value = 2)
     public Types expectedType;
@@ -29,45 +30,45 @@ public class AdditionNodeTest {
     @Parameters
     public static Collection<Object[]> data(){
         return Arrays.asList(new Object[][]{
-                {Types.INT, Types.INT, Types.INT},
-                {Types.INT, Types.FLOAT, Types.FLOAT},
-                {Types.INT, Types.CHAR, Types.CHAR},
-                {Types.INT, Types.STRING, Types.STRING},
+                {Types.INT, Types.INT, Types.BOOL},
+                {Types.INT, Types.FLOAT, Types.BOOL},
+                {Types.INT, Types.CHAR, Types.ERROR},
+                {Types.INT, Types.STRING, Types.ERROR},
                 {Types.INT, Types.BOOL, Types.ERROR},
                 {Types.INT, Types.ARRAY, Types.ERROR},
                 {Types.INT, Types.CHANNEL, Types.ERROR},
                 {Types.INT, Types.RECORD, Types.ERROR},
                 {Types.INT, Types.FILE, Types.ERROR},
-                {Types.FLOAT, Types.INT, Types.FLOAT},
-                {Types.FLOAT, Types.FLOAT, Types.FLOAT},
+                {Types.FLOAT, Types.INT, Types.BOOL},
+                {Types.FLOAT, Types.FLOAT, Types.BOOL},
                 {Types.FLOAT, Types.CHAR, Types.ERROR},
-                {Types.FLOAT, Types.STRING, Types.STRING},
+                {Types.FLOAT, Types.STRING, Types.ERROR},
                 {Types.FLOAT, Types.BOOL, Types.ERROR},
                 {Types.FLOAT, Types.ARRAY, Types.ERROR},
                 {Types.FLOAT, Types.CHANNEL, Types.ERROR},
                 {Types.FLOAT, Types.RECORD, Types.ERROR},
                 {Types.FLOAT, Types.FILE, Types.ERROR},
-                {Types.CHAR, Types.INT, Types.CHAR},
+                {Types.CHAR, Types.INT, Types.ERROR},
                 {Types.CHAR, Types.FLOAT, Types.ERROR},
-                {Types.CHAR, Types.STRING, Types.STRING},
+                {Types.CHAR, Types.STRING, Types.ERROR},
                 {Types.CHAR, Types.BOOL, Types.ERROR},
-                {Types.CHAR, Types.CHAR, Types.CHAR},
+                {Types.CHAR, Types.CHAR, Types.ERROR},
                 {Types.CHAR, Types.ARRAY, Types.ERROR},
                 {Types.CHAR, Types.CHANNEL, Types.ERROR},
                 {Types.CHAR, Types.RECORD, Types.ERROR},
                 {Types.CHAR, Types.FILE, Types.ERROR},
-                {Types.STRING, Types.INT, Types.STRING},
-                {Types.STRING, Types.FLOAT, Types.STRING},
-                {Types.STRING, Types.CHAR, Types.STRING},
-                {Types.STRING, Types.STRING, Types.STRING},
-                {Types.STRING, Types.BOOL, Types.STRING},
+                {Types.STRING, Types.INT, Types.ERROR},
+                {Types.STRING, Types.FLOAT, Types.ERROR},
+                {Types.STRING, Types.CHAR, Types.ERROR},
+                {Types.STRING, Types.STRING, Types.ERROR},
+                {Types.STRING, Types.BOOL, Types.ERROR},
                 {Types.STRING, Types.ARRAY, Types.ERROR},
                 {Types.STRING, Types.CHANNEL, Types.ERROR},
                 {Types.STRING, Types.RECORD, Types.ERROR},
                 {Types.STRING, Types.FILE, Types.ERROR},
                 {Types.BOOL, Types.INT, Types.ERROR},
                 {Types.BOOL, Types.FLOAT, Types.ERROR},
-                {Types.BOOL, Types.STRING, Types.STRING},
+                {Types.BOOL, Types.STRING, Types.ERROR},
                 {Types.BOOL, Types.CHAR, Types.ERROR},
                 {Types.BOOL, Types.BOOL, Types.ERROR},
                 {Types.BOOL, Types.ARRAY, Types.ERROR},
@@ -109,15 +110,16 @@ public class AdditionNodeTest {
                 {Types.FILE, Types.ARRAY, Types.ERROR},
                 {Types.FILE, Types.CHANNEL, Types.ERROR},
                 {Types.FILE, Types.RECORD, Types.ERROR},
-                {Types.FILE, Types.FILE, Types.ERROR}
+                {Types.FILE, Types.FILE, Types.ERROR},
+
         });
     }
 
     @Test
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
-    public void additionNode_typeCheckWithParameters_expected() {
+    public void LessThanNode_typeCheckWithParameters_expected() {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
-        AdditionNode node = new AdditionNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType),0);
+        LessThanNode node = new LessThanNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType),0);
         node.accept(typeCheckVisitor);
         Assert.assertEquals(expectedType, node.getType().getPrimitiveType());
     }
