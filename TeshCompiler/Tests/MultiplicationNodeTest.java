@@ -119,6 +119,6 @@ public class MultiplicationNodeTest {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
         MultiplicationNode node = new MultiplicationNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType),0);
         node.accept(typeCheckVisitor);
-        Assert.assertEquals(node.getType().getPrimitiveType(), expectedType);
+        Assert.assertEquals(expectedType, node.getType().getPrimitiveType());
     }
 }
