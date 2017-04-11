@@ -144,6 +144,9 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
 
     @Override
     public AST visitReturnStatement(TeshParser.ReturnStatementContext ctx) {
+        if (ctx.expression() == null)
+            return null;
+
         return new ReturnNode(
                 (ArithmeticExpressionNode) visit(ctx.expression()),
                 ctx.start.getLine()

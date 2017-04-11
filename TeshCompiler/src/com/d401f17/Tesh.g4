@@ -34,7 +34,7 @@ simpleStatement
 flow
     : CONTINUE                                                                                                          #continueStatement
     | BREAK                                                                                                             #breakStatement
-    | RETURN expression                                                                                                 #returnStatement
+    | RETURN expression?                                                                                                 #returnStatement
     ;
 
 block:

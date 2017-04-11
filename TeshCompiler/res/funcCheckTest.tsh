@@ -1,0 +1,12 @@
+func myFun(int a, string b) void {
+	int i = 2
+	i += a
+
+	if i > 10 {
+		return
+	} else {
+		b = "Oh no!"
+	}
+
+	return
+}

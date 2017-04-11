@@ -40,11 +40,7 @@ func myFun(int a, string b) int {
 	#return b
 }
 
-func myFun2(int a, string b) float {
-	return 2.0
-}
-
-func myFun2(string b) float {
+func myFun2(int a, string b) void {
 	return 2.0
 }
 

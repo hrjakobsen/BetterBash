@@ -17,7 +17,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         //InputStream is = new ByteArrayInputStream( "int a\nstring b\na = b".getBytes() );
         //InputStream is = Main.class.getResourceAsStream("/channelExample.tsh");
-        InputStream is = Main.class.getResourceAsStream("/typeCheckTest.tsh");
+        InputStream is = Main.class.getResourceAsStream("/funcCheckTest.tsh");
 
         CharStream input = CharStreams.fromStream(is);
         TeshLexer lexer = new TeshLexer(input);

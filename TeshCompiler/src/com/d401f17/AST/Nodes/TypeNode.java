@@ -25,6 +25,8 @@ public class TypeNode extends AST {
             this.setType(new Type(Types.RECORD));
         } else if (primitiveType.equals("file")) {
             this.setType(new Type(Types.FILE));
+        } else if (primitiveType.equals("void")) {
+            this.setType(new Type(Types.VOID));
         } else {
             this.setType(new Type(Types.ERROR, "Unknown type: " + primitiveType));
         }
