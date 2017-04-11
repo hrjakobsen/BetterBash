@@ -1,8 +1,5 @@
 import com.d401f17.AST.Nodes.ConstantNode;
-import com.d401f17.AST.Nodes.AssignmentNode;
-import com.d401f17.AST.Nodes.IdentifierNode;
-import com.d401f17.AST.Nodes.SimpleIdentifierNode;
-import com.d401f17.AST.TypeSystem.Type;
+import com.d401f17.AST.Nodes.ModuloNode;
 import com.d401f17.AST.TypeSystem.Types;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
@@ -13,19 +10,18 @@ import org.junit.runners.Parameterized.*;
 
 import java.util.Arrays;
 import java.util.Collection;
+
 /**
  * Created by tessa on 4/11/17.
-*/
-
+ */
 @RunWith(value = Parameterized.class)
-public class AssignmentNodeTest {
-
+public class ModuloNodeTest {
 
     @Parameter(value = 0)
-    public Types leftType;
+    public Types rightType;
 
     @Parameter(value = 1)
-    public Types rightType;
+    public Types leftType;
 
     @Parameter(value = 2)
     public Types expectedType;
@@ -33,7 +29,7 @@ public class AssignmentNodeTest {
     @Parameters
     public static Collection<Object[]> data(){
         return Arrays.asList(new Object[][]{
-                {Types.INT, Types.INT, Types.OK},
+                {Types.INT, Types.INT, Types.INT},
                 {Types.INT, Types.FLOAT, Types.ERROR},
                 {Types.INT, Types.CHAR, Types.ERROR},
                 {Types.INT, Types.STRING, Types.ERROR},
@@ -42,8 +38,8 @@ public class AssignmentNodeTest {
                 {Types.INT, Types.CHANNEL, Types.ERROR},
                 {Types.INT, Types.RECORD, Types.ERROR},
                 {Types.INT, Types.FILE, Types.ERROR},
-                {Types.FLOAT, Types.INT, Types.OK},
-                {Types.FLOAT, Types.FLOAT, Types.OK},
+                {Types.FLOAT, Types.INT, Types.ERROR},
+                {Types.FLOAT, Types.FLOAT, Types.ERROR},
                 {Types.FLOAT, Types.CHAR, Types.ERROR},
                 {Types.FLOAT, Types.STRING, Types.ERROR},
                 {Types.FLOAT, Types.BOOL, Types.ERROR},
@@ -55,7 +51,7 @@ public class AssignmentNodeTest {
                 {Types.CHAR, Types.FLOAT, Types.ERROR},
                 {Types.CHAR, Types.STRING, Types.ERROR},
                 {Types.CHAR, Types.BOOL, Types.ERROR},
-                {Types.CHAR, Types.CHAR, Types.OK},
+                {Types.CHAR, Types.CHAR, Types.ERROR},
                 {Types.CHAR, Types.ARRAY, Types.ERROR},
                 {Types.CHAR, Types.CHANNEL, Types.ERROR},
                 {Types.CHAR, Types.RECORD, Types.ERROR},
@@ -63,7 +59,7 @@ public class AssignmentNodeTest {
                 {Types.STRING, Types.INT, Types.ERROR},
                 {Types.STRING, Types.FLOAT, Types.ERROR},
                 {Types.STRING, Types.CHAR, Types.ERROR},
-                {Types.STRING, Types.STRING, Types.OK},
+                {Types.STRING, Types.STRING, Types.ERROR},
                 {Types.STRING, Types.BOOL, Types.ERROR},
                 {Types.STRING, Types.ARRAY, Types.ERROR},
                 {Types.STRING, Types.CHANNEL, Types.ERROR},
@@ -73,7 +69,7 @@ public class AssignmentNodeTest {
                 {Types.BOOL, Types.FLOAT, Types.ERROR},
                 {Types.BOOL, Types.STRING, Types.ERROR},
                 {Types.BOOL, Types.CHAR, Types.ERROR},
-                {Types.BOOL, Types.BOOL, Types.OK},
+                {Types.BOOL, Types.BOOL, Types.ERROR},
                 {Types.BOOL, Types.ARRAY, Types.ERROR},
                 {Types.BOOL, Types.CHANNEL, Types.ERROR},
                 {Types.BOOL, Types.RECORD, Types.ERROR},
@@ -83,7 +79,7 @@ public class AssignmentNodeTest {
                 {Types.ARRAY, Types.CHAR, Types.ERROR},
                 {Types.ARRAY, Types.STRING, Types.ERROR},
                 {Types.ARRAY, Types.BOOL, Types.ERROR},
-                {Types.ARRAY, Types.ARRAY, Types.OK},
+                {Types.ARRAY, Types.ARRAY, Types.ERROR},
                 {Types.ARRAY, Types.CHANNEL, Types.ERROR},
                 {Types.ARRAY, Types.RECORD, Types.ERROR},
                 {Types.ARRAY, Types.FILE, Types.ERROR},
@@ -93,7 +89,7 @@ public class AssignmentNodeTest {
                 {Types.CHANNEL, Types.STRING, Types.ERROR},
                 {Types.CHANNEL, Types.BOOL, Types.ERROR},
                 {Types.CHANNEL, Types.ARRAY, Types.ERROR},
-                {Types.CHANNEL, Types.CHANNEL, Types.OK},
+                {Types.CHANNEL, Types.CHANNEL, Types.ERROR},
                 {Types.CHANNEL, Types.RECORD, Types.ERROR},
                 {Types.CHANNEL, Types.FILE, Types.ERROR},
                 {Types.RECORD, Types.INT, Types.ERROR},
@@ -103,7 +99,7 @@ public class AssignmentNodeTest {
                 {Types.RECORD, Types.BOOL, Types.ERROR},
                 {Types.RECORD, Types.ARRAY, Types.ERROR},
                 {Types.RECORD, Types.CHANNEL, Types.ERROR},
-                {Types.RECORD, Types.RECORD, Types.OK},
+                {Types.RECORD, Types.RECORD, Types.ERROR},
                 {Types.RECORD, Types.FILE, Types.ERROR},
                 {Types.FILE, Types.INT, Types.ERROR},
                 {Types.FILE, Types.FLOAT, Types.ERROR},
@@ -113,19 +109,18 @@ public class AssignmentNodeTest {
                 {Types.FILE, Types.ARRAY, Types.ERROR},
                 {Types.FILE, Types.CHANNEL, Types.ERROR},
                 {Types.FILE, Types.RECORD, Types.ERROR},
-                {Types.FILE, Types.FILE, Types.OK}
+                {Types.FILE, Types.FILE, Types.ERROR},
+
         });
     }
 
     @Test
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
-    public void AssignmentNode_typeCheckWithParameters_expected() {
+    public void ModuloNode_typeCheckWithParameters_expected() {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
-        IdentifierNode identifierNode = new SimpleIdentifierNode("a", 0);
-        identifierNode.setType(new Type(leftType));
-        AssignmentNode node = new AssignmentNode(identifierNode, new ConstantNode(1, rightType),0);
+        ModuloNode node = new ModuloNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType),0);
         node.accept(typeCheckVisitor);
-        Assert.assertEquals(node.getType().getErrorMessage(), expectedType, node.getType().getPrimitiveType());
+        Assert.assertEquals(expectedType, node.getType().getPrimitiveType());
     }
 }
 
