@@ -156,10 +156,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(ConstantNode node) {
-        node.setType(node.getType());
-        return null;
-    }
+    public Void visit(ConstantNode node) { return null; }
 
     @Override
     public Void visit(DivisionNode node) {
