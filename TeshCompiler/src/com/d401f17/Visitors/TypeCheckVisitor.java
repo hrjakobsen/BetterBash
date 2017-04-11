@@ -450,9 +450,9 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         if (expressionType.getPrimitiveType() != Types.BOOL) {
             node.setType(new Type(Types.ERROR, "Negation node on line " + node.getLine() +  " expected to be of type bool, was " + expressionType));
+        } else {
+            node.setType(expressionType);
         }
-
-        node.setType(expressionType);
 
         return null;
     }
@@ -665,9 +665,10 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         if (predicateType.getPrimitiveType() != Types.BOOL) {
             node.setType(new Type(Types.ERROR, "While node on line " + node.getLine() +  " expected predicate to be of type bool, was " + predicateType));
+        } else {
+            node.setType(statementsType);
         }
 
-        node.setType(statementsType);
         return null;
     }
 

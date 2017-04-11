@@ -1,7 +1,7 @@
-package com.d401f17.Visitors;
 import com.d401f17.AST.Nodes.NegationNode;
 import com.d401f17.AST.Nodes.ConstantNode;
 import com.d401f17.AST.TypeSystem.Types;
+import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -36,13 +36,12 @@ public class WhileNodeTest {
                 {Types.CHANNEL, Types.ERROR},
                 {Types.RECORD, Types.ERROR},
                 {Types.FILE, Types.ERROR},
-
         });
     }
 
     @Test
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
-    public void WhileNode_typeCheckWithParameters_expected() {
+    public void WhileNode_PredicateMustBeBool() {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
         WhileNode node = new WhileNode(new ConstantNode(1, predicate), new StatementsNode(1),0);
         node.accept(typeCheckVisitor);
