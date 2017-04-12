@@ -30,8 +30,8 @@ public class Main {
         TypeCheckVisitor typeCheck = new TypeCheckVisitor();
         ast.accept(typeCheck);
 
-        for (Type err : typeCheck.getErrors()) {
-            System.out.println(err.getErrorMessage());
+        for (String err : typeCheck.getErrors()) {
+            System.out.println(err);
         }
 
 /*

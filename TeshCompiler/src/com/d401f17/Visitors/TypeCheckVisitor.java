@@ -11,10 +11,29 @@ import java.util.List;
  */
 public class TypeCheckVisitor extends BaseVisitor<Void> {
     private SymTab st = new SymbolTable();
-    private ArrayList<Type> errors = new ArrayList<>();
+    private ArrayList<Type> errorNodes = new ArrayList<>();
 
-    public ArrayList<Type> getErrors() {
-        return errors;
+    public List<Type> getErrorNodes() {
+        return errorNodes;
+    }
+
+    public List<String> getErrors() {
+        ArrayList<String> errorStrings = new ArrayList<>();
+        for (Type errorType : errorNodes) {
+            errorStrings.add(errorType.getErrorMessage());
+        }
+
+        return errorStrings;
+    }
+
+    public String getAllErrors() {
+        StringBuilder sb = new StringBuilder();
+        for (String error : getErrors()) {
+            sb.append(error);
+            sb.append('\n');
+        }
+
+        return sb.toString();
     }
 
     @Override
@@ -749,7 +768,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         for(Type childType : childTypes) {
             Types primitiveType = childType.getPrimitiveType();
             if (primitiveType == Types.ERROR) {
-                errors.add(childType);
+                errorNodes.add(childType);
                 invalid = true;
             } else if (primitiveType == Types.IGNORE) {
                 invalid = true;

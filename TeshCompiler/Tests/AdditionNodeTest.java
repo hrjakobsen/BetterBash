@@ -1,5 +1,6 @@
 import com.d401f17.AST.Nodes.AdditionNode;
 import com.d401f17.AST.Nodes.ConstantNode;
+import com.d401f17.AST.TypeSystem.Type;
 import com.d401f17.AST.TypeSystem.Types;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
@@ -119,6 +120,7 @@ public class AdditionNodeTest {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
         AdditionNode node = new AdditionNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType),0);
         node.accept(typeCheckVisitor);
-        Assert.assertEquals(expectedType, node.getType().getPrimitiveType());
+
+        Assert.assertEquals(typeCheckVisitor.getAllErrors(), expectedType, node.getType().getPrimitiveType());
     }
 }
