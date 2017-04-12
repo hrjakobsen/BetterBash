@@ -1,4 +1,4 @@
-import com.d401f17.AST.Nodes.EqualsNode;
+import com.d401f17.AST.Nodes.NotEqualsNode;
 import com.d401f17.AST.Nodes.ConstantNode;
 import com.d401f17.AST.TypeSystem.Types;
 import com.d401f17.Visitors.TypeCheckVisitor;
@@ -14,7 +14,7 @@ import java.util.Collection;
  * Created by tessa on 4/11/17.
  */
 @RunWith(value = Parameterized.class)
-public class EqualsNodeTest {
+public class NotEqualsNodeTest {
 
     @Parameterized.Parameter(value = 0)
     public Types leftType;
@@ -98,7 +98,7 @@ public class EqualsNodeTest {
                 {Types.RECORD, Types.BOOL, Types.ERROR},
                 {Types.RECORD, Types.ARRAY, Types.ERROR},
                 {Types.RECORD, Types.CHANNEL, Types.ERROR},
-                {Types.RECORD, Types.RECORD, Types.BOOL},
+                {Types.RECORD, Types.RECORD, Types.ERROR},
                 {Types.RECORD, Types.FILE, Types.ERROR},
                 {Types.FILE, Types.INT, Types.ERROR},
                 {Types.FILE, Types.FLOAT, Types.ERROR},
@@ -108,7 +108,7 @@ public class EqualsNodeTest {
                 {Types.FILE, Types.ARRAY, Types.ERROR},
                 {Types.FILE, Types.CHANNEL, Types.ERROR},
                 {Types.FILE, Types.RECORD, Types.ERROR},
-                {Types.FILE, Types.FILE, Types.BOOL},
+                {Types.FILE, Types.FILE, Types.ERROR},
 
 
         });
@@ -116,9 +116,9 @@ public class EqualsNodeTest {
 
     @Test
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
-    public void EqualsNode_typeCheckWithParameters_expected() {
+    public void NotEqualsNode_typeCheckWithParameters_expected() {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
-        EqualsNode node = new EqualsNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType),0);
+        NotEqualsNode node = new NotEqualsNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType),0);
         node.accept(typeCheckVisitor);
         Assert.assertEquals(expectedType, node.getType().getPrimitiveType());
     }
