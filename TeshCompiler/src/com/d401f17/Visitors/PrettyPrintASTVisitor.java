@@ -102,7 +102,7 @@ public class PrettyPrintASTVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(EqualsNode node) {
+    public Void visit(EqualNode node) {
         makeNode("==", node.getLeft(), node.getRight());
         return null;
     }
@@ -189,7 +189,7 @@ public class PrettyPrintASTVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(NotEqualsNode node) {
+    public Void visit(NotEqualNode node) {
         makeNode("!=", node.getLeft(), node.getRight());
         return null;
     }

@@ -1,4 +1,4 @@
-import com.d401f17.AST.Nodes.NotEqualsNode;
+import com.d401f17.AST.Nodes.NotEqualNode;
 import com.d401f17.AST.Nodes.ConstantNode;
 import com.d401f17.AST.TypeSystem.Types;
 import com.d401f17.Visitors.TypeCheckVisitor;
@@ -14,7 +14,7 @@ import java.util.Collection;
  * Created by tessa on 4/11/17.
  */
 @RunWith(value = Parameterized.class)
-public class NotEqualsNodeTest {
+public class NotEqualNodeTest {
 
     @Parameterized.Parameter(value = 0)
     public Types leftType;
@@ -116,7 +116,7 @@ public class NotEqualsNodeTest {
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void NotEqualsNode_typeCheckWithParameters_expected() {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
-        NotEqualsNode node = new NotEqualsNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType),0);
+        NotEqualNode node = new NotEqualNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType),0);
         node.accept(typeCheckVisitor);
         Assert.assertEquals(leftType + ", " + rightType + " => " +expectedType + typeCheckVisitor.getAllErrors(), expectedType, node.getType().getPrimitiveType());
     }

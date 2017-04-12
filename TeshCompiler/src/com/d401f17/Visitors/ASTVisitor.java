@@ -17,7 +17,7 @@ public interface ASTVisitor<T> {
     T visit(CompoundIdentifierNode node);
     T visit(ConstantNode node);
     T visit(DivisionNode node);
-    T visit(EqualsNode node);
+    T visit(EqualNode node);
     T visit(ForkNode node);
     T visit(ForNode node);
     T visit(FunctionCallNode node);
@@ -31,7 +31,7 @@ public interface ASTVisitor<T> {
     T visit(ModuloNode node);
     T visit(MultiplicationNode node);
     T visit(NegationNode node);
-    T visit(NotEqualsNode node);
+    T visit(NotEqualNode node);
     T visit(OrNode node);
     T visit(ReadFromChannelNode node);
     T visit(RecordDeclarationNode node);

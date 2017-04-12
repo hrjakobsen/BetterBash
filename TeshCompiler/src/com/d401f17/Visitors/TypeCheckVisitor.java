@@ -219,7 +219,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(EqualsNode node) {
+    public Void visit(EqualNode node) {
         node.setType(equalComparison(node, "Equal node"));
         return null;
     }
@@ -477,7 +477,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(NotEqualsNode node) {
+    public Void visit(NotEqualNode node) {
         node.setType(equalComparison(node, "Not equal node"));
         return null;
     }

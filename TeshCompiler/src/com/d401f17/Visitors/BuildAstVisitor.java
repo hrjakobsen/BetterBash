@@ -333,9 +333,9 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
 
         switch (ctx.op.getType()) {
             case TeshParser.OP_EQ:
-                return new EqualsNode(left, right, lineNum);
+                return new EqualNode(left, right, lineNum);
             case TeshParser.OP_NEQ:
-                return new NotEqualsNode(left, right, lineNum);
+                return new NotEqualNode(left, right, lineNum);
             case TeshParser.OP_LT:
                 return new LessThanNode(left, right, lineNum);
             case TeshParser.OP_GT:
