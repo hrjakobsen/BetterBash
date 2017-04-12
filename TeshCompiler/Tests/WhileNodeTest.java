@@ -7,7 +7,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.*;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,10 +18,10 @@ import java.util.Collection;
 public class WhileNodeTest {
 
     @Parameterized.Parameter(value = 0)
-    public Types predicate;
+    public Types predicateType;
 
     @Parameterized.Parameter(value = 1)
-    public Types expected;
+    public Types expectedType;
 
     @Parameterized.Parameters
     public static Collection<Object[]> data(){
@@ -43,8 +42,11 @@ public class WhileNodeTest {
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void WhileNode_PredicateMustBeBool() {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
-        WhileNode node = new WhileNode(new ConstantNode(1, predicate), new StatementsNode(1),0);
+        WhileNode node = new WhileNode(new ConstantNode(1, predicateType), new StatementsNode(1),0);
         node.accept(typeCheckVisitor);
-        Assert.assertEquals(expected, node.getType().getPrimitiveType());
+
+
+        String errMessage = predicateType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
+        Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
     }
 }

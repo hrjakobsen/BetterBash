@@ -13,7 +13,11 @@ public class StatementsNode extends StatementNode {
     private ArrayList<StatementNode> children;
 
     public StatementsNode(int lineNum, StatementNode ... children) {
-        this.setLine(lineNum);
+        this.lineNum = lineNum;
+        this.children = new ArrayList<>(Arrays.asList(children));
+    }
+
+    public StatementsNode(StatementNode ... children) {
         this.children = new ArrayList<>(Arrays.asList(children));
     }
 

@@ -28,7 +28,12 @@ public class ReadFromChannelNode extends StatementNode {
     public ReadFromChannelNode(IdentifierNode variable, IdentifierNode channel, int lineNum) {
         this.variable = variable;
         this.channel = channel;
-        this.setLine(lineNum);
+        this.lineNum = lineNum;
+    }
+
+    public ReadFromChannelNode(IdentifierNode variable, IdentifierNode channel) {
+        this.variable = variable;
+        this.channel = channel;
     }
 
     @Override

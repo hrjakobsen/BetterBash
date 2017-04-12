@@ -11,6 +11,10 @@ public class NotEqualNode extends InfixExpressionNode {
         super(left, right, lineNum);
     }
 
+    public NotEqualNode(ArithmeticExpressionNode left, ArithmeticExpressionNode right) {
+        super(left, right);
+    }
+
     @Override
     public void accept(ASTVisitor visitor) {
         visitor.visit(this);

@@ -121,6 +121,8 @@ public class GreaterThanNodeTest {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
         GreaterThanNode node = new GreaterThanNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType),0);
         node.accept(typeCheckVisitor);
-        Assert.assertEquals(expectedType, node.getType().getPrimitiveType());
+
+        String errMessage = leftType + ", " + rightType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
+        Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
     }
 }

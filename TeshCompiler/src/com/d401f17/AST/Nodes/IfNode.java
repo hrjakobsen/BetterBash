@@ -38,7 +38,13 @@ public class IfNode extends TypedStatementNode {
         this.predicate = predicate;
         this.trueBranch = trueBranch;
         this.falseBranch = falseBranch;
-        this.setLine(lineNum);
+        this.lineNum = lineNum;
+    }
+
+    public IfNode(ArithmeticExpressionNode predicate, StatementsNode trueBranch, StatementsNode falseBranch) {
+        this.predicate = predicate;
+        this.trueBranch = trueBranch;
+        this.falseBranch = falseBranch;
     }
 
     @Override

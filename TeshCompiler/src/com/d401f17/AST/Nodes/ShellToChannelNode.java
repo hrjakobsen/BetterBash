@@ -12,7 +12,12 @@ public class ShellToChannelNode extends StatementNode {
     public ShellToChannelNode(IdentifierNode channel, ShellNode command, int lineNum) {
         this.channel = channel;
         this.command = command;
-        this.setLine(lineNum);
+        this.lineNum = lineNum;
+    }
+
+    public ShellToChannelNode(IdentifierNode channel, ShellNode command) {
+        this.channel = channel;
+        this.command = command;
     }
 
     public IdentifierNode getChannel() {

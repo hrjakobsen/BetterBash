@@ -31,7 +31,12 @@ public class ProcedureCallNode extends StatementNode {
 
     public ProcedureCallNode(IdentifierNode name, int lineNum, ArithmeticExpressionNode ... arguments) {
         this.name = name;
-        this.setLine(lineNum);
+        this.lineNum = lineNum;
+        this.arguments = new ArrayList<>(Arrays.asList(arguments));
+    }
+
+    public ProcedureCallNode(IdentifierNode name, ArithmeticExpressionNode ... arguments) {
+        this.name = name;
         this.arguments = new ArrayList<>(Arrays.asList(arguments));
     }
 

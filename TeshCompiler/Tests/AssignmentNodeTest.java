@@ -119,15 +119,17 @@ public class AssignmentNodeTest {
     public void AssignmentNode_typeCheckWithParameters_expected() {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
 
-        SimpleIdentifierNode idNode = new SimpleIdentifierNode("a", 0);
+        SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
         idNode.setType(new Type(leftType));
         TypeNode typeNode = new TypeNode(leftType.toString().toLowerCase());
-        VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode, 0);
+        VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
         varNode.accept(typeCheckVisitor);
 
-        AssignmentNode node = new AssignmentNode(idNode, new ConstantNode(1, rightType),0);
+        AssignmentNode node = new AssignmentNode(idNode, new ConstantNode(1, rightType));
         node.accept(typeCheckVisitor);
-        Assert.assertEquals(node.getType().getErrorMessage(), expectedType, node.getType().getPrimitiveType());
+
+        String errMessage = leftType + ", " + rightType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
+        Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
     }
 }
 

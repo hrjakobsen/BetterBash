@@ -116,8 +116,10 @@ public class EqualNodeTest {
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void EqualsNode_typeCheckWithParameters_expected() {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
-        EqualNode node = new EqualNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType),0);
+        EqualNode node = new EqualNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType));
         node.accept(typeCheckVisitor);
-        Assert.assertEquals(leftType + ", " + rightType + " => " +expectedType + typeCheckVisitor.getAllErrors(), expectedType, node.getType().getPrimitiveType());
+
+        String errMessage = leftType + ", " + rightType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
+        Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
     }
 }

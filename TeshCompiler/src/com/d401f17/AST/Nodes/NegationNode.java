@@ -10,7 +10,11 @@ public class NegationNode extends AST {
 
     public NegationNode(AST expression, int lineNum) {
         this.expression = expression;
-        this.setLine(lineNum);
+        this.lineNum = lineNum;
+    }
+
+    public NegationNode(AST expression) {
+        this.expression = expression;
     }
 
     @Override

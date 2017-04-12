@@ -7,6 +7,12 @@ import com.d401f17.Visitors.ASTVisitor;
 public class ConstantNode extends ArithmeticExpressionNode {
     private Object value;
 
+    public ConstantNode(Object value, Types primitiveType, int lineNum) {
+        this.value = value;
+        this.setType(new Type(primitiveType));
+        this.lineNum = lineNum;
+    }
+
     public ConstantNode(Object value, Types primitiveType) {
         this.value = value;
         this.setType(new Type(primitiveType));

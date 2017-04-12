@@ -1,6 +1,5 @@
 import com.d401f17.AST.Nodes.ConstantNode;
 import com.d401f17.AST.Nodes.IfNode;
-import com.d401f17.AST.Nodes.ReturnNode;
 import com.d401f17.AST.Nodes.StatementsNode;
 import com.d401f17.AST.TypeSystem.Types;
 import com.d401f17.Visitors.TypeCheckVisitor;
@@ -19,10 +18,10 @@ import java.util.Collection;
 public class IfNodeTest {
 
     @Parameterized.Parameter(value = 0)
-    public Types predicate;
+    public Types predicateType;
 
     @Parameterized.Parameter(value = 1)
-    public Types expected;
+    public Types expectedType;
 
     @Parameterized.Parameters
     public static Collection<Object[]> data(){
@@ -44,8 +43,10 @@ public class IfNodeTest {
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void IfNode_typeCheckWithParameters_expected() {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
-        IfNode node = new IfNode(new ConstantNode(1, predicate), new StatementsNode(1), new StatementsNode(1),0);
+        IfNode node = new IfNode(new ConstantNode(1, predicateType), new StatementsNode(1), new StatementsNode(1),0);
         node.accept(typeCheckVisitor);
-        Assert.assertEquals(expected, node.getType().getPrimitiveType());
+
+        String errMessage = predicateType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
+        Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
     }
 }

@@ -12,7 +12,12 @@ public class WhileNode extends TypedStatementNode {
     public WhileNode(AST predicate, AST statements, int lineNum) {
         this.predicate = predicate;
         this.statements = statements;
-        this.setLine(lineNum);
+        this.lineNum = lineNum;
+    }
+
+    public WhileNode(AST predicate, AST statements) {
+        this.predicate = predicate;
+        this.statements = statements;
     }
 
     public AST getPredicate() {

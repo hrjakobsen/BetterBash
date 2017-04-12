@@ -10,11 +10,14 @@ public class ReturnNode extends TypedStatementNode {
 
     public ReturnNode(ArithmeticExpressionNode expresssion, int lineNum) {
         this.expresssion = expresssion;
-        this.setLine(lineNum);
+        this.lineNum = lineNum;
+    }
+
+    public ReturnNode(ArithmeticExpressionNode expresssion) {
+        this.expresssion = expresssion;
     }
 
     public ArithmeticExpressionNode getExpresssion() {
-
         return expresssion;
     }
 

@@ -10,6 +10,10 @@ public class SubtractionNode extends InfixExpressionNode {
         super(left, right, lineNum);
     }
 
+    public SubtractionNode(ArithmeticExpressionNode left, ArithmeticExpressionNode right) {
+        super(left, right);
+    }
+
     @Override
     public void accept(ASTVisitor visitor) {
         visitor.visit(this);

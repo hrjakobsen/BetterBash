@@ -8,7 +8,7 @@ import com.d401f17.Visitors.ASTVisitor;
  */
 public abstract class AST {
     private Type type;
-    private int lineNum;
+    protected int lineNum;
 
     public Type getType() {
         return type;

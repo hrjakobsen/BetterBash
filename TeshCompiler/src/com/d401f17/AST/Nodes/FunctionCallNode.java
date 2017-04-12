@@ -31,7 +31,12 @@ public class FunctionCallNode extends ArithmeticExpressionNode {
 
     public FunctionCallNode(IdentifierNode name, int lineNum, ArithmeticExpressionNode ... arguments) {
         this.name = name;
-        this.setLine(lineNum);
+        this.lineNum = lineNum;
+        this.arguments = new ArrayList<>(Arrays.asList(arguments));
+    }
+
+    public FunctionCallNode(IdentifierNode name, ArithmeticExpressionNode ... arguments) {
+        this.name = name;
         this.arguments = new ArrayList<>(Arrays.asList(arguments));
     }
 

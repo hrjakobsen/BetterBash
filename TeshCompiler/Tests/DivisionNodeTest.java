@@ -119,8 +119,10 @@ public class DivisionNodeTest {
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void divisionNode_typeCheckWithParameters_expected() {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
-        DivisionNode node = new DivisionNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType),0);
+        DivisionNode node = new DivisionNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType));
         node.accept(typeCheckVisitor);
-        Assert.assertEquals(node.getType(), new Type(expectedType));
+
+        String errMessage = leftType + ", " + rightType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
+        Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
     }
 }

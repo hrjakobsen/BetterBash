@@ -30,7 +30,12 @@ public class ArrayAccessNode extends IdentifierNode {
     public ArrayAccessNode(IdentifierNode array, List<ArithmeticExpressionNode> indices, int lineNum) {
         this.array = array;
         this.indices = indices;
-        this.setLine(lineNum);
+        this.lineNum = lineNum;
+    }
+
+    public ArrayAccessNode(IdentifierNode array, List<ArithmeticExpressionNode> indices) {
+        this.array = array;
+        this.indices = indices;
     }
 
     @Override

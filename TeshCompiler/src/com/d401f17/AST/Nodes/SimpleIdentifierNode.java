@@ -18,7 +18,11 @@ public class SimpleIdentifierNode extends IdentifierNode {
 
     public SimpleIdentifierNode(String name, int lineNum) {
         this.name = name;
-        this.setLine(lineNum);
+        this.lineNum = lineNum;
+    }
+
+    public SimpleIdentifierNode(String name) {
+        this.name = name;
     }
 
     @Override

@@ -10,11 +10,14 @@ public class ShellNode extends StatementNode {
 
     public ShellNode(ArithmeticExpressionNode command, int lineNum) {
         this.command = command;
-        this.setLine(lineNum);
+        this.lineNum = lineNum;
+    }
+
+    public ShellNode(ArithmeticExpressionNode command) {
+        this.command = command;
     }
 
     public ArithmeticExpressionNode getCommand() {
-
         return command;
     }
 

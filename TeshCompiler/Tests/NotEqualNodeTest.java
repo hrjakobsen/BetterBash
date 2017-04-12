@@ -118,6 +118,8 @@ public class NotEqualNodeTest {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
         NotEqualNode node = new NotEqualNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType),0);
         node.accept(typeCheckVisitor);
-        Assert.assertEquals(leftType + ", " + rightType + " => " +expectedType + typeCheckVisitor.getAllErrors(), expectedType, node.getType().getPrimitiveType());
+
+        String errMessage = leftType + ", " + rightType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
+        Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
     }
 }

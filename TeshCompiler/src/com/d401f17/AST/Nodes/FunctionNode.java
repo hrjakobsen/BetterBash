@@ -34,11 +34,17 @@ public class FunctionNode extends StatementNode {
         this.formalArguments = formalArguments;
         this.statements = statements;
         this.type = type;
-        this.setLine(lineNum);
+        this.lineNum = lineNum;
+    }
+
+    public FunctionNode(SimpleIdentifierNode name, TypeNode type, List<VariableDeclarationNode> formalArguments, StatementsNode statements) {
+        this.name = name;
+        this.formalArguments = formalArguments;
+        this.statements = statements;
+        this.type = type;
     }
 
     public SimpleIdentifierNode getName() {
-
         return name;
     }
 

@@ -14,7 +14,13 @@ public class ArrayBuilderNode extends StatementNode {
         this.variable = variable;
         this.expression = expression;
         this.array = array;
-        this.setLine(lineNum);
+        this.lineNum = lineNum;
+    }
+
+    public ArrayBuilderNode(SimpleIdentifierNode variable, IdentifierNode array, ArithmeticExpressionNode expression) {
+        this.variable = variable;
+        this.expression = expression;
+        this.array = array;
     }
 
     public SimpleIdentifierNode getVariable() {

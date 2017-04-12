@@ -15,16 +15,16 @@ import java.util.Collection;
 @RunWith(value = Parameterized.class)
 public class IfNodeNestedReturnTest {
     @Parameterized.Parameter(value = 0)
-    public Types return1;
+    public Types type1;
 
     @Parameterized.Parameter(value = 1)
-    public Types return2;
+    public Types type2;
 
     @Parameterized.Parameter(value = 2)
-    public Types return3;
+    public Types type3;
 
     @Parameterized.Parameter(value = 3)
-    public Types expected;
+    public Types expectedType;
 
     @Parameterized.Parameters
     public static Collection<Object[]> data(){
@@ -47,12 +47,12 @@ public class IfNodeNestedReturnTest {
         /*
         1   if true {
         2       if false {
-        3           return return1
+        3           return type1
         4       } else {
-        5           return return2
+        5           return type2
         6       }
         7   } else {
-        8       return return3
+        8       return type3
         9   }
          */
 
@@ -67,11 +67,11 @@ public class IfNodeNestedReturnTest {
                                         new ConstantNode(false, Types.BOOL),
                                         new StatementsNode(
                                                 3,
-                                                new ReturnNode(new ConstantNode(0, return1),3)
+                                                new ReturnNode(new ConstantNode(0, type1),3)
                                         ),
                                         new StatementsNode(
                                                 5,
-                                                new ReturnNode(new ConstantNode(0, return2),5)
+                                                new ReturnNode(new ConstantNode(0, type2),5)
                                         ),
                                         2
                                 )
@@ -80,7 +80,7 @@ public class IfNodeNestedReturnTest {
                                 8,
                                 new StatementsNode(
                                         8,
-                                        new ReturnNode(new ConstantNode(0, return3),8)
+                                        new ReturnNode(new ConstantNode(0, type3),8)
                                 )
                         ),
                         1
@@ -88,6 +88,8 @@ public class IfNodeNestedReturnTest {
         );
 
         node.accept(typeCheckVisitor);
-        Assert.assertEquals(typeCheckVisitor.getAllErrors(), expected, node.getType().getPrimitiveType());
+
+        String errMessage = type1 + ", " + type2 + ", " + type3 + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
+        Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
     }
 }

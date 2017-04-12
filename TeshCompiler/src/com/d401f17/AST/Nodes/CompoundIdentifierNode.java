@@ -18,8 +18,12 @@ public class CompoundIdentifierNode extends IdentifierNode {
         this.identifiers = identifiers;
     }
 
-    public CompoundIdentifierNode(List<SimpleIdentifierNode> identifiers) {
+    public CompoundIdentifierNode(List<SimpleIdentifierNode> identifiers, int lineNum) {
+        this.identifiers = identifiers;
+        this.lineNum = lineNum;
+    }
 
+    public CompoundIdentifierNode(List<SimpleIdentifierNode> identifiers) {
         this.identifiers = identifiers;
     }
 

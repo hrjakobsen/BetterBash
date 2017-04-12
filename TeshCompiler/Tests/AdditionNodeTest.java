@@ -118,9 +118,10 @@ public class AdditionNodeTest {
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void additionNode_typeCheckWithParameters_expected() {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
-        AdditionNode node = new AdditionNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType),0);
+        AdditionNode node = new AdditionNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType));
         node.accept(typeCheckVisitor);
 
-        Assert.assertEquals(typeCheckVisitor.getAllErrors(), expectedType, node.getType().getPrimitiveType());
+        String errMessage = leftType + ", " + rightType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
+        Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
     }
 }

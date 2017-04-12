@@ -31,7 +31,12 @@ public class ArrayElementAssignmentNode extends StatementNode {
     public ArrayElementAssignmentNode(ArrayAccessNode element, ArithmeticExpressionNode expression, int lineNum) {
         this.element = element;
         this.expression = expression;
-        this.setLine(lineNum);
+        this.lineNum = lineNum;
+    }
+
+    public ArrayElementAssignmentNode(ArrayAccessNode element, ArithmeticExpressionNode expression) {
+        this.element = element;
+        this.expression = expression;
     }
 
     @Override

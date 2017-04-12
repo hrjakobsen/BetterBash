@@ -121,6 +121,8 @@ public class LessThanOrEqualNodeTest {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
         LessThanOrEqualNode node = new LessThanOrEqualNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType),0);
         node.accept(typeCheckVisitor);
-        Assert.assertEquals(expectedType, node.getType().getPrimitiveType());
+
+        String errMessage = leftType + ", " + rightType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
+        Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
     }
 }

@@ -17,7 +17,7 @@ import java.util.Collection;
 public class NegationNodeTest {
 
     @Parameterized.Parameter(value = 0)
-    public Types leftType;
+    public Types expressionType;
 
     @Parameterized.Parameter(value = 1)
     public Types expectedType;
@@ -42,8 +42,10 @@ public class NegationNodeTest {
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void NegationNode_typeCheckWithParameters_expected() {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
-        NegationNode node = new NegationNode(new ConstantNode(1, leftType),0);
+        NegationNode node = new NegationNode(new ConstantNode(1, expressionType),0);
         node.accept(typeCheckVisitor);
-        Assert.assertEquals(expectedType, node.getType().getPrimitiveType());
+
+        String errMessage = expressionType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
+        Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
     }
 }

@@ -9,6 +9,12 @@ public class WriteToChannelNode extends StatementNode {
     private IdentifierNode identifier;
     private ArithmeticExpressionNode expression;
 
+    public WriteToChannelNode(IdentifierNode identifier, ArithmeticExpressionNode expression, int lineNum) {
+        this.identifier = identifier;
+        this.expression = expression;
+        this.lineNum = lineNum;
+    }
+
     public WriteToChannelNode(IdentifierNode identifier, ArithmeticExpressionNode expression) {
         this.identifier = identifier;
         this.expression = expression;

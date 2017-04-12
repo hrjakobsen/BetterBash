@@ -10,6 +10,10 @@ public class DivisionNode extends InfixExpressionNode {
         super(left, right, lineNum);
     }
 
+    public DivisionNode(ArithmeticExpressionNode left, ArithmeticExpressionNode right) {
+        super(left, right);
+    }
+
     @Override
     public void accept(ASTVisitor visitor) {
         visitor.visit(this);

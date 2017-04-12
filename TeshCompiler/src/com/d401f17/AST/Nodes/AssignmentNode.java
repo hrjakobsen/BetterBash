@@ -28,7 +28,12 @@ public class AssignmentNode extends StatementNode {
     public AssignmentNode(IdentifierNode variable, ArithmeticExpressionNode expression, int lineNum) {
         this.variable = variable;
         this.expression = expression;
-        this.setLine(lineNum);
+        this.lineNum = lineNum;
+    }
+
+    public AssignmentNode(IdentifierNode variable, ArithmeticExpressionNode expression) {
+        this.variable = variable;
+        this.expression = expression;
     }
 
     @Override
