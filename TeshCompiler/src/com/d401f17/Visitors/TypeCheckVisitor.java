@@ -336,7 +336,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         Type funcType = node.getTypeNode().getType();
 
         //If return is same type as function, create it in the symbol table
-        if (funcType.getPrimitiveType() == Types.VOID && statementsType.getPrimitiveType() == Types.OK) {
+        if (funcType.equals(statementsType)) {
             try {
                 st.insert(funcName, new Symbol(new FunctionType(funcType.getPrimitiveType(), argumentTypes), node));
                 node.setType(funcType);
@@ -378,14 +378,20 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         if (predicateType.getPrimitiveType() != Types.BOOL) {
-            node.setType(new Type(Types.ERROR, "If node on line " + node.getLine() + " expected predicate to be of type bool, was " + predicateType));
+            node.setType(new Type(Types.ERROR, "If statement on line " + node.getLine() + " expected a predicate of type bool, was " + predicateType));
             return null;
         }
 
         if (trueBranchType.equals(falseBranchType)) {
             node.setType(trueBranchType);
         } else {
-            node.setType(new Type(Types.ERROR, "If node on line " + node.getLine() + " expected false branch to be of type " + trueBranchType + ", was " + falseBranchType));
+            if (trueBranchType.getPrimitiveType() == Types.OK) {
+                node.setType(falseBranchType);
+            } else if (falseBranchType.getPrimitiveType() == Types.OK) {
+                node.setType(trueBranchType);
+            } else {
+                node.setType(new Type(Types.ERROR, "If statement on line " + node.getLine() + " expected its false branch to be of type " + trueBranchType + ", was " + falseBranchType));
+            }
         }
         return null;
     }
@@ -565,7 +571,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             Type identifierType = st.lookup(node.getName()).getType();
             node.setType(identifierType);
         } catch (VariableNotDeclaredException e) {
-            node.setType(new Type(Types.ERROR, e.getMessage()));
+            node.setType(new Type(Types.ERROR, e.getMessage() + " on line " + node.getLine()));
         }
 
         return null;
@@ -586,6 +592,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             return null;
         }
 
+        /*
         //Collect all typed children
         ArrayList<StatementNode> typedStatementNodes = new ArrayList<>();
         for (StatementNode statementNode : childNodes) {
@@ -593,24 +600,34 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
                 typedStatementNodes.add(statementNode);
             }
         }
-
-        //If we found any typed children, make sure they are all of same type
-        if (typedStatementNodes.size() > 1) {
-            for (int i = 1; i < typedStatementNodes.size(); i++) {
-                if (!typedStatementNodes.get(i).getType().equals(typedStatementNodes.get(i - 1).getType())) {
-                    int firstLine = typedStatementNodes.get(i - 1).getLine();
-                    int lastLine = typedStatementNodes.get(i).getLine();
-                    node.setType(new Type(Types.ERROR, "Return types of statements on lines " + firstLine + " and " + lastLine + " do not match"));
-                    return null;
-                }
+        */
+        ArrayList<StatementNode> typedStatementNodes = new ArrayList<>();
+        for (StatementNode statementNode : childNodes) {
+            if (statementNode.getType().getPrimitiveType() != Types.OK) {
+                typedStatementNodes.add(statementNode);
             }
-        } else if (typedStatementNodes.size() == 0) {
-            node.setType(new Type(Types.OK));
-            return null;
         }
 
-        node.setType(typedStatementNodes.get(0).getType());
-        return null;
+
+        //If we found any typed children, make sure they are all of same type
+        if (typedStatementNodes.size() == 0) {
+            node.setType(new Type(Types.OK));
+            return null;
+        } else {
+            if (typedStatementNodes.size() > 1) {
+                for (int i = 1; i < typedStatementNodes.size(); i++) {
+                    if (!typedStatementNodes.get(i).getType().equals(typedStatementNodes.get(i - 1).getType())) {
+                        int firstLine = typedStatementNodes.get(i - 1).getLine();
+                        int lastLine = typedStatementNodes.get(i).getLine();
+                        node.setType(new Type(Types.ERROR, "Return type of statements on line " + firstLine + " does not match that the return type on the statement on line " + lastLine));
+                        return null;
+                    }
+                }
+            }
+
+            node.setType(typedStatementNodes.get(0).getType());
+            return null;
+        }
     }
 
     @Override
@@ -657,7 +674,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         try {
             st.insert(varName, new Symbol(varType, node));
-            node.setType(varType);
+            node.setType(new Type(Types.OK));
         } catch (VariableAlreadyDeclaredException e) {
             node.setType(new Type(Types.ERROR, e.getMessage()));
         }

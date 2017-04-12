@@ -1,5 +1,6 @@
 import com.d401f17.AST.Nodes.ConstantNode;
 import com.d401f17.AST.Nodes.IfNode;
+import com.d401f17.AST.Nodes.ReturnNode;
 import com.d401f17.AST.Nodes.StatementsNode;
 import com.d401f17.AST.TypeSystem.Types;
 import com.d401f17.Visitors.TypeCheckVisitor;
@@ -7,7 +8,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.*;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,7 +19,7 @@ import java.util.Collection;
 public class IfNodeTest {
 
     @Parameterized.Parameter(value = 0)
-    public Types predicament;
+    public Types predicate;
 
     @Parameterized.Parameter(value = 1)
     public Types expected;
@@ -44,7 +44,7 @@ public class IfNodeTest {
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void IfNode_typeCheckWithParameters_expected() {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
-        IfNode node = new IfNode(new ConstantNode(1, predicament), new StatementsNode(1), new StatementsNode(1),0);
+        IfNode node = new IfNode(new ConstantNode(1, predicate), new StatementsNode(1), new StatementsNode(1),0);
         node.accept(typeCheckVisitor);
         Assert.assertEquals(expected, node.getType().getPrimitiveType());
     }

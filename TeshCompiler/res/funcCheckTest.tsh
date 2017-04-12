@@ -1,3 +1,5 @@
+char c = 'a'
+
 func myFun(int a, string b) void {
 	int i = 2
 	i += a
@@ -9,4 +11,65 @@ func myFun(int a, string b) void {
 	}
 
 	return
+}
+
+func myFun2(int a, string b) int {
+	int i = 10
+
+	if true {
+		if true == false {
+			while true {
+				if false {
+					return i
+				} else {
+					return i
+				}
+			}
+		} else {
+			return i
+		}
+	} else {
+		return i
+	}
+
+	if true {
+		return i
+	} else {
+		float f = 2.3
+		b = "" + f + a + 2 + c
+		return 42
+	}
+
+	if false {
+		return a
+	} else {
+		float f2 = 2
+		return i + a
+	}
+
+	#return b
+}
+
+func myFun3(int a, string b) float {
+	return 2.0
+}
+
+func wontwork() string {
+	int a
+	a = 10
+	string b = "hej"
+
+	return b
+}
+
+func two() int {
+	string b = "2"
+
+	if true {
+		return 1
+	} else {
+		return 2
+	}
+
+	return 2
 }
