@@ -30,7 +30,7 @@ public class EqualsNodeTest {
         return Arrays.asList(new Object[][]{
                 {Types.INT, Types.INT, Types.BOOL},
                 {Types.INT, Types.FLOAT, Types.BOOL},
-                {Types.INT, Types.CHAR, Types.ERROR},
+                {Types.INT, Types.CHAR, Types.BOOL},
                 {Types.INT, Types.STRING, Types.ERROR},
                 {Types.INT, Types.BOOL, Types.ERROR},
                 {Types.INT, Types.ARRAY, Types.ERROR},
@@ -58,7 +58,7 @@ public class EqualsNodeTest {
                 {Types.STRING, Types.INT, Types.ERROR},
                 {Types.STRING, Types.FLOAT, Types.ERROR},
                 {Types.STRING, Types.CHAR, Types.ERROR},
-                {Types.STRING, Types.STRING, Types.ERROR},
+                {Types.STRING, Types.STRING, Types.BOOL},
                 {Types.STRING, Types.BOOL, Types.ERROR},
                 {Types.STRING, Types.ARRAY, Types.ERROR},
                 {Types.STRING, Types.CHANNEL, Types.ERROR},
@@ -109,8 +109,6 @@ public class EqualsNodeTest {
                 {Types.FILE, Types.CHANNEL, Types.ERROR},
                 {Types.FILE, Types.RECORD, Types.ERROR},
                 {Types.FILE, Types.FILE, Types.BOOL},
-
-
         });
     }
 
@@ -120,6 +118,6 @@ public class EqualsNodeTest {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
         EqualsNode node = new EqualsNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType),0);
         node.accept(typeCheckVisitor);
-        Assert.assertEquals(expectedType, node.getType().getPrimitiveType());
+        Assert.assertEquals(leftType + ", " + rightType + " => " +expectedType + typeCheckVisitor.getAllErrors(), expectedType, node.getType().getPrimitiveType());
     }
 }

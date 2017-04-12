@@ -808,10 +808,21 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         if (leftType.equals(rightType)) {
-            return leftType;
+            return new Type(Types.BOOL);
+        } else {
+            if (leftType.getPrimitiveType() == Types.CHAR || rightType.getPrimitiveType() == Types.CHAR) {
+                if (leftType.getPrimitiveType() == Types.INT || rightType.getPrimitiveType() == Types.INT) {
+                    return new Type(Types.BOOL);
+                }
+            }
         }
 
-        return implicitIntToFloatCheck(leftType, rightType, nodeName, node.getLine());
+        Type intToFloatResult = implicitIntToFloatCheck(leftType, rightType, nodeName, node.getLine());
+        if (intToFloatResult.getPrimitiveType() == Types.INT || intToFloatResult.getPrimitiveType() == Types.FLOAT) {
+            return new Type(Types.BOOL);
+        } else {
+            return new Type(Types.ERROR, nodeName + " at line " + node.getLine() + " expected similar types, but got " + leftType + " and " + rightType);
+        }
     }
 
     private Type binaryIntFloat(InfixExpressionNode node, String nodeName) {
