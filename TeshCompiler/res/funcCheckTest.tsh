@@ -13,6 +13,12 @@ func myFun(int a, string b) void {
 	return
 }
 
+func myFun(int a, char b) int {
+	return a + 2
+}
+
+#myfun(2, "hej")
+
 func myFun2(int a, string b) int {
 	int i = 10
 

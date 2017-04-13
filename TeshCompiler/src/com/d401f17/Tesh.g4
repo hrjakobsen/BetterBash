@@ -25,7 +25,7 @@ simpleStatement
     | SIMPLE_IDENTIFIER CHANNEL_OP DOLLAR expression                                                                    #executeShellCommandIntoChannelStatement
     | DOLLAR expression                                                                                                 #executeShellCommandStatement
     | variableDeclaration (ASSIGN expression)?                                                                          #variableDeclarationStatement
-    //| channelDeclaration                                                                                                #channelDeclarationStatement
+    | channelDeclaration                                                                                                #channelDeclarationStatement
     | identifier op=(OP_INCREMENT | OP_DECREMENT | OP_SCALE | OP_DIVIDE | OP_REM) expression                            #compoundAssignment
     | arrayAccess op=(OP_INCREMENT | OP_DECREMENT | OP_SCALE | OP_DIVIDE | OP_REM) expression                           #compoundArrayStatement
     | flow                                                                                                              #flowStatement

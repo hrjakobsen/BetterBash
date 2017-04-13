@@ -36,7 +36,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         return sb.toString();
     }
 
-    @Override
+     @Override
     public Void visit(AdditionNode node) {
         node.getLeft().accept(this);
         node.getRight().accept(this);
@@ -301,6 +301,11 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     }
 
     @Override
+    public Void visit(FunctionIdentifierNode node) {
+        return null;
+    }
+
+    @Override
     public Void visit(FunctionNode node) {
         st.openScope();
 
@@ -337,8 +342,9 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         //If return is same type as function, create it in the symbol table
         if (funcType.equals(statementsType)) {
+            FunctionType function = new FunctionType(funcName, argumentTypes, funcType.getPrimitiveType());
             try {
-                st.insert(funcName, new Symbol(new FunctionType(funcType.getPrimitiveType(), argumentTypes), node));
+                st.insert(function.getSignature(), new Symbol(function, node));
                 node.setType(funcType);
             } catch (VariableAlreadyDeclaredException e) {
                 node.setType(new Type(Types.ERROR, e.getMessage()));
@@ -603,7 +609,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         */
         ArrayList<StatementNode> typedStatementNodes = new ArrayList<>();
         for (StatementNode statementNode : childNodes) {
-            if (statementNode.getType().getPrimitiveType() != Types.OK) {
+            if (statementNode.getType().getPrimitiveType() != Types.OK && !(statementNode instanceof VariableDeclarationNode)) {
                 typedStatementNodes.add(statementNode);
             }
         }
@@ -674,7 +680,8 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         try {
             st.insert(varName, new Symbol(varType, node));
-            node.setType(new Type(Types.OK));
+//            node.setType(new Type(Types.OK));
+            node.setType(varType);
         } catch (VariableAlreadyDeclaredException e) {
             node.setType(new Type(Types.ERROR, e.getMessage()));
         }

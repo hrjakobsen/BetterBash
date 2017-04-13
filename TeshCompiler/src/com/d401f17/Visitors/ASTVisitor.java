@@ -21,6 +21,7 @@ public interface ASTVisitor<T> {
     T visit(ForkNode node);
     T visit(ForNode node);
     T visit(FunctionCallNode node);
+    T visit(FunctionIdentifierNode node);
     T visit(FunctionNode node);
     T visit(GreaterThanNode node);
     T visit(GreaterThanOrEqualNode node);

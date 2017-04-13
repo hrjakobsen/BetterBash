@@ -11,6 +11,7 @@ FOR: 'for';
 VAR: 'var';
 RECORD: 'record';
 FUNCTION: 'func';
+CHANNEL: 'channel';
 FORK: 'fork';
 BREAK: 'break';
 CONTINUE: 'continue';

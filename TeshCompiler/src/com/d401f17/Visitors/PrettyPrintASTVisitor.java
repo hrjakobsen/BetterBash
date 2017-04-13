@@ -126,6 +126,11 @@ public class PrettyPrintASTVisitor extends BaseVisitor<Void> {
     }
 
     @Override
+    public Void visit(FunctionIdentifierNode node) {
+        return null;
+    }
+
+    @Override
     public Void visit(FunctionNode node) {
         List<AST> children = new ArrayList<>();
         children.addAll(node.getFormalArguments());
