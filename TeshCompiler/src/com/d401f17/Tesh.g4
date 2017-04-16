@@ -25,7 +25,6 @@ simpleStatement
     | SIMPLE_IDENTIFIER CHANNEL_OP DOLLAR expression                                                                    #executeShellCommandIntoChannelStatement
     | DOLLAR expression                                                                                                 #executeShellCommandStatement
     | variableDeclaration (ASSIGN expression)?                                                                          #variableDeclarationStatement
-    | channelDeclaration                                                                                                #channelDeclarationStatement
     | identifier op=(OP_INCREMENT | OP_DECREMENT | OP_SCALE | OP_DIVIDE | OP_REM) expression                            #compoundAssignment
     | arrayAccess op=(OP_INCREMENT | OP_DECREMENT | OP_SCALE | OP_DIVIDE | OP_REM) expression                           #compoundArrayStatement
     | flow                                                                                                              #flowStatement
@@ -113,10 +112,6 @@ functionDeclaration
     : FUNCTION name=SIMPLE_IDENTIFIER PARENTHESIS_START (type SIMPLE_IDENTIFIER (COMMA type SIMPLE_IDENTIFIER)*)? PARENTHESIS_END returntype=type block
     ;
 
-channelDeclaration
-    : CHANNEL SIMPLE_IDENTIFIER
-    ;
-
 arrayAccess
     : identifier (SQUARE_BRACKET_START expression SQUARE_BRACKET_END)+
     ;
@@ -128,5 +123,3 @@ constant
 type
     : (SIMPLE_TYPE | RECORD SIMPLE_IDENTIFIER)ARRAY_IDENTIFIER*
     ;
-
-

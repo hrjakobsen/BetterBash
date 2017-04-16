@@ -207,7 +207,7 @@ public class PrettyPrintASTVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ReadFromChannelNode node) {
-        makeNode("ch_read", node.getChannel(), node.getVariable());
+        makeNode("ch_read", node.getChannel(), node.getExpression());
         return null;
     }
 

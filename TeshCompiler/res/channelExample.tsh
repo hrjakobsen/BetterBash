@@ -1,5 +1,16 @@
 #!/bin/tesh
 
+#stdlib begin
+func wait() void {
+}
+func makeFile(string str) file {
+    file f
+    return f
+}
+channel stdio
+#stdlib end
+
+
 channel chn
 
 func chatHandler(int number) void {

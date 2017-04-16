@@ -341,7 +341,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         Type funcType = node.getTypeNode().getType();
 
         //If return is same type as function, create it in the symbol table
-        if (funcType.equals(statementsType)) {
+        if (funcType.equals(statementsType) || (funcType.getPrimitiveType() == Types.VOID && statementsType.getPrimitiveType() == Types.OK)) {
             FunctionType function = new FunctionType(funcName, argumentTypes, funcType.getPrimitiveType());
             try {
                 st.insert(function.getSignature(), new Symbol(function, node));
@@ -502,6 +502,27 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ReadFromChannelNode node) {
+        node.getChannel().accept(this);
+        node.getExpression().accept(this);
+
+        Type channelType = node.getChannel().getType();
+        Type expType = node.getExpression().getType();
+
+        if (invalidChildren(channelType, expType)) {
+            node.setType(new Type(Types.IGNORE));
+            return null;
+        }
+
+        if (channelType.getPrimitiveType() == Types.CHANNEL) {
+            if (expType.getPrimitiveType() == Types.STRING) {
+                node.setType(new Type(Types.OK));
+            } else {
+                node.setType(new Type(Types.ERROR, "Read from channel on line " + node.getLine() + " expected a string, got " + expType));
+            }
+        } else {
+            node.setType(new Type(Types.ERROR, "Read from channel on line " + node.getLine() + " expected a channel, got " + channelType));
+        }
+
         return null;
     }
 
@@ -577,7 +598,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             Type identifierType = st.lookup(node.getName()).getType();
             node.setType(identifierType);
         } catch (VariableNotDeclaredException e) {
-            node.setType(new Type(Types.ERROR, e.getMessage() + " on line " + node.getLine()));
+            node.setType(new Type(Types.ERROR, "Variable " + e.getMessage() + " on line " + node.getLine()));
         }
 
         return null;
@@ -778,7 +799,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         Type rightType = node.getRight().getType();
 
         if (leftType.getPrimitiveType() == Types.STRING && rightType.getPrimitiveType() == Types.STRING) {
-            node.setType(new Type(Types.STRING));
+            node.setType(new Type(Types.BOOL));
         } else {
             node.setType(new Type(Types.ERROR, "Pattern matching node on line " + node.getLine() +  " expected both children to be of type string, was " + leftType + " and " + rightType));
         }

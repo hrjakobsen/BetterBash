@@ -11,7 +11,6 @@ FOR: 'for';
 VAR: 'var';
 RECORD: 'record';
 FUNCTION: 'func';
-CHANNEL: 'channel';
 FORK: 'fork';
 BREAK: 'break';
 CONTINUE: 'continue';
@@ -47,7 +46,7 @@ OP_MOD: 'mod';
 ASSIGN: '=';
 PIPE: '|';
 COMMA: ',';
-SIMPLE_TYPE: ('string'|'int'|'float'|'char'|'bool'|'file'|'void'|'channel');
+SIMPLE_TYPE: ('int'|'float'|'string'|'char'|'bool'|'file'|'channel'|'void');
 CHAR_LITERAL: '\''.?'\'';
 BOOL_LITERAL: 'true' | 'false';
 
