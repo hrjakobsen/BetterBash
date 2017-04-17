@@ -529,11 +529,13 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     @Override
     public Void visit(RecordDeclarationNode node) {
         List<VariableDeclarationNode> varNodes = node.getVariables();
+        String[] varNames = new String[varNodes.size()];
         Type[] varTypes = new Type[varNodes.size()];
 
         st.openScope();
         for (int i = 0; i < varNodes.size(); i++) {
             varNodes.get(i).accept(this);
+            varNames[i] = varNodes.get(i).getName().getName();
             varTypes[i] = varNodes.get(i).getType();
         }
         st.closeScope();
@@ -544,7 +546,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         String recordName = node.getName();
-        Type record = new RecordType(recordName, varTypes);
+        Type record = new RecordType(recordName, varNames, varTypes);
         try {
             st.insert(recordName, new Symbol(record, node));
             node.setType(new Type(Types.OK));
@@ -715,7 +717,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         if (varType.getPrimitiveType() == Types.RECORD) {
             try {
-                st.lookup(varName);
+                st.lookup(((RecordType)varType).getName());
             } catch (VariableNotDeclaredException e) {
                 node.setType(new Type(Types.ERROR, "Record " + e.getMessage()));
                 return null;

@@ -25,7 +25,7 @@ public class TypeNode extends AST {
         } else if (primitiveType.equals("channel")) {
             this.setType(new Type(Types.CHANNEL));
         } else if (primitiveType.substring(0, Math.min(primitiveType.length(), 6)).equals("record")) {
-            this.setType(new RecordType(primitiveType.substring(6, primitiveType.length())));
+            this.setType(new RecordType(primitiveType.substring(6, primitiveType.length()), null, null));
         } else if (primitiveType.equals("file")) {
             this.setType(new Type(Types.FILE));
         } else if (primitiveType.equals("void")) {

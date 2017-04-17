@@ -1,6 +1,7 @@
 package com.d401f17.AST.TypeSystem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -8,14 +9,20 @@ import java.util.List;
  */
 public class RecordType extends Type {
     private String name;
-    private List<Type> args = new ArrayList<>();
+    private HashMap<String, Type> members = new HashMap<>();
 
-    public RecordType(String name, Type ... formalArguments) {
+    public String getName() {
+        return name;
+    }
+
+    public RecordType(String name, String[] memberNames, Type[] memberTypes) {
         super(Types.RECORD);
-
         this.name = name;
-        for (Type t : formalArguments) {
-            this.args.add(t);
+
+        if (memberNames != null && memberNames.length == memberTypes.length) {
+            for (int i = 0; i < memberNames.length; i++) {
+                members.put(memberNames[i], memberTypes[i]);
+            }
         }
     }
 
