@@ -8,18 +8,16 @@ import java.util.List;
  */
 public class FunctionType extends Type {
     private String signature;
+    private List<Type> args = new ArrayList<>();
 
-//    private List<Type> args = new ArrayList<>();
+    public FunctionType(String name, Type[] formalArguments, Types returnType) {
+        super(returnType);
 
-    public FunctionType(String name, Type[] formalArguments, Types primitiveType) {
-        super(primitiveType);
-
-        /*
         for (Type t : formalArguments) {
             this.args.add(t);
-        }*/
+        }
 
-        createSignature(name, formalArguments, primitiveType);
+        createSignature(name, formalArguments);
     }
 
     @Override
@@ -31,7 +29,7 @@ public class FunctionType extends Type {
         return signature;
     }
 
-    private void createSignature(String name, Type[] formalArguments, Types primitiveType) {
+    private void createSignature(String name, Type[] formalArguments) {
         int numArgs = formalArguments.length;
         StringBuilder sb = new StringBuilder();
         sb.append(name + "(");
@@ -41,7 +39,7 @@ public class FunctionType extends Type {
             }
             sb.append(formalArguments[numArgs - 1]);
         }
-        sb.append(")");//->" + primitiveType);
+        sb.append(")");
         signature = sb.toString();
     }
 }

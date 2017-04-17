@@ -528,6 +528,30 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(RecordDeclarationNode node) {
+        List<VariableDeclarationNode> varNodes = node.getVariables();
+        Type[] varTypes = new Type[varNodes.size()];
+
+        st.openScope();
+        for (int i = 0; i < varNodes.size(); i++) {
+            varNodes.get(i).accept(this);
+            varTypes[i] = varNodes.get(i).getType();
+        }
+        st.closeScope();
+
+        if (invalidChildren(varTypes)) {
+            node.setType(new Type(Types.IGNORE));
+            return null;
+        }
+
+        String recordName = node.getName();
+        Type record = new RecordType(recordName, varTypes);
+        try {
+            st.insert(recordName, new Symbol(record, node));
+            node.setType(new Type(Types.OK));
+        } catch (VariableAlreadyDeclaredException e) {
+            node.setType(new Type(Types.ERROR, e.getMessage()));
+        }
+
         return null;
     }
 
@@ -606,7 +630,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(StatementsNode node) {
-        ArrayList<StatementNode> childNodes = node.getChildren();
+        List<StatementNode> childNodes = node.getChildren();
         Type[] childTypes = new Type[childNodes.size()];
 
         for (int i = 0; i < childNodes.size(); i++) {
@@ -619,22 +643,12 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             return null;
         }
 
-        /*
-        //Collect all typed children
-        ArrayList<StatementNode> typedStatementNodes = new ArrayList<>();
-        for (StatementNode statementNode : childNodes) {
-            if (statementNode instanceof TypedStatementNode) {
-                typedStatementNodes.add(statementNode);
-            }
-        }
-        */
         ArrayList<StatementNode> typedStatementNodes = new ArrayList<>();
         for (StatementNode statementNode : childNodes) {
             if (statementNode.getType().getPrimitiveType() != Types.OK && !(statementNode instanceof VariableDeclarationNode)) {
                 typedStatementNodes.add(statementNode);
             }
         }
-
 
         //If we found any typed children, make sure they are all of same type
         if (typedStatementNodes.size() == 0) {
@@ -699,12 +713,20 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         String varName = node.getName().getName();
         Type varType = node.getTypeNode().getType();
 
+        if (varType.getPrimitiveType() == Types.RECORD) {
+            try {
+                st.lookup(varName);
+            } catch (VariableNotDeclaredException e) {
+                node.setType(new Type(Types.ERROR, "Record " + e.getMessage()));
+                return null;
+            }
+        }
+
         try {
             st.insert(varName, new Symbol(varType, node));
-//            node.setType(new Type(Types.OK));
             node.setType(varType);
         } catch (VariableAlreadyDeclaredException e) {
-            node.setType(new Type(Types.ERROR, e.getMessage()));
+            node.setType(new Type(Types.ERROR, "Variable " + e.getMessage()));
         }
 
         return null;

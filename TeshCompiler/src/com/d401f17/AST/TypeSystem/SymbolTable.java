@@ -29,7 +29,7 @@ public class SymbolTable implements SymTab {
 
     public void insert(String id, Symbol s) throws VariableAlreadyDeclaredException {
         if (tables.get(scopeLevel).containsKey(id)) {
-            throw new VariableAlreadyDeclaredException(id + " already declared in this scope");
+            throw new VariableAlreadyDeclaredException(id + " already declared in the current scope");
         } else {
             tables.get(scopeLevel).put(id, s);
         }

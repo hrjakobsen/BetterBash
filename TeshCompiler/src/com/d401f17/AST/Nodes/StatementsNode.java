@@ -10,7 +10,7 @@ import java.util.List;
  * Created by mathias on 3/15/17.
  */
 public class StatementsNode extends StatementNode {
-    private ArrayList<StatementNode> children;
+    private List<StatementNode> children;
 
     public StatementsNode(int lineNum, StatementNode ... children) {
         this.lineNum = lineNum;
@@ -21,11 +21,11 @@ public class StatementsNode extends StatementNode {
         this.children = new ArrayList<>(Arrays.asList(children));
     }
 
-    public ArrayList<StatementNode> getChildren() {
+    public List<StatementNode> getChildren() {
         return children;
     }
 
-    public void setChildren(ArrayList<StatementNode> children) {
+    public void setChildren(List<StatementNode> children) {
         this.children = children;
     }
 
