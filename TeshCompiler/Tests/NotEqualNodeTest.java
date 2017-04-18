@@ -78,7 +78,7 @@ public class NotEqualNodeTest {
                 {Types.ARRAY, Types.CHAR, Types.ERROR},
                 {Types.ARRAY, Types.STRING, Types.ERROR},
                 {Types.ARRAY, Types.BOOL, Types.ERROR},
-                {Types.ARRAY, Types.ARRAY, Types.ERROR},
+                {Types.ARRAY, Types.ARRAY, Types.BOOL},
                 {Types.ARRAY, Types.CHANNEL, Types.ERROR},
                 {Types.ARRAY, Types.RECORD, Types.ERROR},
                 {Types.ARRAY, Types.FILE, Types.ERROR},
@@ -108,7 +108,7 @@ public class NotEqualNodeTest {
                 {Types.FILE, Types.ARRAY, Types.ERROR},
                 {Types.FILE, Types.CHANNEL, Types.ERROR},
                 {Types.FILE, Types.RECORD, Types.ERROR},
-                {Types.FILE, Types.FILE, Types.ERROR},
+                {Types.FILE, Types.FILE, Types.BOOL},
         });
     }
 
