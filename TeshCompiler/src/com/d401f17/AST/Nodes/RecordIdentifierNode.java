@@ -9,21 +9,11 @@ import java.util.List;
  */
 public class RecordIdentifierNode extends IdentifierNode {
     IdentifierNode child;
-    SimpleIdentifierNode name;
 
-    public RecordIdentifierNode(IdentifierNode child, SimpleIdentifierNode name, int lineNum) {
+    public RecordIdentifierNode(IdentifierNode child, String name, int lineNum) {
         this.child = child;
         this.name = name;
         this.lineNum = lineNum;
-    }
-
-    public SimpleIdentifierNode getName() {
-
-        return name;
-    }
-
-    public void setName(SimpleIdentifierNode name) {
-        this.name = name;
     }
 
     public IdentifierNode getChild() {

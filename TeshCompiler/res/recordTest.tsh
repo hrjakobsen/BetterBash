@@ -1,13 +1,23 @@
+record page {
+	int number
+	string numberAsString
+}
+
 record book {
     int year
     string author
+    record page notAGirlsName
 }
 
 record book myBook
+record book book
 
-#Succesfull!
-myBook.yadda.yadda2.year = 1994
+book.notAGirlsName.numberAsString = 5
+
+myBook.notAGirlsName.number = 1994
+
+myBook.notAGirlsName.number = "1994"
 myBook.author = "Henrik"
+mathiasBook.author = "Jacob"
 
-#Not so succesfull!
 myBook.year = "Sidste år"

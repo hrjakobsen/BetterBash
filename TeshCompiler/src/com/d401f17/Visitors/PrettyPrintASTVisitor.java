@@ -77,7 +77,7 @@ public class PrettyPrintASTVisitor extends BaseVisitor<Void> {
     @Override
     public Void visit(RecordIdentifierNode node)
     {
-        makeNode(node.getName().getName(), node.getChild());
+        makeNode(node.getName(), node.getChild());
         return null;
     }
 

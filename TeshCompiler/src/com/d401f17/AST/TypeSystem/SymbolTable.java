@@ -10,7 +10,6 @@ public class SymbolTable implements SymTab {
     private ArrayList<HashMap<String, Symbol>> tables = new ArrayList<>();
     private int scopeLevel = 0;
 
-
     public SymbolTable() {
         tables.add(new HashMap<>());
     }
@@ -24,7 +23,7 @@ public class SymbolTable implements SymTab {
     }
 
     public void closeScope() {
-        scopeLevel--;
+        tables.set(scopeLevel--, null);
     }
 
     public void insert(String id, Symbol s) throws VariableAlreadyDeclaredException {

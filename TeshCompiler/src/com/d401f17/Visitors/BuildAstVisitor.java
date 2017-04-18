@@ -422,10 +422,10 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
             String[] subIdentifiers = ctx.IDENTIFIER().getText().split("\\.");
             int linenum = ctx.start.getLine();
             SimpleIdentifierNode terminal = new SimpleIdentifierNode(subIdentifiers[subIdentifiers.length - 1], linenum);
-            RecordIdentifierNode first = new RecordIdentifierNode(terminal, new SimpleIdentifierNode(subIdentifiers[0], linenum), linenum);
+            RecordIdentifierNode first = new RecordIdentifierNode(terminal, subIdentifiers[0], linenum);
             RecordIdentifierNode latest = first;
             for (int i = 1; i < subIdentifiers.length - 1; i++) {
-                latest.setChild(new RecordIdentifierNode(latest.getChild(), new SimpleIdentifierNode(subIdentifiers[i], linenum), linenum));
+                latest.setChild(new RecordIdentifierNode(latest.getChild(), subIdentifiers[i], linenum));
                 latest = (RecordIdentifierNode) latest.getChild();
             }
             return first;
