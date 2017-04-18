@@ -331,18 +331,15 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             return null;
         }
 
-        //Visit identifier node
-        node.getName().accept(this);
+        FunctionType func = new FunctionType(node.getName().getName(), argumentTypes, Types.VOID);
 
-        Type functionType = node.getName().getType();
-
-        //Check if identifier node is ok
-        if (invalidChildren(functionType)) {
-            node.setType(new Type(Types.IGNORE));
-            return null;
+        try {
+            Type functionType = st.lookup(func.getSignature()).getType();
+            node.setType(functionType);
+        } catch (VariableNotDeclaredException e) {
+            node.setType(new Type(Types.ERROR, "Function with signature " + e.getMessage()));
         }
 
-        node.setType(functionType);
         return null;
     }
 
@@ -823,18 +820,15 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             return null;
         }
 
-        //Visit identifier node
-        node.getName().accept(this);
+        FunctionType func = new FunctionType(node.getName().getName(), argumentTypes, Types.VOID);
 
-        Type procedureType = node.getName().getType();
-
-        //Check if identifier node is ok
-        if (invalidChildren(procedureType)) {
-            node.setType(new Type(Types.IGNORE));
-            return null;
+        try {
+            Type functionType = st.lookup(func.getSignature()).getType();
+            node.setType(new Type(Types.OK));
+        } catch (VariableNotDeclaredException e) {
+            node.setType(new Type(Types.ERROR, "Function with signature " + e.getMessage()));
         }
 
-        node.setType(new Type(Types.OK));
         return null;
     }
 

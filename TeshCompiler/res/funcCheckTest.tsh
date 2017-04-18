@@ -17,7 +17,7 @@ func myFun(int a, char b) int {
 	return a + 2
 }
 
-#myfun(2, "hej")
+int a = myFun(2, 'b')
 
 func myFun2(int a, string b) int {
 	int i = 10
