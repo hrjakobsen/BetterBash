@@ -70,7 +70,7 @@ public class GreaterThanNodeTest {
                 {Types.BOOL, Types.FLOAT, Types.ERROR},
                 {Types.BOOL, Types.STRING, Types.ERROR},
                 {Types.BOOL, Types.CHAR, Types.ERROR},
-                {Types.BOOL, Types.BOOL, Types.BOOL},
+                {Types.BOOL, Types.BOOL, Types.ERROR},
                 {Types.BOOL, Types.ARRAY, Types.ERROR},
                 {Types.BOOL, Types.CHANNEL, Types.ERROR},
                 {Types.BOOL, Types.RECORD, Types.ERROR},
