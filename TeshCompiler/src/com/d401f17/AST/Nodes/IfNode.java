@@ -5,7 +5,7 @@ import com.d401f17.Visitors.ASTVisitor;
 /**
  * Created by mathias on 3/16/17.
  */
-public class IfNode extends TypedStatementNode {
+public class IfNode extends StatementNode {
     private ArithmeticExpressionNode predicate;
     private StatementsNode trueBranch;
     private StatementsNode falseBranch;

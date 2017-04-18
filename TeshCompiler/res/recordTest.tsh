@@ -1,0 +1,15 @@
+record book {
+    int isbn
+    int year
+    string author
+}
+
+record book myBook
+
+#Succesfull!
+myBook.isbn = 40394
+myBook.year = 1994
+myBook.author = "Henrik"
+
+#Not so succesfull!
+myBook.year = "Sidste år"
