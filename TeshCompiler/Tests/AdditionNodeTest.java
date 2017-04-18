@@ -52,7 +52,7 @@ public class AdditionNodeTest {
                 {Types.CHAR, Types.FLOAT, Types.ERROR},
                 {Types.CHAR, Types.STRING, Types.STRING},
                 {Types.CHAR, Types.BOOL, Types.ERROR},
-                {Types.CHAR, Types.CHAR, Types.CHAR},
+                {Types.CHAR, Types.CHAR, Types.ERROR},
                 {Types.CHAR, Types.ARRAY, Types.ERROR},
                 {Types.CHAR, Types.CHANNEL, Types.ERROR},
                 {Types.CHAR, Types.RECORD, Types.ERROR},
