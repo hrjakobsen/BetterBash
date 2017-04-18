@@ -33,7 +33,7 @@ public class WhileNodeWithStatementsTest {
                 {Types.CHANNEL, Types.CHANNEL},
                 {Types.RECORD, Types.RECORD},
                 {Types.FILE, Types.FILE},
-                {Types.ERROR, Types.ERROR},
+                {Types.ERROR, Types.IGNORE},
                 {Types.IGNORE, Types.IGNORE}
         });
     }
@@ -44,7 +44,6 @@ public class WhileNodeWithStatementsTest {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
         WhileNode node = new WhileNode(new ConstantNode(1, Types.BOOL), new StatementsNode(new ReturnNode(new ConstantNode( 0, type))));
         node.accept(typeCheckVisitor);
-
 
         //String errMessage = type + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
         Assert.assertEquals(expectedType, node.getType().getPrimitiveType());

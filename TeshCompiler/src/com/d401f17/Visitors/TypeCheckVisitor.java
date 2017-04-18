@@ -125,6 +125,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
             if (indexType.getPrimitiveType() != Types.INT) {
                 node.setType(new Type(Types.ERROR, "Index " + count + " on line " + node.getLine() +  " was expected to have type int, was " + indexType));
+                return null;
             }
             count++;
         }
@@ -624,7 +625,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             Type identifierType = st.lookup(node.getName()).getType();
             node.setType(identifierType);
         } catch (VariableNotDeclaredException e) {
-            node.setType(new Type(Types.ERROR, "Variable " + e.getMessage() + " on line " + node.getLine()));
+            node.setType(new Type(Types.ERROR, "Variable " + e.getMessage() + ", when used on line " + node.getLine()));
         }
 
         return null;
@@ -877,18 +878,22 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         if (leftType.equals(rightType)) {
-            return new Type(Types.BOOL);
+            if (leftType.getPrimitiveType() == Types.ARRAY || leftType.getPrimitiveType() == Types.FILE) {
+                return new Type(Types.ERROR, nodeName + " at line " + node.getLine() + " expected comparable types, but got " + leftType + " and " + rightType);
+            } else {
+                return new Type(Types.BOOL);
+            }
         } else {
             if (leftType.getPrimitiveType() == Types.CHAR || rightType.getPrimitiveType() == Types.CHAR) {
                 if (leftType.getPrimitiveType() == Types.INT || rightType.getPrimitiveType() == Types.INT) {
-                    return new Type(Types.BOOL);
+                    return new Type(Types.BOOL); //Char == Int, Int == Char
                 }
             }
         }
 
         Type intToFloatResult = implicitIntToFloatCheck(leftType, rightType, nodeName, node.getLine());
         if (intToFloatResult.getPrimitiveType() == Types.INT || intToFloatResult.getPrimitiveType() == Types.FLOAT) {
-            return new Type(Types.BOOL); //Int == Float
+            return new Type(Types.BOOL); //Int == Int, Int == Float
         } else {
             return new Type(Types.ERROR, nodeName + " at line " + node.getLine() + " expected similar types, but got " + leftType + " and " + rightType);
         }

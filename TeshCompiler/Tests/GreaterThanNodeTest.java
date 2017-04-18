@@ -60,7 +60,7 @@ public class GreaterThanNodeTest {
                 {Types.STRING, Types.INT, Types.ERROR},
                 {Types.STRING, Types.FLOAT, Types.ERROR},
                 {Types.STRING, Types.CHAR, Types.ERROR},
-                {Types.STRING, Types.STRING, Types.ERROR},
+                {Types.STRING, Types.STRING, Types.BOOL},
                 {Types.STRING, Types.BOOL, Types.ERROR},
                 {Types.STRING, Types.ARRAY, Types.ERROR},
                 {Types.STRING, Types.CHANNEL, Types.ERROR},
@@ -70,7 +70,7 @@ public class GreaterThanNodeTest {
                 {Types.BOOL, Types.FLOAT, Types.ERROR},
                 {Types.BOOL, Types.STRING, Types.ERROR},
                 {Types.BOOL, Types.CHAR, Types.ERROR},
-                {Types.BOOL, Types.BOOL, Types.ERROR},
+                {Types.BOOL, Types.BOOL, Types.BOOL},
                 {Types.BOOL, Types.ARRAY, Types.ERROR},
                 {Types.BOOL, Types.CHANNEL, Types.ERROR},
                 {Types.BOOL, Types.RECORD, Types.ERROR},
@@ -90,7 +90,7 @@ public class GreaterThanNodeTest {
                 {Types.CHANNEL, Types.STRING, Types.ERROR},
                 {Types.CHANNEL, Types.BOOL, Types.ERROR},
                 {Types.CHANNEL, Types.ARRAY, Types.ERROR},
-                {Types.CHANNEL, Types.CHANNEL, Types.ERROR},
+                {Types.CHANNEL, Types.CHANNEL, Types.BOOL},
                 {Types.CHANNEL, Types.RECORD, Types.ERROR},
                 {Types.CHANNEL, Types.FILE, Types.ERROR},
                 {Types.RECORD, Types.INT, Types.ERROR},
@@ -100,7 +100,7 @@ public class GreaterThanNodeTest {
                 {Types.RECORD, Types.BOOL, Types.ERROR},
                 {Types.RECORD, Types.ARRAY, Types.ERROR},
                 {Types.RECORD, Types.CHANNEL, Types.ERROR},
-                {Types.RECORD, Types.RECORD, Types.ERROR},
+                {Types.RECORD, Types.RECORD, Types.BOOL},
                 {Types.RECORD, Types.FILE, Types.ERROR},
                 {Types.FILE, Types.INT, Types.ERROR},
                 {Types.FILE, Types.FLOAT, Types.ERROR},
@@ -111,7 +111,6 @@ public class GreaterThanNodeTest {
                 {Types.FILE, Types.CHANNEL, Types.ERROR},
                 {Types.FILE, Types.RECORD, Types.ERROR},
                 {Types.FILE, Types.FILE, Types.ERROR},
-
         });
     }
 

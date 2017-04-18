@@ -43,7 +43,14 @@ public class ArrayAccessNodeTest {
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void ArrayAccessNode_IndiceTest() {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
-        ArrayAccessNode node = new ArrayAccessNode(new SimpleIdentifierNode("node", 0){{setType(new Type(Types.OK));}}, new ArrayList<ArithmeticExpressionNode>(){{add(new ConstantNode(0, type));}});
+        ArrayAccessNode node = new ArrayAccessNode(
+                new SimpleIdentifierNode(
+                        "node",
+                        0
+                ) {{setType(new Type(Types.OK));}},
+                new ArrayList<ArithmeticExpressionNode>(){{add(new ConstantNode(0, type));}}
+        );
+
         node.accept(typeCheckVisitor);
 
         String errMessage = type + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
