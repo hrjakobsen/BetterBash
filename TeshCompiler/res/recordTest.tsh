@@ -1,7 +1,7 @@
-#record book {
-#    int year
-#    string author
-#}
+record book {
+    int year
+    string author
+}
 
 record book myBook
 

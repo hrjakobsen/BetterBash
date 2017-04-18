@@ -170,10 +170,20 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         return null;
     }
 
+    /*
     @Override
-    public Void visit(CompoundIdentifierNode node) {
+    public Void visit(RecordIdentifierNode node) {
+        List<SimpleIdentifierNode> identifiers = node.getIdentifiers();
+        Type[] identifierTypes = new Type[identifiers.size()];
+
+        identifiers.get(0).accept(this);
+        identifierTypes[0] = identifiers.get(0).getType();
+
+        identifiers.get(1).setType();
+
         return null;
     }
+    */
 
     @Override
     public Void visit(ConstantNode node) { return null; }
@@ -718,7 +728,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         if (varType.getPrimitiveType() == Types.RECORD) {
             try {
-                st.lookup(((RecordType)varType).getName());
+                varType = st.lookup(((RecordType)varType).getName()).getType();
             } catch (VariableNotDeclaredException e) {
                 node.setType(new Type(Types.ERROR, "Record " + e.getMessage()));
                 return null;

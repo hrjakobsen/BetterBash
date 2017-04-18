@@ -419,7 +419,7 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
             );
         } else {
             List<SimpleIdentifierNode> identifiers = new ArrayList<>();
-            for (String s : ctx.IDENTIFIER().getText().split(".")) {
+            for (String s : ctx.IDENTIFIER().getText().split("\\.")) {
                 identifiers.add(new SimpleIdentifierNode(
                         s,
                         ctx.start.getLine()
