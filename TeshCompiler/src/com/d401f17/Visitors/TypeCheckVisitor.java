@@ -221,7 +221,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(EqualNode node) {
-        node.setType(binaryComparison(node, "Equal node"));
+        node.setType(binaryEquality(node, "Equal node"));
         return null;
     }
 
@@ -491,7 +491,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(NotEqualNode node) {
-        node.setType(binaryComparison(node, "Not equal node"));
+        node.setType(binaryEquality(node, "Not equal node"));
         return null;
     }
 
@@ -866,6 +866,35 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         return new Type(Types.ERROR, "Assignment on line " + lineNum + " expected expression to be of type " + var + ", was " + exp);
     }
 
+    private Type binaryEquality(InfixExpressionNode node, String nodeName) {
+        node.getLeft().accept(this);
+        node.getRight().accept(this);
+
+        Type leftType = node.getLeft().getType();
+        Type rightType = node.getRight().getType();
+
+        if (invalidChildren(leftType, rightType)) {
+            return new Type(Types.IGNORE);
+        }
+
+        if (leftType.equals(rightType)) {
+            return new Type(Types.BOOL);
+        } else {
+            if (leftType.getPrimitiveType() == Types.CHAR || rightType.getPrimitiveType() == Types.CHAR) {
+                if (leftType.getPrimitiveType() == Types.INT || rightType.getPrimitiveType() == Types.INT) {
+                    return new Type(Types.BOOL); //Char == Int, Int == Char
+                }
+            }
+        }
+
+        Type intToFloatResult = implicitIntToFloatCheck(leftType, rightType, nodeName, node.getLine());
+        if (intToFloatResult.getPrimitiveType() == Types.INT || intToFloatResult.getPrimitiveType() == Types.FLOAT) {
+            return new Type(Types.BOOL); //Int == Int, Int == Float
+        } else {
+            return new Type(Types.ERROR, nodeName + " at line " + node.getLine() + " expected similar types, but got " + leftType + " and " + rightType);
+        }
+    }
+
     private Type binaryComparison(InfixExpressionNode node, String nodeName) {
         node.getLeft().accept(this);
         node.getRight().accept(this);
@@ -878,7 +907,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         if (leftType.equals(rightType)) {
-            if (leftType.getPrimitiveType() == Types.ARRAY || leftType.getPrimitiveType() == Types.FILE) {
+            if (leftType.getPrimitiveType() == Types.STRING || leftType.getPrimitiveType() == Types.BOOL || leftType.getPrimitiveType() == Types.ARRAY || leftType.getPrimitiveType() == Types.RECORD || leftType.getPrimitiveType() == Types.FILE || leftType.getPrimitiveType() == Types.CHANNEL) {
                 return new Type(Types.ERROR, nodeName + " at line " + node.getLine() + " expected comparable types, but got " + leftType + " and " + rightType);
             } else {
                 return new Type(Types.BOOL);
