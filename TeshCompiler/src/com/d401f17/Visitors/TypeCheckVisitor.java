@@ -170,10 +170,13 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         return null;
     }
 
+
     @Override
     public Void visit(RecordIdentifierNode node) {
+
         return null;
     }
+
 
     @Override
     public Void visit(ConstantNode node) { return null; }
@@ -718,7 +721,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         if (varType.getPrimitiveType() == Types.RECORD) {
             try {
-                st.lookup(((RecordType)varType).getName());
+                varType = st.lookup(((RecordType)varType).getName()).getType();
             } catch (VariableNotDeclaredException e) {
                 node.setType(new Type(Types.ERROR, "Record " + e.getMessage()));
                 return null;
