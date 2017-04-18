@@ -281,7 +281,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             return null;
         }
 
-        node.setType(statementType);
+        node.setType(new Type(Types.OK));
 
         return null;
     }
@@ -846,10 +846,14 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         if (idType.getPrimitiveType() == Types.CHANNEL) {
-            node.setType(implicitIntFloatStringToString(expType, "Expression node in write to channel node", node.getLine()));
-        } else {
-            node.setType(new Type(Types.ERROR, "Identifier node in write to channel node on line " + node.getLine() +  " expected to be of type channel, was " + idType));
+            expType = implicitIntFloatStringToString(expType, "Expression node in write to channel node", node.getLine());
+            if (expType.getPrimitiveType() == Types.STRING) {
+                node.setType(new Type(Types.OK));
+                return null;
+            }
         }
+
+        node.setType(new Type(Types.ERROR, "Identifier node in write to channel node on line " + node.getLine() +  " expected to be of type channel, was " + idType));
 
         return null;
     }
