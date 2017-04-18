@@ -75,16 +75,9 @@ public class PrettyPrintASTVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(CompoundIdentifierNode node)
+    public Void visit(RecordIdentifierNode node)
     {
-        StringBuilder label = new StringBuilder();
-        for (IdentifierNode n : node.getIdentifiers()) {
-            label.append(n.toString()).append(".");
-        }
-        label.deleteCharAt(sb.length() - 1);
-        String id = Integer.toString(runningID++);
-
-        sb.append(id).append("\n").append(id).append("[label=\"").append(label).append("\"]\n");
+        makeNode(node.getName().getName(), node.getChild());
         return null;
     }
 

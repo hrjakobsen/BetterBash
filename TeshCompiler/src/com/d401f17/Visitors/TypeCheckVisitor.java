@@ -171,7 +171,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(CompoundIdentifierNode node) {
+    public Void visit(RecordIdentifierNode node) {
         return null;
     }
 

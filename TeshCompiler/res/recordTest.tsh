@@ -6,7 +6,7 @@
 record book myBook
 
 #Succesfull!
-myBook.year = 1994
+myBook.yadda.yadda2.year = 1994
 myBook.author = "Henrik"
 
 #Not so succesfull!
