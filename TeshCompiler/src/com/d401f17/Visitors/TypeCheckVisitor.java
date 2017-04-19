@@ -3,6 +3,7 @@ package com.d401f17.Visitors;
 import com.d401f17.AST.Nodes.*;
 import com.d401f17.AST.TypeSystem.*;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -142,6 +143,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ArrayBuilderNode node) {
+        //node.get
         return null;
     }
 
@@ -223,6 +225,31 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         return null;
     }
 
+    @Override
+    public Void visit(ArrayConstantNode node) {
+        ArrayList<ArithmeticExpressionNode> expressionNodes = node.getExpressions();
+        Type[] expressionTypes = new Type[expressionNodes.size()];
+
+        for (int i = 0; i < expressionNodes.size(); i++) {
+            expressionNodes.get(i).accept(this);
+            expressionTypes[i] = expressionNodes.get(i).getType();
+        }
+
+        //Check if expressions were ok
+        if (invalidChildren(expressionTypes)) {
+            node.setType(new Type(Types.IGNORE));
+            return null;
+        }
+
+        boolean allSameType = true;
+        if (allSameType) {
+            node.setType(expressionTypes[0]);
+        } else {
+            node.setType(new Type(Types.ERROR, "Array c"));
+        }
+
+        return null;
+    }
 
     @Override
     public Void visit(ConstantNode node) { return null; }
