@@ -94,6 +94,7 @@ finalValue
     | functionCall                                                                                                      #functionCallExpr
     | arrayAccess                                                                                                       #arrayAccessExpr
     | PARENTHESIS_START arithmeticExpression PARENTHESIS_END                                                            #parenthesisExpr
+    | SQUARE_BRACKET_START (arithmeticExpression (COMMA arithmeticExpression)*)? SQUARE_BRACKET_END                     #arrayConstant
     ;
 
 identifier
@@ -121,5 +122,5 @@ constant
     ;
 
 type
-    : (SIMPLE_TYPE | RECORD SIMPLE_IDENTIFIER)ARRAY_IDENTIFIER*
+    : (SIMPLE_TYPE | RECORD SIMPLE_IDENTIFIER)(SQUARE_BRACKET_START SQUARE_BRACKET_END)*
     ;

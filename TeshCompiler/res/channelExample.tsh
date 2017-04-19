@@ -12,7 +12,7 @@ channel stdio
 
 channel chn
 
-func chatHandler(int number) void {
+func chatHandler() void {
     fork chn << $ "./chat.sh"
 
     int p1Count = 0

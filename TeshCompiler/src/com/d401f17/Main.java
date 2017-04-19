@@ -27,7 +27,7 @@ public class Main {
 
         TeshParser.CompileUnitContext unit = parser.compileUnit();
         AST ast = new BuildAstVisitor().visitCompileUnit(unit);
-
+        
         SymTab symbolTable = new SymbolTable();
         SymTab recordTable = new SymbolTable();
         TypeCheckVisitor typeCheck = new TypeCheckVisitor(symbolTable, recordTable);
@@ -36,8 +36,7 @@ public class Main {
         for (String err : typeCheck.getErrors()) {
             System.out.println(err);
         }
-
-/*
+        /*
         PrettyPrintASTVisitor p = new PrettyPrintASTVisitor();
         ast.accept(p);
         PrintWriter writer =
@@ -46,6 +45,7 @@ public class Main {
         writer.print("graph {\n" + p.toString() + "\n}\n");
         writer.flush();
         writer.close();
-*/
+        */
+
     }
 }
