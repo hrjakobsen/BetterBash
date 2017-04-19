@@ -12,6 +12,7 @@ public interface ASTVisitor<T> {
     T visit(ArrayAccessNode node);
     T visit(ArrayBuilderNode node);
     T visit(ArrayElementAssignmentNode node);
+    T visit(ArrayConstantNode node);
     T visit(AssignmentNode node);
     T visit(AST node);
     T visit(RecordIdentifierNode node);
