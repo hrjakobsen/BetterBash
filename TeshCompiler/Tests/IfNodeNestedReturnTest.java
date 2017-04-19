@@ -1,4 +1,6 @@
 import com.d401f17.AST.Nodes.*;
+import com.d401f17.AST.TypeSystem.SymTab;
+import com.d401f17.AST.TypeSystem.SymbolTable;
 import com.d401f17.AST.TypeSystem.Types;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
@@ -56,7 +58,9 @@ public class IfNodeNestedReturnTest {
         9   }
          */
 
-        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
+        SymTab symbolTable = new SymbolTable();
+        SymTab recordTable = new SymbolTable();
+        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
         StatementNode node = new StatementsNode(
                 1,
                 new IfNode(

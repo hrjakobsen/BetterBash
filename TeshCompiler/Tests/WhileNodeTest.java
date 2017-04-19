@@ -1,6 +1,8 @@
 import com.d401f17.AST.Nodes.ConstantNode;
 import com.d401f17.AST.Nodes.WhileNode;
 import com.d401f17.AST.Nodes.StatementsNode;
+import com.d401f17.AST.TypeSystem.SymTab;
+import com.d401f17.AST.TypeSystem.SymbolTable;
 import com.d401f17.AST.TypeSystem.Types;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
@@ -41,7 +43,9 @@ public class WhileNodeTest {
     @Test
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void WhileNode_PredicateMustBeBool() {
-        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
+        SymTab symbolTable = new SymbolTable();
+        SymTab recordTable = new SymbolTable();
+        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
         WhileNode node = new WhileNode(new ConstantNode(1, predicateType), new StatementsNode(1),0);
         node.accept(typeCheckVisitor);
 
