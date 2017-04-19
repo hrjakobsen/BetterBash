@@ -10,9 +10,14 @@ import java.util.List;
  * Created by hense on 4/5/17.
  */
 public class TypeCheckVisitor extends BaseVisitor<Void> {
-    private SymTab st = new SymbolTable();
-    private SymTab recordTable = new SymbolTable();
     private ArrayList<Type> errorNodes = new ArrayList<>();
+    private SymTab st;
+    private SymTab rt;
+
+    public TypeCheckVisitor(SymTab symbolTable, SymTab recordTable) {
+        this.st = symbolTable;
+        this.rt = recordTable;
+    }
 
     public List<Type> getErrorNodes() {
         return errorNodes;
@@ -191,15 +196,6 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         while (traveller != null) {
             if (traveller instanceof SimpleIdentifierNode) {
                 try {
-                    Type terminalType = ((RecordType)previous.getType()).getMemberType(traveller.getName());
-
-                    node.setType(terminalType);
-                } catch (MemberNotFoundException e) {
-                    node.setType(new Type(Types.ERROR, e.getMessage()));
-                }
-                return null;
-            } else {
-                try {
                     recordType = (RecordType) st.lookup(previous.getName()).getType();
                     traveller.setType(recordType.getMemberType(traveller.getName()));
                 } catch (VariableNotDeclaredException e) {
@@ -212,8 +208,16 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
                 previous = traveller;
                 traveller = ((RecordIdentifierNode)traveller).getChild();
-            }
+            } else {
+                try {
+                    Type terminalType = ((RecordType)previous.getType()).getMemberType(traveller.getName());
 
+                    node.setType(terminalType);
+                } catch (MemberNotFoundException e) {
+                    node.setType(new Type(Types.ERROR, e.getMessage()));
+                }
+                return null;
+            }
         }
 
         return null;
@@ -591,7 +595,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         String recordName = node.getName();
         Type record = new RecordType(recordName, varNames, varTypes);
         try {
-            recordTable.insert(recordName, new Symbol(record, node));
+            rt.insert(recordName, new Symbol(record, node));
             node.setType(new Type(Types.OK));
         } catch (VariableAlreadyDeclaredException e) {
             node.setType(new Type(Types.ERROR, e.getMessage()));
@@ -760,7 +764,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         if (varType.getPrimitiveType() == Types.RECORD) {
             try {
-                varType = recordTable.lookup(((RecordType)varType).getName()).getType();
+                varType = rt.lookup(((RecordType)varType).getName()).getType();
             } catch (VariableNotDeclaredException e) {
                 node.setType(new Type(Types.ERROR, "Record " + e.getMessage()));
                 return null;

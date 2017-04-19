@@ -10,7 +10,6 @@ func makeFile(string str) file {
 channel stdio
 #stdlib end
 
-
 channel chn
 
 func chatHandler() void {

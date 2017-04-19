@@ -1,5 +1,7 @@
 import com.d401f17.AST.Nodes.ConstantNode;
 import com.d401f17.AST.Nodes.GreaterThanOrEqualNode;
+import com.d401f17.AST.TypeSystem.SymTab;
+import com.d401f17.AST.TypeSystem.SymbolTable;
 import com.d401f17.AST.TypeSystem.Types;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
@@ -117,7 +119,9 @@ public class GreaterThanOrEqualNodeTest {
     @Test
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void GreaterThanOrEqualNode_typeCheckWithParameters_expected() {
-        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
+        SymTab symbolTable = new SymbolTable();
+        SymTab recordTable = new SymbolTable();
+        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
         GreaterThanOrEqualNode node = new GreaterThanOrEqualNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType),0);
         node.accept(typeCheckVisitor);
 

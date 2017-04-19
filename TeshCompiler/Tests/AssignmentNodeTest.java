@@ -1,4 +1,6 @@
 import com.d401f17.AST.Nodes.*;
+import com.d401f17.AST.TypeSystem.SymTab;
+import com.d401f17.AST.TypeSystem.SymbolTable;
 import com.d401f17.AST.TypeSystem.Type;
 import com.d401f17.AST.TypeSystem.Types;
 import com.d401f17.Visitors.TypeCheckVisitor;
@@ -108,7 +110,9 @@ public class AssignmentNodeTest {
     @Test
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void AssignmentNode_typeCheckWithParameters_expected() {
-        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
+        SymTab symbolTable = new SymbolTable();
+        SymTab recordTable = new SymbolTable();
+        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
 
         SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
         idNode.setType(new Type(leftType));

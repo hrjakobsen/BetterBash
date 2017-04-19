@@ -1,5 +1,7 @@
 import com.d401f17.AST.Nodes.AdditionNode;
 import com.d401f17.AST.Nodes.ConstantNode;
+import com.d401f17.AST.TypeSystem.SymTab;
+import com.d401f17.AST.TypeSystem.SymbolTable;
 import com.d401f17.AST.TypeSystem.Type;
 import com.d401f17.AST.TypeSystem.Types;
 import com.d401f17.Visitors.TypeCheckVisitor;
@@ -117,7 +119,9 @@ public class AdditionNodeTest {
     @Test
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void additionNode_typeCheckWithParameters_expected() {
-        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
+        SymTab symbolTable = new SymbolTable();
+        SymTab recordTable = new SymbolTable();
+        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
         AdditionNode node = new AdditionNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType));
         node.accept(typeCheckVisitor);
 

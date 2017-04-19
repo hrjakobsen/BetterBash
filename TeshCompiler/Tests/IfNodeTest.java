@@ -1,6 +1,8 @@
 import com.d401f17.AST.Nodes.ConstantNode;
 import com.d401f17.AST.Nodes.IfNode;
 import com.d401f17.AST.Nodes.StatementsNode;
+import com.d401f17.AST.TypeSystem.SymTab;
+import com.d401f17.AST.TypeSystem.SymbolTable;
 import com.d401f17.AST.TypeSystem.Types;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
@@ -42,7 +44,9 @@ public class IfNodeTest {
     @Test
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void IfNode_typeCheckWithParameters_expected() {
-        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
+        SymTab symbolTable = new SymbolTable();
+        SymTab recordTable = new SymbolTable();
+        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
         IfNode node = new IfNode(new ConstantNode(1, predicateType), new StatementsNode(1), new StatementsNode(1),0);
         node.accept(typeCheckVisitor);
 
