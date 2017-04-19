@@ -27,13 +27,12 @@ public class Main {
         AST ast = new BuildAstVisitor().visitCompileUnit(unit);
 
         TypeCheckVisitor typeCheck = new TypeCheckVisitor();
-        ast.accept(typeCheck);
+        /*ast.accept(typeCheck);
 
         for (String err : typeCheck.getErrors()) {
             System.out.println(err);
-        }
+        }*/
 
-/*
         PrettyPrintASTVisitor p = new PrettyPrintASTVisitor();
         ast.accept(p);
         PrintWriter writer =
@@ -42,6 +41,6 @@ public class Main {
         writer.print("graph {\n" + p.toString() + "\n}\n");
         writer.flush();
         writer.close();
-*/
+
     }
 }

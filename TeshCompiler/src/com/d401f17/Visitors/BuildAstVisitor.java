@@ -5,6 +5,7 @@ import com.d401f17.TeshBaseVisitor;
 import com.d401f17.TeshParser;
 import com.d401f17.AST.TypeSystem.Types;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.Tree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -430,6 +431,15 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
             }
             return first;
         }
+    }
+
+    @Override
+    public AST visitArrayConstant(TeshParser.ArrayConstantContext ctx) {
+        List<ArithmeticExpressionNode> values = new ArrayList<>();
+        for (ParseTree child : ctx.arithmeticExpression()) {
+            values.add((ArithmeticExpressionNode)visit(child));
+        }
+        return new ConstantNode(values, Types.ARRAY, ctx.start.getLine());
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.d401f17.Visitors;
 
 import com.d401f17.AST.Nodes.*;
+import com.d401f17.AST.TypeSystem.Types;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,6 +84,10 @@ public class PrettyPrintASTVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ConstantNode node) {
+        if (node.getType().getPrimitiveType() == Types.ARRAY) {
+            makeNode("Array", ((List<ArithmeticExpressionNode>)node.getValue()).toArray(new ArithmeticExpressionNode[0]));
+            return null;
+        }
         String id = Integer.toString(runningID++);
         sb.append(id).append("\n").append(id).append("[label=\"").append(node.getType().toString()).append("\\n").append(node.getValue().toString().replace("\\", "\\\\")).append("\"]\n");
         return null;
@@ -242,7 +247,11 @@ public class PrettyPrintASTVisitor extends BaseVisitor<Void> {
     @Override
     public Void visit(StatementsNode node) {
         String id = Integer.toString(runningID++);
-
+        if (node.getChildren().size() == 0) {
+            sb.append(id).append("\n");
+            sb.append(id).append("[label=\"...\"]\n");
+            return null;
+        }
         for (AST child : node.getChildren()) {
             sb.append(id).append(" -- ");
             child.accept(this);
