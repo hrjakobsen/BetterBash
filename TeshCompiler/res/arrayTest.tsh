@@ -1,1 +1,3 @@
-int[] anArrayOfIntegers = [1, 2, 3, 4, "hej!"]
+int a = 10
+int h = 2
+float[] anArrayOfIntegers = [1, 2, 3]

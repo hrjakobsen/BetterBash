@@ -27,6 +27,6 @@ public class ArrayConstantNode extends ConstantNode {
 
     @Override
     public void accept(ASTVisitor visitor) {
-        super.accept(visitor);
+        visitor.visit(this);
     }
 }
