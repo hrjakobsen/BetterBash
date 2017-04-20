@@ -663,7 +663,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         if (commandType.getPrimitiveType() == Types.STRING) {
-            node.setType(commandType); //String
+            node.setType(new Type(Types.STRING)); //String
         } else {
             node.setType(new Type(Types.ERROR, "Shell node on line " + node.getLine() +  " expected to be of type string, was " + commandType));
         }
