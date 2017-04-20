@@ -224,6 +224,36 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     public Void visit(LiteralNode node) { return null; }
 
     @Override
+    public Void visit(IntLiteralNode node) {
+        return null;
+    }
+
+    @Override
+    public Void visit(BoolLiteralNode node) {
+        return null;
+    }
+
+    @Override
+    public Void visit(FloatLiteralNode node) {
+        return null;
+    }
+
+    @Override
+    public Void visit(StringLiteralNode node) {
+        return null;
+    }
+
+    @Override
+    public Void visit(CharLiteralNode node) {
+        return null;
+    }
+
+    @Override
+    public Void visit(RecordLiteralNode node) {
+        return null;
+    }
+
+    @Override
     public Void visit(DivisionNode node) {
         node.getLeft().accept(this);
         node.getRight().accept(this);

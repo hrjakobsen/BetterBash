@@ -89,6 +89,43 @@ public class PrettyPrintASTVisitor extends BaseVisitor<Void> {
     }
 
     @Override
+    public Void visit(IntLiteralNode node) {
+        String id = Integer.toString(runningID++);
+        sb.append(id).append("\n").append(id).append("[label=\"IIINT").append(node.getType().toString()).append("\\n").append(node.getValue().toString().replace("\\", "\\\\")).append("\"]\n");
+        return null;
+    }
+
+    @Override
+    public Void visit(BoolLiteralNode node) {
+        visit((LiteralNode)node);
+        return null;
+    }
+
+    @Override
+    public Void visit(FloatLiteralNode node) {
+        visit((LiteralNode)node);
+        return null;
+    }
+
+    @Override
+    public Void visit(StringLiteralNode node) {
+        visit((LiteralNode)node);
+        return null;
+    }
+
+    @Override
+    public Void visit(CharLiteralNode node) {
+        visit((LiteralNode)node);
+        return null;
+    }
+
+    @Override
+    public Void visit(RecordLiteralNode node) {
+        visit((LiteralNode)node);
+        return null;
+    }
+
+    @Override
     public Void visit(ArrayLiteralNode node) {
         makeNode("Array", (node.getValue()).toArray(new ArithmeticExpressionNode[0]));
         return null;

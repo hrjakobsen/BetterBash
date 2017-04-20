@@ -4,21 +4,21 @@ import com.d401f17.AST.TypeSystem.Types;
 import com.d401f17.Visitors.ASTVisitor;
 
 /**
- * Created by mathias on 4/19/17.
+ * Created by mathias on 4/20/17.
  */
-public class StringLiteralNode extends LiteralNode {
-    public StringLiteralNode(String value) {
+public class CharLiteralNode extends LiteralNode {
+    public CharLiteralNode(Character value) {
         super(value, Types.STRING);
     }
-    public StringLiteralNode(String value, int lineNumber) {
+    public CharLiteralNode(Character value, int lineNumber) {
         super(value, Types.STRING, lineNumber);
     }
 
-    public String getValue() {
-        return (String)super.getValue();
+    public Character getValue() {
+        return (Character) super.getValue();
     }
 
-    public void setValue(String value) {
+    public void setValue(Character value) {
         super.setValue(value);
     }
 
