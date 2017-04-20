@@ -36,4 +36,15 @@ public class ArrayType extends Type {
             this.childType = new ArrayType(Types.ARRAY, childType, depth - 1);
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        ArrayType arrayType = (ArrayType) o;
+
+        return childType != null ? childType.equals(arrayType.childType) : arrayType.childType == null;
+    }
 }

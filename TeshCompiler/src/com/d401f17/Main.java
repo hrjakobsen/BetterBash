@@ -27,7 +27,7 @@ public class Main {
 
         TeshParser.CompileUnitContext unit = parser.compileUnit();
         AST ast = new BuildAstVisitor().visitCompileUnit(unit);
-        
+
         SymTab symbolTable = new SymbolTable();
         SymTab recordTable = new SymbolTable();
         TypeCheckVisitor typeCheck = new TypeCheckVisitor(symbolTable, recordTable);

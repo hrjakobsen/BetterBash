@@ -5,7 +5,6 @@ import com.d401f17.TeshBaseVisitor;
 import com.d401f17.TeshParser;
 import com.d401f17.AST.TypeSystem.Types;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.Tree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -436,10 +435,12 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
     @Override
     public AST visitArrayConstant(TeshParser.ArrayConstantContext ctx) {
         List<ArithmeticExpressionNode> values = new ArrayList<>();
-        for (ParseTree child : ctx.arithmeticExpression()) {
-            values.add((ArithmeticExpressionNode)visit(child));
+        if (ctx.arithmeticExpression() != null) {
+            for (ParseTree child : ctx.arithmeticExpression()) {
+                values.add((ArithmeticExpressionNode)visit(child));
+            }
         }
-        return new ConstantNode(values, Types.ARRAY, ctx.start.getLine());
+        return new ArrayConstantNode(values, ctx.start.getLine());
     }
 
     @Override
@@ -520,15 +521,15 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
     @Override
     public AST visitConstant(TeshParser.ConstantContext ctx) {
         if (ctx.BOOL_LITERAL() != null) {
-            return new ConstantNode(Objects.equals(ctx.BOOL_LITERAL().getText(), "true"), Types.BOOL);
+            return new BoolConstantNode(Objects.equals(ctx.BOOL_LITERAL().getText(), "true"));
         } else if (ctx.CHAR_LITERAL() != null) {
             return new ConstantNode(ctx.CHAR_LITERAL().getText().charAt(1), Types.CHAR);
         } else if (ctx.FLOAT_LITERAL() != null) {
-            return new ConstantNode(Float.parseFloat(ctx.FLOAT_LITERAL().getText()), Types.FLOAT);
+            return new FloatConstantNode(Float.parseFloat(ctx.FLOAT_LITERAL().getText()));
         } else if (ctx.INT_LITERAL() != null) {
-            return new ConstantNode(Integer.parseInt(ctx.INT_LITERAL().getText()), Types.INT);
+            return new IntConstantNode(Integer.parseInt(ctx.INT_LITERAL().getText()));
         } else {
-            return new ConstantNode(ctx.STRING_LITERAL().getText().substring(1, ctx.STRING_LITERAL().getText().length() - 1), Types.STRING);
+            return new StringConstantNode(ctx.STRING_LITERAL().getText().substring(1, ctx.STRING_LITERAL().getText().length() - 1));
         }
     }
 
