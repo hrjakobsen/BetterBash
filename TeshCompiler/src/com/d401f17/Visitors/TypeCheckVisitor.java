@@ -607,10 +607,11 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         IdentifierNode previous = node;
 
         while (traveller != null) {
-            if (traveller instanceof SimpleIdentifierNode) {
+            if (!(traveller instanceof SimpleIdentifierNode)) {
                 try {
                     recordType = (RecordType) st.lookup(previous.getName()).getType();
                     traveller.setType(recordType.getMemberType(traveller.getName()));
+                    node.setType(traveller.getType());
                 } catch (VariableNotDeclaredException e) {
                     node.setType(new Type(Types.ERROR, e.getMessage()));
                     return null;
@@ -624,7 +625,6 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             } else {
                 try {
                     Type terminalType = ((RecordType)previous.getType()).getMemberType(traveller.getName());
-
                     node.setType(terminalType);
                 } catch (MemberNotFoundException e) {
                     node.setType(new Type(Types.ERROR, e.getMessage()));
@@ -942,6 +942,9 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             }
         }
 
+        if (var instanceof RecordType) {
+
+        }
         return new Type(Types.ERROR, "Assignment on line " + lineNum + " expected expression to be of type " + var + ", was " + exp);
     }
 

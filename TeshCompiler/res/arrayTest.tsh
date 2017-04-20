@@ -1,7 +1,7 @@
-float b
-b = weight / ((height / 100) * (height / 100))
+#float b
+#b = weight / ((height / 100) * (height / 100))
+#b = weight / (height / 100)
 
-
-#int a = 10
-#int h = 2
-#float[] anArrayOfIntegers = [1, 2, 3]
+int a = 10
+int h = 2
+float[] anArrayOfIntegers = [1, 2, 3]
