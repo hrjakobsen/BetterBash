@@ -5,13 +5,13 @@ import com.d401f17.AST.TypeSystem.Types;
 /**
  * Created by mathias on 4/19/17.
  */
-public class IntConstantNode extends ConstantNode {
+public class IntLiteralNode extends LiteralNode {
 
-    public IntConstantNode(int value) {
+    public IntLiteralNode(int value) {
         super(value, Types.INT);
     }
 
-    public IntConstantNode(int value, int lineNumber) {
+    public IntLiteralNode(int value, int lineNumber) {
         super(value, Types.INT, lineNumber);
     }
 

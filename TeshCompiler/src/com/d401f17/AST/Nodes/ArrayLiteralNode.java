@@ -8,12 +8,12 @@ import java.util.List;
 /**
  * Created by mathias on 4/19/17.
  */
-public class ArrayConstantNode extends ConstantNode {
-    public ArrayConstantNode(List<ArithmeticExpressionNode> value, int lineNum) {
+public class ArrayLiteralNode extends LiteralNode {
+    public ArrayLiteralNode(List<ArithmeticExpressionNode> value, int lineNum) {
         super(value, Types.ARRAY, lineNum);
     }
 
-    public ArrayConstantNode(List<ArithmeticExpressionNode> value) {
+    public ArrayLiteralNode(List<ArithmeticExpressionNode> value) {
         super(value, Types.ARRAY);
     }
 

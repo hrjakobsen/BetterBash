@@ -15,7 +15,7 @@ import java.util.Collection;
  * Created by tessa on 4/20/17.
  */
 @RunWith(value = Parameterized.class)
-public class ArrayConstantNodeNestedTest {
+public class ArrayLiteralNodeNestedTest {
 
     @Parameterized.Parameter(value = 0)
     public Type type;
@@ -45,12 +45,12 @@ public class ArrayConstantNodeNestedTest {
         SymTab symbolTable = new SymbolTable();
         SymTab recordTable = new SymbolTable();
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
-        ArrayConstantNode array = new ArrayConstantNode(new ArrayList<ArithmeticExpressionNode>() {
+        ArrayLiteralNode array = new ArrayLiteralNode(new ArrayList<ArithmeticExpressionNode>() {
             {
-                add(new ConstantNode(0, expectedType));
+                add(new LiteralNode(0, expectedType));
             }
         });
-        ArrayConstantNode node = new ArrayConstantNode(new ArrayList<ArithmeticExpressionNode>() {
+        ArrayLiteralNode node = new ArrayLiteralNode(new ArrayList<ArithmeticExpressionNode>() {
             {
                 add(array);
             }

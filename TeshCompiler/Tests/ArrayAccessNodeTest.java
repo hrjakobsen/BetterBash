@@ -52,7 +52,7 @@ public class ArrayAccessNodeTest {
                         "node",
                         0
                 ) {{setType(new Type(Types.OK));}},
-                new ArrayList<ArithmeticExpressionNode>(){{add(new ConstantNode(0, type));}}
+                new ArrayList<ArithmeticExpressionNode>(){{add(new LiteralNode(0, type));}}
         );
 
         node.accept(typeCheckVisitor);

@@ -11,11 +11,11 @@ public interface ASTVisitor<T> {
     T visit(ArithmeticExpressionNode node);
     T visit(ArrayAccessNode node);
     T visit(ArrayBuilderNode node);
-    T visit(ArrayConstantNode node);
+    T visit(ArrayLiteralNode node);
     T visit(ArrayElementAssignmentNode node);
     T visit(AssignmentNode node);
     T visit(AST node);
-    T visit(ConstantNode node);
+    T visit(LiteralNode node);
     T visit(DivisionNode node);
     T visit(EqualNode node);
     T visit(ForkNode node);

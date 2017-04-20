@@ -5,11 +5,11 @@ import com.d401f17.AST.TypeSystem.Types;
 /**
  * Created by mathias on 4/19/17.
  */
-public class StringConstantNode extends ConstantNode {
-    public StringConstantNode(String value) {
+public class StringLiteralNode extends LiteralNode {
+    public StringLiteralNode(String value) {
         super(value, Types.STRING);
     }
-    public StringConstantNode(String value, int lineNumber) {
+    public StringLiteralNode(String value, int lineNumber) {
         super(value, Types.STRING, lineNumber);
     }
 

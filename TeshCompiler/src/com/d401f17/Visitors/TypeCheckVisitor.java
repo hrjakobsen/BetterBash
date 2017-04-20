@@ -158,7 +158,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(ArrayConstantNode node) {
+    public Void visit(ArrayLiteralNode node) {
         List<ArithmeticExpressionNode> expressionNodes = node.getValue();
         Type[] expressionTypes = new Type[expressionNodes.size()];
         int errorIndex = 0;
@@ -221,7 +221,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(ConstantNode node) { return null; }
+    public Void visit(LiteralNode node) { return null; }
 
     @Override
     public Void visit(DivisionNode node) {
