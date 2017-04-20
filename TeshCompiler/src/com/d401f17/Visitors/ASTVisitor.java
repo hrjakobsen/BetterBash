@@ -16,6 +16,12 @@ public interface ASTVisitor<T> {
     T visit(AssignmentNode node);
     T visit(AST node);
     T visit(LiteralNode node);
+    T visit(IntLiteralNode node);
+    T visit(BoolLiteralNode node);
+    T visit(FloatLiteralNode node);
+    T visit(StringLiteralNode node);
+    T visit(CharLiteralNode node);
+    T visit(RecordLiteralNode node);
     T visit(DivisionNode node);
     T visit(EqualNode node);
     T visit(ForkNode node);
