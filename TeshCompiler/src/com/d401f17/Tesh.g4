@@ -16,9 +16,9 @@ simpleStatement
     | arrayAccess ASSIGN expression                                                                                     #arrayElementAssignmentStatement
     | newArrayName=identifier ASSIGN SQUARE_BRACKET_START
           variableName=identifier IN arrayName=identifier PIPE expression SQUARE_BRACKET_END                            #arrayBuilderStatement
-    | identifier CHANNEL_OP SIMPLE_IDENTIFIER                                                                           #readFromChannelStatementToVariable
-    | arrayAccess CHANNEL_OP SIMPLE_IDENTIFIER                                                                          #readFromChannelStatementToArray
-    | SIMPLE_IDENTIFIER CHANNEL_OP expression                                                                           #writeToChannelStatement
+    //| identifier CHANNEL_OP SIMPLE_IDENTIFIER                                                                           #readFromChannelStatementToVariable
+    | arrayAccess CHANNEL_OP expression                                                                                 #readFromChannelStatementToArray
+    | SIMPLE_IDENTIFIER CHANNEL_OP expression                                                                           #channelStatement
     | VAR identifier ASSIGN expression                                                                                  #varStatement
     | functionCall                                                                                                      #functionCallStatement
     | DOLLAR expression                                                                                                 #backgroundExecuteShellCommandStatement

@@ -34,7 +34,6 @@ public interface ASTVisitor<T> {
     T visit(NegationNode node);
     T visit(NotEqualNode node);
     T visit(OrNode node);
-    T visit(ReadFromChannelNode node);
     T visit(RecordDeclarationNode node);
     T visit(RecordIdentifierNode node);
     T visit(ReturnNode node);
@@ -47,6 +46,6 @@ public interface ASTVisitor<T> {
     T visit(VariableDeclarationNode node);
     T visit(WhileNode node);
     T visit(ProcedureCallNode node);
-    T visit(WriteToChannelNode node);
+    T visit(ChannelNode node);
     T visit(PatternMatchNode node);
 }
