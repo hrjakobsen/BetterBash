@@ -241,7 +241,6 @@ public class PrettyPrintASTVisitor extends BaseVisitor<Void> {
         return null;
     }
 
-
     @Override
     public Void visit(RecordDeclarationNode node) {
         makeNode("Rec " + node.getName(), node.getVariables().toArray(new VariableDeclarationNode[0]));
