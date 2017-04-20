@@ -118,26 +118,33 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ArrayAccessNode node) {
-        int count = 0;
+        node.getArray().accept(this);
+        List<ArithmeticExpressionNode> indexNodes = node.getIndices();
 
-        for(ArithmeticExpressionNode index : node.getIndices()) {
-            index.accept(this);
+        ArrayType arrayType = (ArrayType) node.getArray().getType();
+        Type[] indexTypes = new Type[indexNodes.size()];
 
-            Type indexType = index.getType();
-
-            if (invalidChildren(indexType)) {
-                node.setType(new Type(Types.IGNORE));
-                return null;
-            }
-
-            if (indexType.getPrimitiveType() != Types.INT) {
-                node.setType(new Type(Types.ERROR, "Index " + count + " on line " + node.getLine() +  " was expected to have type int, was " + indexType));
-                return null;
-            }
-            count++;
+        if (invalidChildren(arrayType)) {
+            node.setType(new Type(Types.IGNORE));
+            return null;
         }
 
-        node.setType(node.getArray().getType());
+        for (int i = 0; i < indexNodes.size(); i++) {
+            indexNodes.get(i).accept(this);
+            indexTypes[i] = indexNodes.get(i).getType();
+
+            if (indexTypes[i].getPrimitiveType() != Types.INT) {
+                node.setType(new Type(Types.ERROR, "Index " + i + " on line " + node.getLine() +  " was expected to have type int, was " + indexTypes[i]));
+                return null;
+            }
+        }
+
+        if (invalidChildren(indexTypes)) {
+            node.setType(new Type(Types.IGNORE));
+            return null;
+        }
+
+        node.setType(arrayType.getChildType());
         return null;
     }
 
@@ -936,15 +943,17 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             return new Type(Types.OK);
         }
 
+        if (exp instanceof ArrayType && var instanceof ArrayType) {
+            exp = ((ArrayType)exp).getChildType();
+            var = ((ArrayType)var).getChildType();
+        }
+
         if (exp.getPrimitiveType() == Types.INT) {
             if (var.getPrimitiveType() == Types.FLOAT || var.getPrimitiveType() == Types.CHAR) {
                 return new Type(Types.OK);
             }
         }
 
-        if (var instanceof RecordType) {
-
-        }
         return new Type(Types.ERROR, "Assignment on line " + lineNum + " expected expression to be of type " + var + ", was " + exp);
     }
 
