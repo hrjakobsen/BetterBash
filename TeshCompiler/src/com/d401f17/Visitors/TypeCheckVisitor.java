@@ -148,84 +148,6 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(ArrayElementAssignmentNode node) {
-        node.getElement().accept(this);
-        node.getExpression().accept(this);
-
-        Type varType = node.getElement().getType();
-        Type expType = node.getExpression().getType();
-
-        node.setType(assignment(varType, expType, node.getLine()));
-
-        return null;
-    }
-
-    @Override
-    public Void visit(AssignmentNode node) {
-        node.getVariable().accept(this);
-        node.getExpression().accept(this);
-
-        Type varType = node.getVariable().getType();
-        Type expType = node.getExpression().getType();
-
-        node.setType(assignment(varType, expType, node.getLine()));
-
-        return null;
-    }
-
-    @Override
-    public Void visit(AST node) {
-        return null;
-    }
-
-
-    @Override
-    public Void visit(RecordIdentifierNode node) {
-        String name = node.getName();
-        RecordType recordType;
-
-        try {
-            recordType = (RecordType) st.lookup(node.getName()).getType();
-            node.setType(recordType);
-        } catch (VariableNotDeclaredException e) {
-            node.setType(new Type(Types.ERROR, e.getMessage()));
-            return null;
-        }
-
-        IdentifierNode traveller = node.getChild();
-        IdentifierNode previous = node;
-
-        while (traveller != null) {
-            if (traveller instanceof SimpleIdentifierNode) {
-                try {
-                    recordType = (RecordType) st.lookup(previous.getName()).getType();
-                    traveller.setType(recordType.getMemberType(traveller.getName()));
-                } catch (VariableNotDeclaredException e) {
-                    node.setType(new Type(Types.ERROR, e.getMessage()));
-                    return null;
-                } catch (MemberNotFoundException e) {
-                    node.setType(new Type(Types.ERROR, e.getMessage()));
-                    return null;
-                }
-
-                previous = traveller;
-                traveller = ((RecordIdentifierNode)traveller).getChild();
-            } else {
-                try {
-                    Type terminalType = ((RecordType)previous.getType()).getMemberType(traveller.getName());
-
-                    node.setType(terminalType);
-                } catch (MemberNotFoundException e) {
-                    node.setType(new Type(Types.ERROR, e.getMessage()));
-                }
-                return null;
-            }
-        }
-
-        return null;
-    }
-
-    @Override
     public Void visit(ArrayConstantNode node) {
         List<ArithmeticExpressionNode> expressionNodes = node.getValue();
         Type[] expressionTypes = new Type[expressionNodes.size()];
@@ -253,6 +175,38 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             return null;
         }
 
+        return null;
+    }
+
+    @Override
+    public Void visit(ArrayElementAssignmentNode node) {
+        node.getElement().accept(this);
+        node.getExpression().accept(this);
+
+        Type varType = node.getElement().getType();
+        Type expType = node.getExpression().getType();
+
+        node.setType(assignment(varType, expType, node.getLine()));
+
+        return null;
+    }
+
+    @Override
+    public Void visit(AssignmentNode node) {
+        node.getVariable().accept(this);
+        node.getExpression().accept(this);
+
+        Type varType = node.getVariable().getType();
+        Type expType = node.getExpression().getType();
+
+        node.setType(assignment(varType, expType, node.getLine()));
+
+        return null;
+    }
+
+
+    @Override
+    public Void visit(AST node) {
         return null;
     }
 
@@ -637,6 +591,52 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     }
 
     @Override
+    public Void visit(RecordIdentifierNode node) {
+        String name = node.getName();
+        RecordType recordType;
+
+        try {
+            recordType = (RecordType) st.lookup(node.getName()).getType();
+            node.setType(recordType);
+        } catch (VariableNotDeclaredException e) {
+            node.setType(new Type(Types.ERROR, e.getMessage()));
+            return null;
+        }
+
+        IdentifierNode traveller = node.getChild();
+        IdentifierNode previous = node;
+
+        while (traveller != null) {
+            if (!(traveller instanceof SimpleIdentifierNode)) {
+                try {
+                    recordType = (RecordType) st.lookup(previous.getName()).getType();
+                    traveller.setType(recordType.getMemberType(traveller.getName()));
+                    node.setType(traveller.getType());
+                } catch (VariableNotDeclaredException e) {
+                    node.setType(new Type(Types.ERROR, e.getMessage()));
+                    return null;
+                } catch (MemberNotFoundException e) {
+                    node.setType(new Type(Types.ERROR, e.getMessage()));
+                    return null;
+                }
+
+                previous = traveller;
+                traveller = ((RecordIdentifierNode)traveller).getChild();
+            } else {
+                try {
+                    Type terminalType = ((RecordType)previous.getType()).getMemberType(traveller.getName());
+                    node.setType(terminalType);
+                } catch (MemberNotFoundException e) {
+                    node.setType(new Type(Types.ERROR, e.getMessage()));
+                }
+                return null;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
     public Void visit(ReturnNode node) {
         node.getExpresssion().accept(this);
 
@@ -942,6 +942,9 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             }
         }
 
+        if (var instanceof RecordType) {
+
+        }
         return new Type(Types.ERROR, "Assignment on line " + lineNum + " expected expression to be of type " + var + ", was " + exp);
     }
 

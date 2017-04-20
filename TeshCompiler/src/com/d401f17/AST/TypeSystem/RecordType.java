@@ -28,7 +28,18 @@ public class RecordType extends Type {
 
     @Override
     public boolean equals(Object o) {
-        return super.equals(o);
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        RecordType that = (RecordType) o;
+
+        return name != null ? name.equals(that.name) : that.name == null;
+    }
+
+    @Override
+    public String toString() {
+        return "RECORD " + name.toUpperCase();
     }
 
     public Type getMemberType(String id) throws MemberNotFoundException {

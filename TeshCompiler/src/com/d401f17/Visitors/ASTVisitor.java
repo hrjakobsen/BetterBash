@@ -11,11 +11,10 @@ public interface ASTVisitor<T> {
     T visit(ArithmeticExpressionNode node);
     T visit(ArrayAccessNode node);
     T visit(ArrayBuilderNode node);
-    T visit(ArrayElementAssignmentNode node);
     T visit(ArrayConstantNode node);
+    T visit(ArrayElementAssignmentNode node);
     T visit(AssignmentNode node);
     T visit(AST node);
-    T visit(RecordIdentifierNode node);
     T visit(ConstantNode node);
     T visit(DivisionNode node);
     T visit(EqualNode node);
@@ -37,6 +36,7 @@ public interface ASTVisitor<T> {
     T visit(OrNode node);
     T visit(ReadFromChannelNode node);
     T visit(RecordDeclarationNode node);
+    T visit(RecordIdentifierNode node);
     T visit(ReturnNode node);
     T visit(ShellNode node);
     T visit(ShellToChannelNode node);
