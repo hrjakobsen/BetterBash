@@ -176,7 +176,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         if (allSameType) {
             node.setType(new ArrayType(Types.ARRAY, expressionTypes[0]));
         } else {
-            node.setType(new Type(Types.ERROR, "Array construction on line " + node.getLine() + " failed. Type " + (errorIndex + 1) + " was " + expressionTypes[errorIndex] + " expected " + expressionTypes[0]));
+            node.setType(new Type(Types.ERROR, "Error on line " + node.getLine() + ": Type of element " + (errorIndex + 1) + " was " + expressionTypes[errorIndex] + " expected " + expressionTypes[errorIndex - 1]));
         }
 
         //Check if expressions were ok
@@ -240,7 +240,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             if (leftType.getPrimitiveType() == Types.INT || leftType.getPrimitiveType() == Types.FLOAT) {
                 node.setType(leftType);
             } else {
-                node.setType(new Type(Types.ERROR, "Division node on line " + node.getLine() +  " expected int or float, got " + leftType));
+                node.setType(new Type(Types.ERROR, "Error on line " + node.getLine() + ": Expected int or float, got " + leftType));
             }
             return null;
         }
@@ -249,16 +249,16 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             if (rightType.getPrimitiveType() == Types.FLOAT) {
                 node.setType(new Type(Types.FLOAT));
             } else {
-                node.setType(new Type(Types.ERROR, "Right node in division node on line " + node.getLine() +  " expected to be of type int or float, was " + rightType));
+                node.setType(new Type(Types.ERROR, "Error on line " + node.getLine() + ": Expected int or float, got " + rightType));
             }
         } else if (leftType.getPrimitiveType() == Types.FLOAT) {
             if (rightType.getPrimitiveType() == Types.INT) {
                 node.setType(new Type(Types.FLOAT));
             } else {
-                node.setType(new Type(Types.ERROR, "Right node in division node on line " + node.getLine() +  " expected to be of type int or float, was " + rightType));
+                node.setType(new Type(Types.ERROR, "Error on line " + node.getLine() + ": Expected int or float, got " + rightType));
             }
         } else {
-            node.setType(new Type(Types.ERROR, "Left node in division node on line " + node.getLine() +  " expected to be of type int or float, was " + leftType));
+            node.setType(new Type(Types.ERROR, "Error on line " + node.getLine() + ": Expected int or float, got " + leftType));
         }
 
         return null;
@@ -266,16 +266,17 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(EqualNode node) {
-        node.setType(binaryEquality(node, "Equal node"));
+        node.setType(binaryEquality(node));
         return null;
     }
 
     @Override
     public Void visit(ForkNode node) {
+        st.openScope();
         node.getChild().accept(this);
+        st.closeScope();
 
         Type statementType = node.getChild().getType();
-
         if (invalidChildren(statementType)) {
             node.setType(new Type(Types.IGNORE));
             return null;
@@ -307,7 +308,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         if (arrayType.getPrimitiveType() == Types.ARRAY) {
             if (variableType.getPrimitiveType() != ((ArrayType)arrayType).getChildType().getPrimitiveType()) {
-                node.setType(new Type(Types.ERROR, "Error on line " + node.getLine() + ": Expected an array of type " + variableType.getPrimitiveType() + ", got " + ((ArrayType)arrayType).getChildType().getPrimitiveType()));
+                node.setType(new Type(Types.ERROR, "Error on line " + node.getLine() + ": Expected " + variableType.getPrimitiveType() + ", got " + ((ArrayType)arrayType).getChildType().getPrimitiveType()));
                 return null;
             }
         } else {
@@ -933,7 +934,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         return new Type(Types.ERROR, "Error on line " + lineNum + ": Expected " + var + ", got " + exp);
     }
 
-    private Type binaryEquality(InfixExpressionNode node, String nodeName) {
+    private Type binaryEquality(InfixExpressionNode node) {
         node.getLeft().accept(this);
         node.getRight().accept(this);
 
