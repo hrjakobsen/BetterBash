@@ -2,6 +2,11 @@
 #b = weight / ((height / 100) * (height / 100))
 #b = weight / (height / 100)
 
-int[][] anArrayOfIntegers
-float[] floatArr = [1, 2]
-anArrayOfIntegers = [[1, 2], [4, 5]]
+int[][] intArrayArray
+float[] floatArray = [1.0, 2.2]
+float[][] floatArrayArray = [[1, 2], floatArray]
+floatArrayArray = [[2.3], intArrayArray[0]]
+
+arrayOfIntegers = [[2, 2], [4, 5]]
+floatArray[0] = 2.3
+floatArray[1] = 2
