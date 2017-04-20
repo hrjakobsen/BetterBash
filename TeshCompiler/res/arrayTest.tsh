@@ -39,3 +39,25 @@ floatArray1[0] = 2.3
 
 #OK
 floatArray1[1] = 2
+
+#OK
+for i in intArray {
+	i = 10
+	int a = i * 10
+	string b
+	b = "Number is " + a
+}
+
+for i in intArrayArray {
+	#Fail
+	i = 10
+}
+
+#Both of these fail a lot.. should they though?
+for i in intArrayArray[0] {
+
+}
+
+for i in [1, 2, 3] {
+	
+}

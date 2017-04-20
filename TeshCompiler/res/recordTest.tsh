@@ -21,9 +21,8 @@ myBook.pageInBook = notAPage
 
 
 myBook2.pageInBook = myPage
-myBook.notPageInBook = myPage
+myBook.pageInBook.year = myPage
 myBook.notPageInBook = notAPage
-
 
 #myBook.pageInBook.number = 1994
 
