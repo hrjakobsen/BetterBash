@@ -542,4 +542,9 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
     public AST visitBlock(TeshParser.BlockContext ctx) {
         return visit(ctx.multipleStatements());
     }
+
+    @Override
+    public AST visitParenthesisExpr(TeshParser.ParenthesisExprContext ctx) {
+        return visit(ctx.arithmeticExpression());
+    }
 }
