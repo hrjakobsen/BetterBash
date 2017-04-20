@@ -14,8 +14,8 @@ public class TypeNode extends AST {
         if (primitiveType.substring(0, Math.min(primitiveType.length(), 6)).equals("record")) {
             this.setType(new RecordType(primitiveType.substring(6, primitiveType.length()), null, null));
         } else if (primitiveType.endsWith("[]")) {
-            String[] parts = primitiveType.split("\\[]");
-            this.setType(new ArrayType(Types.ARRAY, new Type(Types.valueOf(parts[0].toUpperCase())), parts.length - 1));
+            String[] parts = primitiveType.split("\\[");
+            this.setType(new ArrayType(Types.ARRAY, new Type(Types.valueOf(parts[0].toUpperCase())), parts.length - 2));
         }
         else {
             try {
