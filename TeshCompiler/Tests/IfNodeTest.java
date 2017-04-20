@@ -1,4 +1,4 @@
-import com.d401f17.AST.Nodes.ConstantNode;
+import com.d401f17.AST.Nodes.LiteralNode;
 import com.d401f17.AST.Nodes.IfNode;
 import com.d401f17.AST.Nodes.StatementsNode;
 import com.d401f17.AST.TypeSystem.SymTab;
@@ -47,7 +47,7 @@ public class IfNodeTest {
         SymTab symbolTable = new SymbolTable();
         SymTab recordTable = new SymbolTable();
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
-        IfNode node = new IfNode(new ConstantNode(1, predicateType), new StatementsNode(1), new StatementsNode(1),0);
+        IfNode node = new IfNode(new LiteralNode(1, predicateType), new StatementsNode(1), new StatementsNode(1),0);
         node.accept(typeCheckVisitor);
 
         String errMessage = predicateType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();

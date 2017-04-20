@@ -1,7 +1,6 @@
 package com.d401f17.Visitors;
 
 import com.d401f17.AST.Nodes.*;
-import com.d401f17.AST.TypeSystem.Types;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,14 +82,14 @@ public class PrettyPrintASTVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(ConstantNode node) {
+    public Void visit(LiteralNode node) {
         String id = Integer.toString(runningID++);
         sb.append(id).append("\n").append(id).append("[label=\"").append(node.getType().toString()).append("\\n").append(node.getValue().toString().replace("\\", "\\\\")).append("\"]\n");
         return null;
     }
 
     @Override
-    public Void visit(ArrayConstantNode node) {
+    public Void visit(ArrayLiteralNode node) {
         makeNode("Array", (node.getValue()).toArray(new ArithmeticExpressionNode[0]));
         return null;
     }
@@ -205,11 +204,6 @@ public class PrettyPrintASTVisitor extends BaseVisitor<Void> {
         return null;
     }
 
-    @Override
-    public Void visit(ReadFromChannelNode node) {
-        makeNode("ch_read", node.getChannel(), node.getExpression());
-        return null;
-    }
 
     @Override
     public Void visit(RecordDeclarationNode node) {
@@ -293,8 +287,8 @@ public class PrettyPrintASTVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(WriteToChannelNode node) {
-        makeNode("ch_write", node.getIdentifier(), node.getExpression());
+    public Void visit(ChannelNode node) {
+        makeNode("chn", node.getIdentifier(), node.getExpression());
         return null;
     }
 

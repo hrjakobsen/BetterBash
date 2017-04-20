@@ -2,7 +2,6 @@ import com.d401f17.AST.Nodes.*;
 
 import com.d401f17.AST.TypeSystem.SymTab;
 import com.d401f17.AST.TypeSystem.SymbolTable;
-import com.d401f17.AST.TypeSystem.Type;
 import com.d401f17.AST.TypeSystem.Types;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
@@ -10,7 +9,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -50,7 +48,7 @@ public class ReturnNodeTest {
         SymTab symbolTable = new SymbolTable();
         SymTab recordTable = new SymbolTable();
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
-        ReturnNode node = new ReturnNode(new ConstantNode(0, predicateType));
+        ReturnNode node = new ReturnNode(new LiteralNode(0, predicateType));
         node.accept(typeCheckVisitor);
 
         String errMessage = predicateType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();

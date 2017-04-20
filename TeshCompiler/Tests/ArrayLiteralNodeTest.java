@@ -14,7 +14,7 @@ import java.util.Collection;
  * Created by tessa on 4/20/17.
  */
 @RunWith(value = Parameterized.class)
-public class ArrayConstantNodeTest {
+public class ArrayLiteralNodeTest {
 
     @Parameterized.Parameter(value = 0)
     public Types type;
@@ -120,10 +120,10 @@ public class ArrayConstantNodeTest {
         SymTab symbolTable = new SymbolTable();
         SymTab recordTable = new SymbolTable();
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
-        ArrayConstantNode node = new ArrayConstantNode(new ArrayList<ArithmeticExpressionNode>() {
+        ArrayLiteralNode node = new ArrayLiteralNode(new ArrayList<ArithmeticExpressionNode>() {
             {
-                add(new ConstantNode(0, type));
-                add(new ConstantNode(0, type2));
+                add(new LiteralNode(0, type));
+                add(new LiteralNode(0, type2));
             }
         });
 

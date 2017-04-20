@@ -5,12 +5,12 @@ import com.d401f17.AST.TypeSystem.Types;
 /**
  * Created by mathias on 4/19/17.
  */
-public class BoolConstantNode extends ConstantNode {
-    public BoolConstantNode(boolean value) {
+public class BoolLiteralNode extends LiteralNode {
+    public BoolLiteralNode(boolean value) {
         super(value, Types.BOOL);
     }
 
-    public BoolConstantNode(boolean value, int lineNumber) {
+    public BoolLiteralNode(boolean value, int lineNumber) {
         super(value, Types.BOOL, lineNumber);
     }
 

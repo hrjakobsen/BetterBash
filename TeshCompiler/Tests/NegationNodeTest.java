@@ -1,5 +1,5 @@
 import com.d401f17.AST.Nodes.NegationNode;
-import com.d401f17.AST.Nodes.ConstantNode;
+import com.d401f17.AST.Nodes.LiteralNode;
 import com.d401f17.AST.TypeSystem.SymTab;
 import com.d401f17.AST.TypeSystem.SymbolTable;
 import com.d401f17.AST.TypeSystem.Types;
@@ -46,7 +46,7 @@ public class NegationNodeTest {
         SymTab symbolTable = new SymbolTable();
         SymTab recordTable = new SymbolTable();
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
-        NegationNode node = new NegationNode(new ConstantNode(1, expressionType),0);
+        NegationNode node = new NegationNode(new LiteralNode(1, expressionType),0);
         node.accept(typeCheckVisitor);
 
         String errMessage = expressionType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();

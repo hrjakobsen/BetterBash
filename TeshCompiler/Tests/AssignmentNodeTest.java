@@ -120,7 +120,7 @@ public class AssignmentNodeTest {
         VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
         varNode.accept(typeCheckVisitor);
 
-        AssignmentNode node = new AssignmentNode(idNode, new ConstantNode(1, rightType));
+        AssignmentNode node = new AssignmentNode(idNode, new LiteralNode(1, rightType));
         node.accept(typeCheckVisitor);
 
         String errMessage = leftType + ", " + rightType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();

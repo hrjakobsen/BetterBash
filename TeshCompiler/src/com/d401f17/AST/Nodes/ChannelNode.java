@@ -5,17 +5,17 @@ import com.d401f17.Visitors.ASTVisitor;
 /**
  * Created by mathias on 3/16/17.
  */
-public class WriteToChannelNode extends StatementNode {
+public class ChannelNode extends StatementNode {
     private IdentifierNode identifier;
     private ArithmeticExpressionNode expression;
 
-    public WriteToChannelNode(IdentifierNode identifier, ArithmeticExpressionNode expression, int lineNum) {
+    public ChannelNode(IdentifierNode identifier, ArithmeticExpressionNode expression, int lineNum) {
         this.identifier = identifier;
         this.expression = expression;
         this.lineNum = lineNum;
     }
 
-    public WriteToChannelNode(IdentifierNode identifier, ArithmeticExpressionNode expression) {
+    public ChannelNode(IdentifierNode identifier, ArithmeticExpressionNode expression) {
         this.identifier = identifier;
         this.expression = expression;
     }

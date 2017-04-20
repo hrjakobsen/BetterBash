@@ -3,7 +3,6 @@ package com.d401f17.Visitors;
 import com.d401f17.AST.Nodes.*;
 import com.d401f17.AST.TypeSystem.*;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -159,7 +158,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(ArrayConstantNode node) {
+    public Void visit(ArrayLiteralNode node) {
         List<ArithmeticExpressionNode> expressionNodes = node.getValue();
         Type[] expressionTypes = new Type[expressionNodes.size()];
         int errorIndex = 0;
@@ -222,7 +221,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(ConstantNode node) { return null; }
+    public Void visit(LiteralNode node) { return null; }
 
     @Override
     public Void visit(DivisionNode node) {
@@ -545,32 +544,6 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(ReadFromChannelNode node) {
-        node.getChannel().accept(this);
-        node.getExpression().accept(this);
-
-        Type channelType = node.getChannel().getType();
-        Type expType = node.getExpression().getType();
-
-        if (invalidChildren(channelType, expType)) {
-            node.setType(new Type(Types.IGNORE));
-            return null;
-        }
-
-        if (channelType.getPrimitiveType() == Types.CHANNEL) {
-            if (expType.getPrimitiveType() == Types.STRING) {
-                node.setType(new Type(Types.OK));
-            } else {
-                node.setType(new Type(Types.ERROR, "Read from channel on line " + node.getLine() + " expected a string, got " + expType));
-            }
-        } else {
-            node.setType(new Type(Types.ERROR, "Read from channel on line " + node.getLine() + " expected a channel, got " + channelType));
-        }
-
-        return null;
-    }
-
-    @Override
     public Void visit(RecordDeclarationNode node) {
         List<VariableDeclarationNode> varNodes = node.getVariables();
         String[] varNames = new String[varNodes.size()];
@@ -880,7 +853,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(WriteToChannelNode node) {
+    public Void visit(ChannelNode node) {
         node.getIdentifier().accept(this);
         node.getExpression().accept(this);
 

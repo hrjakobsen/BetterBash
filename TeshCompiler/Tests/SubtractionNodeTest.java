@@ -1,14 +1,12 @@
-import com.d401f17.AST.Nodes.ConstantNode;
+import com.d401f17.AST.Nodes.LiteralNode;
 import com.d401f17.AST.Nodes.SubtractionNode;
 import com.d401f17.AST.TypeSystem.SymTab;
 import com.d401f17.AST.TypeSystem.SymbolTable;
-import com.d401f17.AST.TypeSystem.Type;
 import com.d401f17.AST.TypeSystem.Types;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.*;
 
@@ -123,7 +121,7 @@ public class SubtractionNodeTest {
         SymTab symbolTable = new SymbolTable();
         SymTab recordTable = new SymbolTable();
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
-        SubtractionNode node = new SubtractionNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType),0);
+        SubtractionNode node = new SubtractionNode(new LiteralNode(1, leftType), new LiteralNode(1, rightType),0);
         node.accept(typeCheckVisitor);
 
         String errMessage = leftType + ", " + rightType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
