@@ -1,7 +1,6 @@
 package com.d401f17.Visitors;
 
 import com.d401f17.AST.Nodes.*;
-import com.d401f17.AST.TypeSystem.Types;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -207,7 +206,7 @@ public class PrettyPrintASTVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ReadFromChannelNode node) {
-        makeNode("ch_read", node.getChannel(), node.getExpression());
+        makeNode("ch_read", node.getChannel(), node.getVariable());
         return null;
     }
 
