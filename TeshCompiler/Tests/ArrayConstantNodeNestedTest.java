@@ -45,9 +45,14 @@ public class ArrayConstantNodeNestedTest {
         SymTab symbolTable = new SymbolTable();
         SymTab recordTable = new SymbolTable();
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
+        ArrayConstantNode array = new ArrayConstantNode(new ArrayList<ArithmeticExpressionNode>() {
+            {
+                add(new ConstantNode(0, expectedType));
+            }
+        });
         ArrayConstantNode node = new ArrayConstantNode(new ArrayList<ArithmeticExpressionNode>() {
             {
-                add(new ConstantNode(0, type.getPrimitiveType()));
+                add(array);
             }
         });
 
@@ -55,7 +60,7 @@ public class ArrayConstantNodeNestedTest {
 
         String errMessage = type + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
         if(node.getType() instanceof ArrayType) {
-            Assert.assertEquals(expectedType, ((ArrayType)node.getType()).getChildType().getPrimitiveType());
+            Assert.assertEquals(expectedType, ((ArrayType)((ArrayType)node.getType()).getChildType()).getChildType().getPrimitiveType());
         } else {
             Assert.assertEquals(expectedType, node.getType().getPrimitiveType());
         }

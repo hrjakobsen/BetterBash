@@ -34,76 +34,76 @@ public class ArrayElementAssignmentNodeTest {
     public static Collection<Object[]> data(){
         return Arrays.asList(new Object[][]{
                 {Types.INT, Types.INT, Types.OK},
-                {Types.INT, Types.FLOAT, Types.ERROR},
-                {Types.INT, Types.CHAR, Types.ERROR},
-                {Types.INT, Types.STRING, Types.ERROR},
-                {Types.INT, Types.BOOL, Types.ERROR},
-                {Types.INT, Types.ARRAY, Types.ERROR},
-                {Types.INT, Types.CHANNEL, Types.ERROR},
-                {Types.INT, Types.RECORD, Types.ERROR},
-                {Types.INT, Types.FILE, Types.ERROR},
+                {Types.INT, Types.FLOAT, Types.IGNORE},
+                {Types.INT, Types.CHAR, Types.IGNORE},
+                {Types.INT, Types.STRING, Types.IGNORE},
+                {Types.INT, Types.BOOL, Types.IGNORE},
+                {Types.INT, Types.ARRAY, Types.IGNORE},
+                {Types.INT, Types.CHANNEL, Types.IGNORE},
+                {Types.INT, Types.RECORD, Types.IGNORE},
+                {Types.INT, Types.FILE, Types.IGNORE},
                 {Types.FLOAT, Types.INT, Types.OK},
                 {Types.FLOAT, Types.FLOAT, Types.OK},
-                {Types.FLOAT, Types.CHAR, Types.ERROR},
-                {Types.FLOAT, Types.STRING, Types.ERROR},
-                {Types.FLOAT, Types.BOOL, Types.ERROR},
-                {Types.FLOAT, Types.ARRAY, Types.ERROR},
-                {Types.FLOAT, Types.CHANNEL, Types.ERROR},
-                {Types.FLOAT, Types.RECORD, Types.ERROR},
-                {Types.FLOAT, Types.FILE, Types.ERROR},
+                {Types.FLOAT, Types.CHAR, Types.IGNORE},
+                {Types.FLOAT, Types.STRING, Types.IGNORE},
+                {Types.FLOAT, Types.BOOL, Types.IGNORE},
+                {Types.FLOAT, Types.ARRAY, Types.IGNORE},
+                {Types.FLOAT, Types.CHANNEL, Types.IGNORE},
+                {Types.FLOAT, Types.RECORD, Types.IGNORE},
+                {Types.FLOAT, Types.FILE, Types.IGNORE},
                 {Types.CHAR, Types.INT, Types.OK},
-                {Types.CHAR, Types.FLOAT, Types.ERROR},
-                {Types.CHAR, Types.STRING, Types.ERROR},
-                {Types.CHAR, Types.BOOL, Types.ERROR},
+                {Types.CHAR, Types.FLOAT, Types.IGNORE},
+                {Types.CHAR, Types.STRING, Types.IGNORE},
+                {Types.CHAR, Types.BOOL, Types.IGNORE},
                 {Types.CHAR, Types.CHAR, Types.OK},
-                {Types.CHAR, Types.ARRAY, Types.ERROR},
-                {Types.CHAR, Types.CHANNEL, Types.ERROR},
-                {Types.CHAR, Types.RECORD, Types.ERROR},
-                {Types.CHAR, Types.FILE, Types.ERROR},
-                {Types.STRING, Types.INT, Types.ERROR},
-                {Types.STRING, Types.FLOAT, Types.ERROR},
-                {Types.STRING, Types.CHAR, Types.ERROR},
+                {Types.CHAR, Types.ARRAY, Types.IGNORE},
+                {Types.CHAR, Types.CHANNEL, Types.IGNORE},
+                {Types.CHAR, Types.RECORD, Types.IGNORE},
+                {Types.CHAR, Types.FILE, Types.IGNORE},
+                {Types.STRING, Types.INT, Types.IGNORE},
+                {Types.STRING, Types.FLOAT, Types.IGNORE},
+                {Types.STRING, Types.CHAR, Types.IGNORE},
                 {Types.STRING, Types.STRING, Types.OK},
-                {Types.STRING, Types.BOOL, Types.ERROR},
-                {Types.STRING, Types.ARRAY, Types.ERROR},
-                {Types.STRING, Types.CHANNEL, Types.ERROR},
-                {Types.STRING, Types.RECORD, Types.ERROR},
-                {Types.STRING, Types.FILE, Types.ERROR},
-                {Types.BOOL, Types.INT, Types.ERROR},
-                {Types.BOOL, Types.FLOAT, Types.ERROR},
-                {Types.BOOL, Types.STRING, Types.ERROR},
-                {Types.BOOL, Types.CHAR, Types.ERROR},
+                {Types.STRING, Types.BOOL, Types.IGNORE},
+                {Types.STRING, Types.ARRAY, Types.IGNORE},
+                {Types.STRING, Types.CHANNEL, Types.IGNORE},
+                {Types.STRING, Types.RECORD, Types.IGNORE},
+                {Types.STRING, Types.FILE, Types.IGNORE},
+                {Types.BOOL, Types.INT, Types.IGNORE},
+                {Types.BOOL, Types.FLOAT, Types.IGNORE},
+                {Types.BOOL, Types.STRING, Types.IGNORE},
+                {Types.BOOL, Types.CHAR, Types.IGNORE},
                 {Types.BOOL, Types.BOOL, Types.OK},
-                {Types.BOOL, Types.ARRAY, Types.ERROR},
-                {Types.BOOL, Types.CHANNEL, Types.ERROR},
-                {Types.BOOL, Types.RECORD, Types.ERROR},
-                {Types.BOOL, Types.FILE, Types.ERROR},
-                {Types.ARRAY, Types.INT, Types.ERROR},
-                {Types.ARRAY, Types.FLOAT, Types.ERROR},
-                {Types.ARRAY, Types.CHAR, Types.ERROR},
-                {Types.ARRAY, Types.STRING, Types.ERROR},
-                {Types.ARRAY, Types.BOOL, Types.ERROR},
+                {Types.BOOL, Types.ARRAY, Types.IGNORE},
+                {Types.BOOL, Types.CHANNEL, Types.IGNORE},
+                {Types.BOOL, Types.RECORD, Types.IGNORE},
+                {Types.BOOL, Types.FILE, Types.IGNORE},
+                {Types.ARRAY, Types.INT, Types.IGNORE},
+                {Types.ARRAY, Types.FLOAT, Types.IGNORE},
+                {Types.ARRAY, Types.CHAR, Types.IGNORE},
+                {Types.ARRAY, Types.STRING, Types.IGNORE},
+                {Types.ARRAY, Types.BOOL, Types.IGNORE},
                 {Types.ARRAY, Types.ARRAY, Types.OK},
-                {Types.ARRAY, Types.CHANNEL, Types.ERROR},
-                {Types.ARRAY, Types.RECORD, Types.ERROR},
-                {Types.ARRAY, Types.FILE, Types.ERROR},
-                {Types.CHANNEL, Types.INT, Types.ERROR},
-                {Types.CHANNEL, Types.FLOAT, Types.ERROR},
-                {Types.CHANNEL, Types.CHAR, Types.ERROR},
-                {Types.CHANNEL, Types.STRING, Types.ERROR},
-                {Types.CHANNEL, Types.BOOL, Types.ERROR},
-                {Types.CHANNEL, Types.ARRAY, Types.ERROR},
+                {Types.ARRAY, Types.CHANNEL, Types.IGNORE},
+                {Types.ARRAY, Types.RECORD, Types.IGNORE},
+                {Types.ARRAY, Types.FILE, Types.IGNORE},
+                {Types.CHANNEL, Types.INT, Types.IGNORE},
+                {Types.CHANNEL, Types.FLOAT, Types.IGNORE},
+                {Types.CHANNEL, Types.CHAR, Types.IGNORE},
+                {Types.CHANNEL, Types.STRING, Types.IGNORE},
+                {Types.CHANNEL, Types.BOOL, Types.IGNORE},
+                {Types.CHANNEL, Types.ARRAY, Types.IGNORE},
                 {Types.CHANNEL, Types.CHANNEL, Types.OK},
-                {Types.CHANNEL, Types.RECORD, Types.ERROR},
-                {Types.CHANNEL, Types.FILE, Types.ERROR},
-                {Types.FILE, Types.INT, Types.ERROR},
-                {Types.FILE, Types.FLOAT, Types.ERROR},
-                {Types.FILE, Types.STRING, Types.ERROR},
-                {Types.FILE, Types.CHAR, Types.ERROR},
-                {Types.FILE, Types.BOOL, Types.ERROR},
-                {Types.FILE, Types.ARRAY, Types.ERROR},
-                {Types.FILE, Types.CHANNEL, Types.ERROR},
-                {Types.FILE, Types.RECORD, Types.ERROR},
+                {Types.CHANNEL, Types.RECORD, Types.IGNORE},
+                {Types.CHANNEL, Types.FILE, Types.IGNORE},
+                {Types.FILE, Types.INT, Types.IGNORE},
+                {Types.FILE, Types.FLOAT, Types.IGNORE},
+                {Types.FILE, Types.STRING, Types.IGNORE},
+                {Types.FILE, Types.CHAR, Types.IGNORE},
+                {Types.FILE, Types.BOOL, Types.IGNORE},
+                {Types.FILE, Types.ARRAY, Types.IGNORE},
+                {Types.FILE, Types.CHANNEL, Types.IGNORE},
+                {Types.FILE, Types.RECORD, Types.IGNORE},
                 {Types.FILE, Types.FILE, Types.OK}
         });
     }
@@ -115,25 +115,25 @@ public class ArrayElementAssignmentNodeTest {
         SymTab recordTable = new SymbolTable();
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
 
-       // SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
-       // idNode.setType(new Type(leftType));
-       // TypeNode typeNode = new TypeNode(leftType.toString().toLowerCase());
+       SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
+       idNode.setType(new Type(leftType));
+       TypeNode typeNode = new TypeNode(leftType.toString().toLowerCase());
 
-        // VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
-        // varNode.accept(typeCheckVisitor);
+       VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
+       varNode.accept(typeCheckVisitor);
 
         ArrayList<ArithmeticExpressionNode> c = new ArrayList<ArithmeticExpressionNode>(){{
             add(new ConstantNode(0, leftType));
             add(new ConstantNode(0, rightType));
         }};
 
-        ArrayAccessNode node = new ArrayAccessNode(new SimpleIdentifierNode("name"), c);
+        ArrayAccessNode node = new ArrayAccessNode(idNode,c);
 
-        ArrayElementAssignmentNode a = new ArrayElementAssignmentNode(node, new ConstantNode(0, Types.INT));
+        ArrayElementAssignmentNode a = new ArrayElementAssignmentNode(node, new ConstantNode(0, leftType));
         a.accept(typeCheckVisitor);
 
         String errMessage = leftType + ", " + rightType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
-        Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
+        Assert.assertEquals(errMessage, expectedType, a.getType().getPrimitiveType());
     }
 }
 
