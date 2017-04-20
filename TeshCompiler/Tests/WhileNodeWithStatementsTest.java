@@ -46,7 +46,7 @@ public class WhileNodeWithStatementsTest {
         SymTab symbolTable = new SymbolTable();
         SymTab recordTable = new SymbolTable();
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
-        WhileNode node = new WhileNode(new ConstantNode(1, Types.BOOL), new StatementsNode(new ReturnNode(new ConstantNode( 0, type))));
+        WhileNode node = new WhileNode(new LiteralNode(1, Types.BOOL), new StatementsNode(new ReturnNode(new LiteralNode( 0, type))));
         node.accept(typeCheckVisitor);
 
         //String errMessage = type + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();

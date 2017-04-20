@@ -64,18 +64,18 @@ public class IfNodeNestedReturnTest {
         StatementNode node = new StatementsNode(
                 1,
                 new IfNode(
-                        new ConstantNode(true, Types.BOOL),
+                        new LiteralNode(true, Types.BOOL),
                         new StatementsNode(
                                 2,
                                 new IfNode (
-                                        new ConstantNode(false, Types.BOOL),
+                                        new LiteralNode(false, Types.BOOL),
                                         new StatementsNode(
                                                 3,
-                                                new ReturnNode(new ConstantNode(0, type1),3)
+                                                new ReturnNode(new LiteralNode(0, type1),3)
                                         ),
                                         new StatementsNode(
                                                 5,
-                                                new ReturnNode(new ConstantNode(0, type2),5)
+                                                new ReturnNode(new LiteralNode(0, type2),5)
                                         ),
                                         2
                                 )
@@ -84,7 +84,7 @@ public class IfNodeNestedReturnTest {
                                 8,
                                 new StatementsNode(
                                         8,
-                                        new ReturnNode(new ConstantNode(0, type3),8)
+                                        new ReturnNode(new LiteralNode(0, type3),8)
                                 )
                         ),
                         1

@@ -1,4 +1,4 @@
-import com.d401f17.AST.Nodes.ConstantNode;
+import com.d401f17.AST.Nodes.LiteralNode;
 import com.d401f17.AST.Nodes.WhileNode;
 import com.d401f17.AST.Nodes.StatementsNode;
 import com.d401f17.AST.TypeSystem.SymTab;
@@ -46,7 +46,7 @@ public class WhileNodeTest {
         SymTab symbolTable = new SymbolTable();
         SymTab recordTable = new SymbolTable();
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
-        WhileNode node = new WhileNode(new ConstantNode(1, predicateType), new StatementsNode(1),0);
+        WhileNode node = new WhileNode(new LiteralNode(1, predicateType), new StatementsNode(1),0);
         node.accept(typeCheckVisitor);
 
 

@@ -45,7 +45,7 @@ public class ShellNodeTest {
         SymTab symbolTable = new SymbolTable();
         SymTab recordTable = new SymbolTable();
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
-        ShellNode node = new ShellNode(new ConstantNode(0, predicateType));
+        ShellNode node = new ShellNode(new LiteralNode(0, predicateType));
         node.accept(typeCheckVisitor);
 
         String errMessage = predicateType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();

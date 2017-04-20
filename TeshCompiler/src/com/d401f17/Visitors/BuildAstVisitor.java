@@ -28,24 +28,12 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
 
     @Override
     public AST visitWriteToChannelStatement(TeshParser.WriteToChannelStatementContext ctx) {
-        return new WriteToChannelNode(
+        return new ChannelNode(
                 new SimpleIdentifierNode(
                         ctx.SIMPLE_IDENTIFIER().getText(),
                         ctx.start.getLine()
                 ),
                 (ArithmeticExpressionNode) visit(ctx.expression())
-        );
-    }
-
-    @Override
-    public AST visitReadFromChannelStatementToVariable(TeshParser.ReadFromChannelStatementToVariableContext ctx) {
-        return new ReadFromChannelNode(
-                (IdentifierNode) visit(ctx.identifier()),
-                new SimpleIdentifierNode(
-                        ctx.SIMPLE_IDENTIFIER().getText(),
-                        ctx.start.getLine()
-                ),
-                ctx.start.getLine()
         );
     }
 
@@ -146,7 +134,7 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
     public AST visitReturnStatement(TeshParser.ReturnStatementContext ctx) {
         ArithmeticExpressionNode expNode;
         if (ctx.expression() == null) {
-            expNode = new ConstantNode(0, Types.VOID);
+            expNode = new LiteralNode(0, Types.VOID);
         } else {
             expNode = (ArithmeticExpressionNode) visit(ctx.expression());
         }
@@ -182,7 +170,7 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
 
     @Override
     public AST visitReadFromChannelStatementToArray(TeshParser.ReadFromChannelStatementToArrayContext ctx) {
-        return new ReadFromChannelNode(
+        return new ChannelNode(
                 (ArrayAccessNode) visit(ctx.arrayAccess()),
                 new SimpleIdentifierNode(
                         ctx.SIMPLE_IDENTIFIER().getText(),
@@ -392,7 +380,7 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
         if (ctx.op.getType() == TeshParser.OP_SUB) {
             return new MultiplicationNode(
                     (ArithmeticExpressionNode) visit(ctx.value()),
-                    new ConstantNode(
+                    new LiteralNode(
                             -1,
                             Types.INT
                     ),
@@ -440,7 +428,7 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
                 values.add((ArithmeticExpressionNode)visit(child));
             }
         }
-        return new ArrayConstantNode(values, ctx.start.getLine());
+        return new ArrayLiteralNode(values, ctx.start.getLine());
     }
 
     @Override
@@ -521,15 +509,15 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
     @Override
     public AST visitConstant(TeshParser.ConstantContext ctx) {
         if (ctx.BOOL_LITERAL() != null) {
-            return new BoolConstantNode(Objects.equals(ctx.BOOL_LITERAL().getText(), "true"));
+            return new BoolLiteralNode(Objects.equals(ctx.BOOL_LITERAL().getText(), "true"));
         } else if (ctx.CHAR_LITERAL() != null) {
-            return new ConstantNode(ctx.CHAR_LITERAL().getText().charAt(1), Types.CHAR);
+            return new LiteralNode(ctx.CHAR_LITERAL().getText().charAt(1), Types.CHAR);
         } else if (ctx.FLOAT_LITERAL() != null) {
-            return new FloatConstantNode(Float.parseFloat(ctx.FLOAT_LITERAL().getText()));
+            return new FloatLiteralNode(Float.parseFloat(ctx.FLOAT_LITERAL().getText()));
         } else if (ctx.INT_LITERAL() != null) {
-            return new IntConstantNode(Integer.parseInt(ctx.INT_LITERAL().getText()));
+            return new IntLiteralNode(Integer.parseInt(ctx.INT_LITERAL().getText()));
         } else {
-            return new StringConstantNode(ctx.STRING_LITERAL().getText().substring(1, ctx.STRING_LITERAL().getText().length() - 1));
+            return new StringLiteralNode(ctx.STRING_LITERAL().getText().substring(1, ctx.STRING_LITERAL().getText().length() - 1));
         }
     }
 

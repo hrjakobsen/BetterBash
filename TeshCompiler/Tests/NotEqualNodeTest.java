@@ -1,5 +1,5 @@
 import com.d401f17.AST.Nodes.NotEqualNode;
-import com.d401f17.AST.Nodes.ConstantNode;
+import com.d401f17.AST.Nodes.LiteralNode;
 import com.d401f17.AST.TypeSystem.SymTab;
 import com.d401f17.AST.TypeSystem.SymbolTable;
 import com.d401f17.AST.TypeSystem.Types;
@@ -120,7 +120,7 @@ public class NotEqualNodeTest {
         SymTab symbolTable = new SymbolTable();
         SymTab recordTable = new SymbolTable();
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
-        NotEqualNode node = new NotEqualNode(new ConstantNode(1, leftType), new ConstantNode(1, rightType),0);
+        NotEqualNode node = new NotEqualNode(new LiteralNode(1, leftType), new LiteralNode(1, rightType),0);
         node.accept(typeCheckVisitor);
 
         String errMessage = leftType + ", " + rightType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
