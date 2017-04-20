@@ -121,7 +121,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         node.getArray().accept(this);
         List<ArithmeticExpressionNode> indexNodes = node.getIndices();
 
-        ArrayType arrayType = (ArrayType) node.getArray().getType();
+        Type arrayType = node.getArray().getType();
         Type[] indexTypes = new Type[indexNodes.size()];
 
         if (invalidChildren(arrayType)) {
@@ -137,6 +137,10 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
                 node.setType(new Type(Types.ERROR, "Index " + i + " on line " + node.getLine() +  " was expected to have type int, was " + indexTypes[i]));
                 return null;
             }
+
+            if (arrayType instanceof ArrayType) {
+                arrayType = ((ArrayType)arrayType).getChildType();
+            }
         }
 
         if (invalidChildren(indexTypes)) {
@@ -144,7 +148,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             return null;
         }
 
-        node.setType(arrayType.getChildType());
+        node.setType(arrayType);
         return null;
     }
 
