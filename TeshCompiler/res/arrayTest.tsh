@@ -1,7 +1,3 @@
-#float b
-#b = weight / ((height / 100) * (height / 100))
-#b = weight / (height / 100)
-
 #OK
 int[] intArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
@@ -9,10 +5,13 @@ int[] intArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 int[][] intArrayArray
 
 #OK
-float[] floatArray = [1.0, 2.2]
+float[] floatArray1 = [1.0, 2.2]
 
 #Fail
-float[][] floatArrayArray = [[1, 2], floatArray]
+float[] floatArray2 = [1, 2]
+
+#OK
+float[][] floatArrayArray = [[1, 2], floatArray1]
 
 #Fail
 floatArrayArray = [[2.3], intArrayArray[0]]
@@ -35,6 +34,30 @@ intArrayArray[0][1] = 1
 #Fail
 intArrayArray[0][1] = "1"
 
-#
-floatArray[0] = 2.3
-floatArray[1] = 2
+#OK
+floatArray1[0] = 2.3
+
+#OK
+floatArray1[1] = 2
+
+#OK
+for i in intArray {
+	i = 10
+	int a = i * 10
+	string b
+	b = "Number is " + a
+}
+
+for i in intArrayArray {
+	#Fail
+	i = 10
+}
+
+#Both of these fail a lot.. should they though?
+for i in intArrayArray[0] {
+
+}
+
+for i in [1, 2, 3] {
+	
+}

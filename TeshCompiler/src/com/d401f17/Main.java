@@ -17,8 +17,8 @@ import java.io.*;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        //InputStream is = new ByteArrayInputStream( "int a\nstring b\na = b".getBytes() );
-        InputStream is = Main.class.getResourceAsStream("/channelExample.tsh");
+        //InputStream is = new ByteArrayInputStream( "string txt\nchannel stdio\n stdio << txt\n".getBytes() );
+        InputStream is = Main.class.getResourceAsStream("/arrayTest.tsh");
 
         CharStream input = CharStreams.fromStream(is);
         TeshLexer lexer = new TeshLexer(input);
@@ -30,13 +30,13 @@ public class Main {
 
         SymTab symbolTable = new SymbolTable();
         SymTab recordTable = new SymbolTable();
-        TypeCheckVisitor typeCheck = new TypeCheckVisitor(symbolTable, recordTable);
+        /*TypeCheckVisitor typeCheck = new TypeCheckVisitor(symbolTable, recordTable);
         ast.accept(typeCheck);
 
         for (String err : typeCheck.getErrors()) {
             System.out.println(err);
-        }
-        /*
+        }*/
+
         PrettyPrintASTVisitor p = new PrettyPrintASTVisitor();
         ast.accept(p);
         PrintWriter writer =
@@ -45,7 +45,7 @@ public class Main {
         writer.print("graph {\n" + p.toString() + "\n}\n");
         writer.flush();
         writer.close();
-        */
+
 
     }
 }

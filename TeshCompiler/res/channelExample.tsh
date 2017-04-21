@@ -13,7 +13,7 @@ channel stdio
 channel chn
 
 func chatHandler() void {
-    fork chn << $ "./chat.sh"
+    fork chn << $"./chat.sh"
 
     int p1Count = 0
     int p2Count = 0
@@ -27,7 +27,7 @@ func chatHandler() void {
         } else {
             p2Count += 1
         }
-        stdio << "Person 1: " + p1Count + "\nPerson 2: " + p2Count + "\n"
+        stdio << "Person 1: " + p1Count + "\nPerson 2:\" hej " + p2Count + "\n"
     }
 }
 

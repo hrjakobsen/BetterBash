@@ -12,14 +12,17 @@ record book {
 record book myBook
 record page myPage
 
-#myPage.number = 10
-#myPage.numberAsString = "10"
+myPage.number = 10
+myPage.numberAsString = "10"
+myBook.pageInBook = myPage
 
 record book notAPage
 myBook.pageInBook = notAPage
 
-#myBook.pageInBook = notAPage
 
+myBook2.pageInBook = myPage
+myBook.pageInBook.year = myPage
+myBook.notPageInBook = notAPage
 
 #myBook.pageInBook.number = 1994
 

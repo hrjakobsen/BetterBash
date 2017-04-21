@@ -7,7 +7,7 @@ import com.d401f17.Visitors.ASTVisitor;
  */
 public class ForNode extends StatementNode {
     private SimpleIdentifierNode variable;
-    private AST array;
+    private ArithmeticExpressionNode array;
     private AST statements;
 
     public AST getStatements() {
@@ -18,7 +18,7 @@ public class ForNode extends StatementNode {
         this.variable = variable;
     }
 
-    public AST getArray() {
+    public ArithmeticExpressionNode getArray() {
         return array;
     }
 
@@ -30,18 +30,18 @@ public class ForNode extends StatementNode {
         this.statements = statements;
     }
 
-    public void setArray(AST array) {
+    public void setArray(ArithmeticExpressionNode array) {
         this.array = array;
     }
 
-    public ForNode(SimpleIdentifierNode variable, AST array, AST statements, int lineNum) {
+    public ForNode(SimpleIdentifierNode variable, ArithmeticExpressionNode array, AST statements, int lineNum) {
         this.variable = variable;
         this.array = array;
         this.statements = statements;
         this.lineNum = lineNum;
     }
 
-    public ForNode(SimpleIdentifierNode variable, AST array, AST statements) {
+    public ForNode(SimpleIdentifierNode variable, ArithmeticExpressionNode array, AST statements) {
         this.variable = variable;
         this.array = array;
         this.statements = statements;

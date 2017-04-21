@@ -31,9 +31,7 @@ simpleStatement
     ;
 
 flow
-    : CONTINUE                                                                                                          #continueStatement
-    | BREAK                                                                                                             #breakStatement
-    | RETURN expression?                                                                                                 #returnStatement
+    : RETURN expression?                                                                                                 #returnStatement
     ;
 
 block:
@@ -51,7 +49,7 @@ functionCall
 compoundStatement
     : IF expression trueBranch=block ELSE falseBranch=block                                                             #ifStatement
     | WHILE expression block                                                                                            #whileStatement
-    | FOR SIMPLE_IDENTIFIER IN identifier block                                                                         #forStatement
+    | FOR SIMPLE_IDENTIFIER IN arithmeticExpression block                                                               #forStatement
     | recordDeclaration                                                                                                 #recordDeclarationStatement
     | functionDeclaration                                                                                               #functionDeclarationStatement
     | FORK compoundStatement                                                                                            #forkCompoundStatement
