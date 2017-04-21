@@ -31,24 +31,15 @@ public class Type implements Comparable<Type> {
     }
 
     public boolean isSubtypeOf(Types t) {
-        if (t == primitiveType) {
-            return true;
-        }
-
         switch (t) {
             case INT:
                 return primitiveType == Types.INT;
-                break;
             case FLOAT:
-                if ()
-                break;
-
+                return primitiveType == Types.INT || primitiveType == Types.FLOAT;
+            case CHAR:
+                return primitiveType == Types.INT || primitiveType == Types.CHAR;
             case STRING:
-
-                break;
-            case BOOL:
-
-                break;
+                return primitiveType == Types.INT || primitiveType == Types.FLOAT || primitiveType == Types.STRING || primitiveType == Types.CHAR || primitiveType == Types.BOOL;
             default:
                 return false;
         }

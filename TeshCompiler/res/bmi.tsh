@@ -1,6 +1,10 @@
 #!/bin/tesh
 
 #stdlib begin
+func val(string str) int {
+    int value
+    return value
+}
 func wait() void {
 }
 func makeFile(string str) file {
@@ -11,7 +15,8 @@ channel stdio
 #stdlib end
 
 func requestNonZeroInteger(string requestText) int {
-    #Variable to hold input
+    #Variables to hold input
+    string inputStr
     int input
 
     #Keep asking the user to input a valid choice until they do so
@@ -20,7 +25,8 @@ func requestNonZeroInteger(string requestText) int {
         stdio << requestText
 
         #Read input from user
-        input << stdio
+        inputStr << stdio
+        input = val(inputStr)
     }
 
     return input
@@ -36,10 +42,11 @@ func requestAndCalculate(string heightUnit, string weightUnit) float {
     weight = requestNonZeroInteger("Please enter you weight in " + weightUnit)
 
     #return the calculated BMI
-    return weight / ((height / 100) * (height / 100))
+    return weight / ((height / 100.0) * (height / 100))
 }
 
-#Declare a variable to store user's choice of units
+#Declare variables to store user's choice of units
+string unitChoiceStr
 int unitChoice = 0
 
 #Print to stdout
@@ -48,13 +55,15 @@ stdio << "1. Metric"
 stdio << "2. Imperial"
 
 #Read input from user
-unitChoice << stdio
+unitChoiceStr << stdio
+unitChoice = val(unitChoiceStr)
 
 #Keep asking the user to input a valid choice until they do so
 while unitChoice != 1 && unitChoice != 2 {
     stdio << "Please choose a valid option"
 
-    unitChoice << stdio
+    unitChoiceStr << stdio
+    unitChoice = val(unitChoiceStr)
 }
 
 #Declare variable to hold the calculated BMI

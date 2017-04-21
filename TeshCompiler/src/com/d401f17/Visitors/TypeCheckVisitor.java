@@ -919,20 +919,19 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
 
         if (leftType.getPrimitiveType() == Types.CHANNEL) { //Write to channel
-            /*
-            //if (rightType.subType(Types.STRING)) {
-            if (rightType.getPrimitiveType() == Types.STRING) {
-
+            if (rightType.isSubtypeOf(Types.STRING)) {
+                node.setType(new Type(Types.OK));
+            } else {
+                node.setType(new Type(Types.ERROR,node.getLine(), "Expected channel and string, got " + leftType + " and " + rightType));
             }
-            */
-
         } else if (rightType.getPrimitiveType() == Types.CHANNEL) { //Read from channel
-
-        } else {
-
+            if (leftType.getPrimitiveType() == Types.STRING) {
+                node.setType(new Type(Types.OK));
+            } else {
+                node.setType(new Type(Types.ERROR,node.getLine(), "Expected string and channel, got " + leftType + " and " + rightType));
+            }
         }
 
-        node.setType(new Type(Types.ERROR,node.getLine(), "Expected channel and string, got " + leftType + " and " + rightType));
         return null;
     }
 
