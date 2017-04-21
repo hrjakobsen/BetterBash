@@ -54,12 +54,12 @@ public class ForNodeTest {
         VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
         varNode.accept(typeCheckVisitor);
 
-        ArrayConstantNode array = new ArrayConstantNode(new ArrayList<ArithmeticExpressionNode>() {{
-                add(new ConstantNode(0, predicateType));
-                add(new ConstantNode(0, predicateType));
+        ArrayLiteralNode array = new ArrayLiteralNode(new ArrayList<ArithmeticExpressionNode>() {{
+                add(new LiteralNode(0, predicateType));
+                add(new LiteralNode(0, predicateType));
         }});
 
-        ForNode node = new ForNode(idNode, array, new ConstantNode(0, predicateType));
+        ForNode node = new ForNode(idNode, array, new LiteralNode(0, predicateType));
         node.accept(typeCheckVisitor);
 
 
