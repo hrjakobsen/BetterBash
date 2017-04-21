@@ -30,6 +30,30 @@ public class Type implements Comparable<Type> {
         return "Error on line " + lineNum + ": " + errorMessage;
     }
 
+    public boolean isSubtypeOf(Types t) {
+        if (t == primitiveType) {
+            return true;
+        }
+
+        switch (t) {
+            case INT:
+                return primitiveType == Types.INT;
+                break;
+            case FLOAT:
+                if ()
+                break;
+
+            case STRING:
+
+                break;
+            case BOOL:
+
+                break;
+            default:
+                return false;
+        }
+    }
+
     @Override
     public String toString() {
         return primitiveType.toString();

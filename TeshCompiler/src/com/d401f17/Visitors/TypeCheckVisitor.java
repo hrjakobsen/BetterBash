@@ -909,23 +909,30 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         node.getIdentifier().accept(this);
         node.getExpression().accept(this);
 
-        Type idType = node.getIdentifier().getType();
-        Type expType = node.getExpression().getType();
+        Type leftType = node.getIdentifier().getType();
+        Type rightType = node.getExpression().getType();
 
-        if (invalidChildren(idType, expType)) {
+        if (invalidChildren(leftType, rightType)) {
             node.setType(new Type(Types.IGNORE));
             return null;
         }
 
-        if (idType.getPrimitiveType() == Types.CHANNEL) {
-            expType = implicitIntFloatStringToString(expType, node.getLine());
-            if (expType.getPrimitiveType() == Types.STRING) {
-                node.setType(new Type(Types.OK));
-                return null;
+
+        if (leftType.getPrimitiveType() == Types.CHANNEL) { //Write to channel
+            /*
+            //if (rightType.subType(Types.STRING)) {
+            if (rightType.getPrimitiveType() == Types.STRING) {
+
             }
+            */
+
+        } else if (rightType.getPrimitiveType() == Types.CHANNEL) { //Read from channel
+
+        } else {
+
         }
 
-        node.setType(new Type(Types.ERROR,node.getLine(), "Expected channel and string, got " + idType + " and " + expType));
+        node.setType(new Type(Types.ERROR,node.getLine(), "Expected channel and string, got " + leftType + " and " + rightType));
         return null;
     }
 
