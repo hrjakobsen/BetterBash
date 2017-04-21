@@ -7,13 +7,13 @@ int[][] intArrayArray
 #OK
 float[] floatArray1 = [1.0, 2.2]
 
-#Fail
+#Fail line 11
 float[] floatArray2 = [1, 2]
 
-#OK
+#Fail line 14
 float[][] floatArrayArray = [[1, 2], floatArray1]
 
-#Fail
+#Fail line 17
 floatArrayArray = [[2.3], intArrayArray[0]]
 
 #OK
@@ -22,7 +22,7 @@ intArrayArray = [[2, 2], [4, 5]]
 #OK
 intArrayArray[0] = intArray
 
-#Fail
+#Fail line 26
 intArrayArray[0][1] = intArray
 
 #OK
@@ -31,7 +31,7 @@ intArrayArray[0][1] = intArray[0]
 #OK
 intArrayArray[0][1] = 1
 
-#Fail
+#Fail line 35
 intArrayArray[0][1] = "1"
 
 #OK
@@ -48,16 +48,20 @@ for i in intArray {
 	b = "Number is " + a
 }
 
+#OK
 for i in intArrayArray {
-	#Fail
+	#Fail line 54
 	i = 10
 }
 
-#Both of these fail a lot.. should they though?
+#OK
 for i in intArrayArray[0] {
-
+    #OK
+    int a = i + 10
 }
 
+#OK
 for i in [1, 2, 3] {
-	
+    #Fail line 66
+	string a = i + 10
 }
