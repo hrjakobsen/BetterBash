@@ -156,19 +156,7 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
                 ctx.start.getLine()
         );
     }
-/*
-    @Override
-    public AST visitReadFromChannelStatementToArray(TeshParser.ReadFromChannelStatementToArrayContext ctx) {
-        return new ChannelNode(
-                (ArrayAccessNode) visit(ctx.arrayAccess()),
-                new SimpleIdentifierNode(
-                        ctx.SIMPLE_IDENTIFIER().getText(),
-                        ctx.start.getLine()
-                ),
-                ctx.start.getLine()
-        );
-    }
-*/
+
     @Override
     public AST visitCompoundArrayStatement(TeshParser.CompoundArrayStatementContext ctx) {
         ArrayAccessNode element = (ArrayAccessNode) visit(ctx.arrayAccess());
@@ -204,6 +192,14 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
                 visit(ctx.expression()), visit(ctx.block()),
                 ctx.start.getLine()
         );
+    }
+
+    @Override
+    public AST visitChannelStatement(TeshParser.ChannelStatementContext ctx) {
+        return new ChannelNode(
+                new SimpleIdentifierNode(ctx.SIMPLE_IDENTIFIER().getText()),
+                (ArithmeticExpressionNode)visit(ctx.expression()),
+                ctx.start.getLine());
     }
 
     @Override
