@@ -91,7 +91,7 @@ public class PrettyPrintASTVisitor extends BaseVisitor<Void> {
     @Override
     public Void visit(IntLiteralNode node) {
         String id = Integer.toString(runningID++);
-        sb.append(id).append("\n").append(id).append("[label=\"IIINT").append(node.getType().toString()).append("\\n").append(node.getValue().toString().replace("\\", "\\\\")).append("\"]\n");
+        sb.append(id).append("\n").append(id).append("[label=\"").append(node.getType().toString()).append("\\n").append(node.getValue().toString().replace("\\", "\\\\")).append("\"]\n");
         return null;
     }
 

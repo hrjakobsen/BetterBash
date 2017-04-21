@@ -75,7 +75,7 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
                         ctx.SIMPLE_IDENTIFIER().getText(),
                         ctx.start.getLine()
                 ),
-                visit(ctx.identifier()),
+                (ArithmeticExpressionNode)visit(ctx.arithmeticExpression()),
                 visit(ctx.block()),
                 ctx.start.getLine()
         );

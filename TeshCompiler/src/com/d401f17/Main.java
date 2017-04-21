@@ -30,13 +30,13 @@ public class Main {
 
         SymTab symbolTable = new SymbolTable();
         SymTab recordTable = new SymbolTable();
-        TypeCheckVisitor typeCheck = new TypeCheckVisitor(symbolTable, recordTable);
+        /*TypeCheckVisitor typeCheck = new TypeCheckVisitor(symbolTable, recordTable);
         ast.accept(typeCheck);
 
         for (String err : typeCheck.getErrors()) {
             System.out.println(err);
-        }
-        /*
+        }*/
+
         PrettyPrintASTVisitor p = new PrettyPrintASTVisitor();
         ast.accept(p);
         PrintWriter writer =
@@ -45,7 +45,7 @@ public class Main {
         writer.print("graph {\n" + p.toString() + "\n}\n");
         writer.flush();
         writer.close();
-        */
+
 
     }
 }
