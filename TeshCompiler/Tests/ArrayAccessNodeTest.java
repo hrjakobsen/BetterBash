@@ -29,14 +29,13 @@ public class ArrayAccessNodeTest {
     @Parameterized.Parameters
     public static Collection<Object[]> data(){
         return Arrays.asList(new Object[][]{
-                {Types.INT, Types.OK},
+                {Types.INT, Types.INT},
                 {Types.FLOAT, Types.ERROR},
                 {Types.CHAR, Types.ERROR},
                 {Types.STRING, Types.ERROR},
                 {Types.BOOL, Types.ERROR},
                 {Types.ARRAY, Types.ERROR},
                 {Types.CHANNEL, Types.ERROR},
-                {Types.RECORD, Types.ERROR},
                 {Types.FILE, Types.ERROR},
         });
     }
@@ -47,11 +46,16 @@ public class ArrayAccessNodeTest {
         SymTab symbolTable = new SymbolTable();
         SymTab recordTable = new SymbolTable();
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
+
+        SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
+        idNode.setType(new Type(type));
+        TypeNode typeNode = new TypeNode(type.toString().toLowerCase());
+
+        VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
+        varNode.accept(typeCheckVisitor);
+
         ArrayAccessNode node = new ArrayAccessNode(
-                new SimpleIdentifierNode(
-                        "node",
-                        0
-                ) {{setType(new Type(Types.OK));}},
+                idNode,
                 new ArrayList<ArithmeticExpressionNode>(){{add(new LiteralNode(0, type));}}
         );
 

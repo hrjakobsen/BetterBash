@@ -4,7 +4,9 @@ import com.d401f17.AST.Nodes.VariableDeclarationNode;
 import com.d401f17.AST.TypeSystem.*;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -16,6 +18,9 @@ import java.util.Collection;
  */
 @RunWith(value = Parameterized.class)
 public class SimpleIdentifierNodeTest {
+
+  @Rule
+  public final ExpectedException exception = ExpectedException.none();
 
   @Parameterized.Parameter(value = 0)
   public Types predicateType;
@@ -33,13 +38,12 @@ public class SimpleIdentifierNodeTest {
               {Types.BOOL, Types.BOOL},
               {Types.ARRAY, Types.ARRAY},
               {Types.CHANNEL, Types.CHANNEL},
-              {Types.FILE, Types.FILE},
-              {Types.ERROR, Types.ERROR}
+              {Types.FILE, Types.FILE}
 
       });
   }
     @Test
-  public void SimpleIdentifierNode_SymbolsPresent_expected() {
+    public void SimpleIdentifierNode_SymbolsPresent_expected() {
         SymTab symbolTable = new SymbolTable();
         SymTab recordTable = new SymbolTable();
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
@@ -48,17 +52,24 @@ public class SimpleIdentifierNodeTest {
         idNode.setType(new Type(predicateType));
         TypeNode typeNode = new TypeNode(predicateType.toString().toLowerCase());
 
-        if(idNode.getType().getPrimitiveType() != Types.ERROR) {
+        VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
+        varNode.accept(typeCheckVisitor);
 
-            VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
-            varNode.accept(typeCheckVisitor);
-        }
-
+        String errMessage = predicateType + ", " + expectedType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
         try {
-            Assert.assertEquals(expectedType, symbolTable.lookup("a").getType().getPrimitiveType());
+            Assert.assertEquals(errMessage, expectedType, symbolTable.lookup("a").getType().getPrimitiveType());
         } catch (VariableNotDeclaredException e) {
-                Assert.assertEquals(expectedType, idNode.getType().getPrimitiveType());
-            }
+            Assert.fail();
         }
     }
 
+    @Test
+    public void SimpleIdentifierNode_SymbolsNotPresent_expected() throws VariableNotDeclaredException {
+        SymTab symbolTable = new SymbolTable();
+        SymTab recordTable = new SymbolTable();
+        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
+
+        exception.expect(VariableNotDeclaredException.class);
+        symbolTable.lookup("a");
+    }
+}

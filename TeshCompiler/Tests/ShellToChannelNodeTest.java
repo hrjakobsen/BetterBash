@@ -129,13 +129,12 @@ public class ShellToChannelNodeTest {
         varNode.accept(typeCheckVisitor);
 
         ArrayList<ArithmeticExpressionNode> c = new ArrayList<ArithmeticExpressionNode>(){{
-            add(new LiteralNode(0, leftType));
-            add(new LiteralNode(0, rightType));
+            add(new LiteralNode(0, Types.INT));
         }};
 
         ArrayAccessNode node = new ArrayAccessNode(idNode,c);
 
-        ArrayElementAssignmentNode a = new ArrayElementAssignmentNode(node, new LiteralNode(0, leftType));
+        ArrayElementAssignmentNode a = new ArrayElementAssignmentNode(node, new LiteralNode(0, rightType));
         a.accept(typeCheckVisitor);
 
         String errMessage = leftType + ", " + rightType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
