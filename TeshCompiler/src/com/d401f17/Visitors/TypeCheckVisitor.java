@@ -84,8 +84,8 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         } else if (leftType.getPrimitiveType() == Types.FLOAT) {
             if (rightType.getPrimitiveType() == Types.STRING) {
                 node.setType(rightType); //Float + String = String, Float + Char = String
-            } else if (rightType.getPrimitiveType() == Types.FLOAT) {
-                node.setType(rightType); //Int + Float = Float
+            } else if (rightType.getPrimitiveType() == Types.INT) {
+                node.setType(leftType); //Float + Int = Float
             } else {
                 node.setType(new Type(Types.ERROR,node.getLine(), "Expected int, float, string or char, got " + rightType));
             }
