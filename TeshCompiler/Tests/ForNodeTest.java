@@ -1,8 +1,5 @@
 import com.d401f17.AST.Nodes.*;
-import com.d401f17.AST.TypeSystem.SymTab;
-import com.d401f17.AST.TypeSystem.SymbolTable;
-import com.d401f17.AST.TypeSystem.Type;
-import com.d401f17.AST.TypeSystem.Types;
+import com.d401f17.AST.TypeSystem.*;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
 import org.junit.Test;
@@ -35,9 +32,29 @@ public class ForNodeTest {
                 {Types.BOOL, Types.OK},
                 {Types.ARRAY, Types.OK},
                 {Types.CHANNEL, Types.OK},
-                {Types.RECORD, Types.ERROR},
+                {Types.RECORD, Types.OK},
                 {Types.FILE, Types.OK}
         });
+    }
+
+    @Test
+    //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
+    public void ForNode_ForNodeTypeIsStatementsType() {
+        SymTab symbolTable = new SymbolTable();
+        SymTab recordTable = new SymbolTable();
+        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
+
+
+        ArrayLiteralNode array = new ArrayLiteralNode(new ArrayList<ArithmeticExpressionNode>() {{
+                add(new LiteralNode(0, predicateType));
+                add(new LiteralNode(0, predicateType));
+        }});
+
+        ForNode node = new ForNode(new SimpleIdentifierNode(""), array, new StatementsNode());
+        node.accept(typeCheckVisitor);
+
+        String errMessage = predicateType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
+        Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
     }
 
     @Test
@@ -47,23 +64,18 @@ public class ForNodeTest {
         SymTab recordTable = new SymbolTable();
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
 
-        SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
-        idNode.setType(new Type(predicateType));
-        TypeNode typeNode = new TypeNode(predicateType.toString().toLowerCase());
-
-        VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
-        varNode.accept(typeCheckVisitor);
 
         ArrayLiteralNode array = new ArrayLiteralNode(new ArrayList<ArithmeticExpressionNode>() {{
-                add(new LiteralNode(0, predicateType));
-                add(new LiteralNode(0, predicateType));
+            add(new LiteralNode(0, predicateType));
+            add(new LiteralNode(0, predicateType));
         }});
+        typeCheckVisitor.visit(array);
 
-        ForNode node = new ForNode(idNode, array, new LiteralNode(0, predicateType));
+        ForNode node = new ForNode(new SimpleIdentifierNode(""), array,
+                new LiteralNode(0, ((ArrayType)array.getType()).getChildType().getPrimitiveType()));
         node.accept(typeCheckVisitor);
 
-
         String errMessage = predicateType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
-        Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
+        Assert.assertEquals(errMessage, predicateType, node.getType().getPrimitiveType());
     }
 }
