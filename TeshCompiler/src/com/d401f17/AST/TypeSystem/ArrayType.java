@@ -19,10 +19,6 @@ public class ArrayType extends Type {
         super(primitiveType);
     }
 
-    public ArrayType(Types primitiveType, String errorMessage) {
-        super(primitiveType, errorMessage);
-    }
-
     public ArrayType(Types primitiveType, Type childType) {
         super(primitiveType);
         this.childType = childType;

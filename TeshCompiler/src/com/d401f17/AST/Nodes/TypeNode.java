@@ -22,7 +22,7 @@ public class TypeNode extends AST {
                 Types prim = Types.valueOf(primitiveType.toUpperCase());
                 this.setType(new Type(prim));
             } catch (IllegalArgumentException e) {
-                this.setType(new Type(Types.ERROR, "Unknown type: " + primitiveType));
+                this.setType(new Type(Types.ERROR, 0, "Unknown type: " + primitiveType));
             }
         }
     }
