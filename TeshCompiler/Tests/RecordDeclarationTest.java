@@ -92,18 +92,36 @@ public class RecordDeclarationTest {
             }
         };
 
-        RecordDeclarationNode subRecord = new RecordDeclarationNode("subrecord",variables);
+        RecordDeclarationNode subRecord = new RecordDeclarationNode("page",variables);
         subRecord.accept(typeCheckVisitor);
 
-        variables.add();
-        RecordDeclarationNode node = new RecordDeclarationNode("record",);
+        variables.remove(0);
+        SimpleIdentifierNode nameOfSubRecord = new SimpleIdentifierNode("mypage");
+        String[] a = {"a"};
+        Type[] b = {new Type(predicateType)};
+        RecordType recordType = new RecordType("page",a,b);
+        nameOfSubRecord.setType(recordType);
+        nameOfSubRecord.setName("mypage");
+        VariableDeclarationNode temp = new VariableDeclarationNode(nameOfSubRecord, new TypeNode(recordType.toString().toLowerCase()));
+        variables.add(temp);
+
+        RecordDeclarationNode node = new RecordDeclarationNode("book",variables);
         node.accept(typeCheckVisitor);
+
+        SimpleIdentifierNode record = new SimpleIdentifierNode("mybook");
+        String[] page = {"page"};
+        Type[] type = {new Type(Types.RECORD)};
+        RecordType recordType1 = new RecordType("mybook",page,type);
+        record.setType(recordType1);
+        record.setName("mybook");
+        VariableDeclarationNode book = new VariableDeclarationNode(record, new TypeNode(recordType1.toString().toLowerCase()));
+        book.accept(typeCheckVisitor);
 
         String errMessage = predicateType + ", " + expectedType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
         try {
-            Assert.assertEquals(errMessage, Types.RECORD, recordTable.lookup("record").getType().getPrimitiveType());
+            Assert.assertEquals(errMessage, Types.RECORD, recordTable.lookup("mybook").getType().getPrimitiveType());
             try {
-                Assert.assertEquals(errMessage, symbolTable.lookup("a").getType().getPrimitiveType(), ((RecordType) recordTable.lookup("record").getType()).getMemberType("a").getPrimitiveType());
+                Assert.assertEquals(errMessage, symbolTable.lookup("a").getType().getPrimitiveType(), ((RecordType) recordTable.lookup("book").getType()).getMemberType("a").getPrimitiveType());
             } catch (MemberNotFoundException m) {
                 Assert.fail();
             }
