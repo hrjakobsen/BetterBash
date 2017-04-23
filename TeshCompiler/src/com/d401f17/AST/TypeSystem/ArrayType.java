@@ -1,14 +1,23 @@
 package com.d401f17.AST.TypeSystem;
 
+import static com.d401f17.AST.TypeSystem.Types.*;
+
 /**
  * Created by mathias on 4/19/17.
  */
 public class ArrayType extends Type {
-
     private Type childType;
 
     public Type getChildType() {
         return childType;
+    }
+
+    public Type getInnermostChildType() {
+        Type inner = childType;
+        while (childType instanceof ArrayType) {
+            inner = ((ArrayType) childType).getChildType();
+        }
+        return inner;
     }
 
     public void setChildType(Type childType) {
