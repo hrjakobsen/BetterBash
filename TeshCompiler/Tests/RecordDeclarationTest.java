@@ -72,61 +72,68 @@ public class RecordDeclarationTest {
             Assert.fail();
         }
     }
-/*
+
     @Test
     public void RecordDeclarationNode_AddRecordWithRecordWithEachType_ExpectedRecordsPresentInRecordTable() {
         SymTab symbolTable = new SymbolTable();
         SymTab recordTable = new SymbolTable();
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
 
+        //Declaration of variable a
         SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
         idNode.setType(new Type(predicateType));
         TypeNode typeNode = new TypeNode(predicateType.toString().toLowerCase());
-
         VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
         varNode.accept(typeCheckVisitor);
 
+        //Array used for declaring the following two Records
         ArrayList<VariableDeclarationNode> variables = new ArrayList<VariableDeclarationNode>() {
             {
                 add(varNode);
             }
         };
 
+        //Declaring the page record
         RecordDeclarationNode subRecord = new RecordDeclarationNode("page",variables);
         subRecord.accept(typeCheckVisitor);
 
+        //Declaring the page record as a variable in order to declare another record, and add the record variable to the array
         variables.remove(0);
-        SimpleIdentifierNode nameOfSubRecord = new SimpleIdentifierNode("mypage");
+        SimpleIdentifierNode nameOfSubRecord = new SimpleIdentifierNode("page");
         String[] a = {"a"};
         Type[] b = {new Type(predicateType)};
         RecordType recordType = new RecordType("page",a,b);
         nameOfSubRecord.setType(recordType);
-        nameOfSubRecord.setName("mypage");
+        nameOfSubRecord.setName("page");
         VariableDeclarationNode temp = new VariableDeclarationNode(nameOfSubRecord, new TypeNode(recordType.toString().toLowerCase()));
+        temp.setType(new Type(Types.RECORD));
         variables.add(temp);
 
+        //Declaring the book record
         RecordDeclarationNode node = new RecordDeclarationNode("book",variables);
         node.accept(typeCheckVisitor);
 
-        SimpleIdentifierNode record = new SimpleIdentifierNode("mybook");
+        //Creates a book variable and add the page record to the book record as its only member
+        SimpleIdentifierNode record = new SimpleIdentifierNode("book");
         String[] page = {"page"};
         Type[] type = {new Type(Types.RECORD)};
-        RecordType recordType1 = new RecordType("mybook",page,type);
+        RecordType recordType1 = new RecordType("book",page,type);
         record.setType(recordType1);
-        record.setName("mybook");
+        record.setName("book");
         VariableDeclarationNode book = new VariableDeclarationNode(record, new TypeNode(recordType1.toString().toLowerCase()));
         book.accept(typeCheckVisitor);
 
-        String errMessage = predicateType + ", " + expectedType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
         try {
-            Assert.assertEquals(errMessage, Types.RECORD, recordTable.lookup("mybook").getType().getPrimitiveType());
+            RecordType bookType = ((RecordType)recordTable.lookup("book").getType());
+            Assert.assertEquals(Types.RECORD, bookType.getPrimitiveType());
             try {
-                Assert.assertEquals(errMessage, symbolTable.lookup("a").getType().getPrimitiveType(), ((RecordType) recordTable.lookup("book").getType()).getMemberType("a").getPrimitiveType());
+                RecordType pageType = ((RecordType)bookType.getMemberType("page"));
+                Assert.assertEquals(symbolTable.lookup("a").getType().getPrimitiveType(), pageType.getMemberType("a").getPrimitiveType());
             } catch (MemberNotFoundException m) {
                 Assert.fail();
             }
         } catch (VariableNotDeclaredException e) {
             Assert.fail();
         }
-    }*/
+    }
 }

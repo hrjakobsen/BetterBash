@@ -11,8 +11,8 @@ import com.d401f17.Visitors.ASTVisitor;
  */
 public class TypeNode extends AST {
     public TypeNode(String primitiveType) {
-        if (primitiveType.substring(0, Math.min(primitiveType.length(), 6)).equals("record")) {
-            this.setType(new RecordType(primitiveType.substring(6, primitiveType.length()), null, null));
+        if (primitiveType.substring(0, Math.min(primitiveType.length(), 7)).equals("record ")) {
+            this.setType(new RecordType(primitiveType.substring(7, primitiveType.length()), null, null));
         } else if (primitiveType.endsWith("[]")) {
             String[] parts = primitiveType.split("\\[");
             this.setType(new ArrayType(Types.ARRAY, new Type(Types.valueOf(parts[0].toUpperCase())), parts.length - 2));
