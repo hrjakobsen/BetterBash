@@ -1,5 +1,5 @@
 import com.d401f17.AST.Nodes.*;
-import com.d401f17.AST.TypeSystem.*;
+import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
 import org.junit.Rule;

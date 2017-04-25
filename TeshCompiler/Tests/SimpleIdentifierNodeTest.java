@@ -1,7 +1,7 @@
 import com.d401f17.AST.Nodes.SimpleIdentifierNode;
 import com.d401f17.AST.Nodes.TypeNode;
 import com.d401f17.AST.Nodes.VariableDeclarationNode;
-import com.d401f17.AST.TypeSystem.*;
+import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
 import org.junit.Rule;

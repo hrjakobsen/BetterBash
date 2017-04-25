@@ -1,8 +1,6 @@
-package com.d401f17.AST.TypeSystem;
+package com.d401f17.TypeSystem;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by Henrik on 17-04-2017.
@@ -16,7 +14,6 @@ public class RecordType extends Type {
     }
 
     public RecordType(String name, String[] memberNames, Type[] memberTypes) {
-        super(Types.RECORD);
         this.name = name;
 
         if (memberNames != null && memberNames.length == memberTypes.length) {

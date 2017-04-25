@@ -1,7 +1,23 @@
 #!/bin/tesh
 
 #stdlib begin
-func val(string str) int {
+func str(int i) string {
+    string o
+    return o
+}
+func str(float i) string {
+    string o
+    return o
+}
+func str(char i) string {
+    string o
+    return o
+}
+func str(bool i) string {
+    string o
+    return o
+}
+func intVal(string str) int {
     int value
     return value
 }
@@ -26,7 +42,7 @@ func requestNonZeroInteger(string requestText) int {
 
         #Read input from user
         inputStr << stdio
-        input = val(inputStr)
+        input = intVal(inputStr)
     }
 
     return input
@@ -56,14 +72,14 @@ stdio << "2. Imperial"
 
 #Read input from user
 unitChoiceStr << stdio
-unitChoice = val(unitChoiceStr)
+unitChoice = intVal(unitChoiceStr)
 
 #Keep asking the user to input a valid choice until they do so
 while unitChoice != 1 && unitChoice != 2 {
     stdio << "Please choose a valid option"
 
     unitChoiceStr << stdio
-    unitChoice = val(unitChoiceStr)
+    unitChoice = intVal(unitChoiceStr)
 }
 
 #Declare variable to hold the calculated BMI
@@ -93,5 +109,5 @@ if BMI < 18.5 {
 }
 
 #Tell the user his/her BMI and category
-stdio << "Your BMI is " + BMI + ""
+stdio << "Your BMI is " + str(BMI)
 stdio << "This puts you in the category " + category

@@ -1,6 +1,7 @@
 package com.d401f17.AST.Nodes;
 
-import com.d401f17.AST.TypeSystem.Types;
+import com.d401f17.TypeSystem.CharType;
+import com.d401f17.TypeSystem.Types;
 import com.d401f17.Visitors.ASTVisitor;
 
 /**
@@ -8,10 +9,10 @@ import com.d401f17.Visitors.ASTVisitor;
  */
 public class CharLiteralNode extends LiteralNode {
     public CharLiteralNode(Character value) {
-        super(value, Types.STRING);
+        super(value, new CharType());
     }
     public CharLiteralNode(Character value, int lineNumber) {
-        super(value, Types.STRING, lineNumber);
+        super(value, new CharType(), lineNumber);
     }
 
     public Character getValue() {

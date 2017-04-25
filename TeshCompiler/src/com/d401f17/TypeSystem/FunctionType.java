@@ -1,4 +1,4 @@
-package com.d401f17.AST.TypeSystem;
+package com.d401f17.TypeSystem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +9,14 @@ import java.util.List;
 public class FunctionType extends Type {
     private String signature;
     private List<Type> args = new ArrayList<>();
+    private Type returnType;
 
-    public FunctionType(String name, Type[] formalArguments, Types returnType) {
-        super(returnType);
+    public Type getReturnType() {
+        return returnType;
+    }
 
+    public FunctionType(String name, Type[] formalArguments, Type returnType) {
+        this.returnType = returnType;
         for (Type t : formalArguments) {
             this.args.add(t);
         }
@@ -23,6 +27,11 @@ public class FunctionType extends Type {
     @Override
     public boolean equals(Object o) {
         return super.equals(o);
+    }
+
+    @Override
+    public String toString() {
+        return returnType.toString();
     }
 
     public String getSignature() {

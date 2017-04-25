@@ -1,6 +1,4 @@
-package com.d401f17.AST.TypeSystem;
-
-import static com.d401f17.AST.TypeSystem.Types.*;
+package com.d401f17.TypeSystem;
 
 /**
  * Created by mathias on 4/19/17.
@@ -20,31 +18,24 @@ public class ArrayType extends Type {
         return inner;
     }
 
-    public void setChildType(Type childType) {
+    public ArrayType() {
+    }
+
+    public ArrayType(Type childType) {
         this.childType = childType;
     }
 
-    public ArrayType(Types primitiveType) {
-        super(primitiveType);
-    }
-
-    public ArrayType(Types primitiveType, Type childType) {
-        super(primitiveType);
-        this.childType = childType;
-    }
-
-    public ArrayType(Types primitiveType, Type childType, int depth) {
-        super(primitiveType);
+    public ArrayType(Type childType, int depth) {
         if (depth <= 0) {
             this.childType = childType;
         } else {
-            this.childType = new ArrayType(Types.ARRAY, childType, depth - 1);
+            this.childType = new ArrayType(childType, depth - 1);
         }
     }
 
     @Override
     public String toString() {
-        return childType.toString().toUpperCase() + "[]";
+        return childType.toString() + "[]";
     }
 
     @Override

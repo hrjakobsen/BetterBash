@@ -1,4 +1,4 @@
-package com.d401f17.AST.TypeSystem;
+package com.d401f17.TypeSystem;
 
 /**
  * Created by Henrik on 05-04-2017.

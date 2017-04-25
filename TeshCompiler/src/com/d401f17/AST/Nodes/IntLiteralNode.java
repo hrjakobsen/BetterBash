@@ -1,6 +1,7 @@
 package com.d401f17.AST.Nodes;
 
-import com.d401f17.AST.TypeSystem.Types;
+import com.d401f17.TypeSystem.IntType;
+import com.d401f17.TypeSystem.Types;
 import com.d401f17.Visitors.ASTVisitor;
 
 /**
@@ -9,11 +10,11 @@ import com.d401f17.Visitors.ASTVisitor;
 public class IntLiteralNode extends LiteralNode {
 
     public IntLiteralNode(int value) {
-        super(value, Types.INT);
+        super(value, new IntType());
     }
 
     public IntLiteralNode(int value, int lineNumber) {
-        super(value, Types.INT, lineNumber);
+        super(value, new IntType(), lineNumber);
     }
 
     public Integer getValue() {

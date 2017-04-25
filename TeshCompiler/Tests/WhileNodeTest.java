@@ -1,9 +1,9 @@
 import com.d401f17.AST.Nodes.LiteralNode;
 import com.d401f17.AST.Nodes.WhileNode;
 import com.d401f17.AST.Nodes.StatementsNode;
-import com.d401f17.AST.TypeSystem.SymTab;
-import com.d401f17.AST.TypeSystem.SymbolTable;
-import com.d401f17.AST.TypeSystem.Types;
+import com.d401f17.TypeSystem.SymTab;
+import com.d401f17.TypeSystem.SymbolTable;
+import com.d401f17.TypeSystem.Types;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
 import org.junit.Test;
