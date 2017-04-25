@@ -14,8 +14,8 @@ public class ArrayType extends Type {
 
     public Type getInnermostChildType() {
         Type inner = childType;
-        while (childType instanceof ArrayType) {
-            inner = ((ArrayType) childType).getChildType();
+        while (inner instanceof ArrayType) {
+            inner = ((ArrayType) inner).getChildType();
         }
         return inner;
     }

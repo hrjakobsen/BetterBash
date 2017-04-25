@@ -17,8 +17,8 @@ import java.io.*;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        InputStream is = new ByteArrayInputStream( "string[] intArray = [1, 2.3, true, 4, 5, 6, 7, 8, 9, 10]".getBytes() );
-        //InputStream is = Main.class.getResourceAsStream("/arrayTest.tsh");
+        //InputStream is = new ByteArrayInputStream( "float[][] intArray = [[1, 2], [2, 2]]".getBytes() );
+        InputStream is = Main.class.getResourceAsStream("/arrayTest.tsh");
 
         CharStream input = CharStreams.fromStream(is);
         TeshLexer lexer = new TeshLexer(input);

@@ -50,7 +50,8 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         return sb.toString();
     }
 
-     @Override
+/*
+    @Override
     public Void visit(AdditionNode node) {
         node.getLeft().accept(this);
         node.getRight().accept(this);
@@ -89,7 +90,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             } else {
                 node.setType(new Type(Types.ERROR,node.getLine(), "Expected int, float, string or char, got " + rightType));
             }
-     } else if (leftType.getPrimitiveType() == Types.STRING) {
+        } else if (leftType.getPrimitiveType() == Types.STRING) {
             if (rightType.getPrimitiveType() == Types.INT || rightType.getPrimitiveType() == Types.FLOAT || rightType.getPrimitiveType() == Types.CHAR || rightType.getPrimitiveType() == Types.BOOL) {
                 node.setType(leftType); //String + Int = String, String + Float = String, String + Char = String, String + Bool = String
             } else {
@@ -115,6 +116,56 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         return null;
     }
+ */
+@Override
+public Void visit(AdditionNode node) {
+    node.getLeft().accept(this);
+    node.getRight().accept(this);
+
+    Type leftType = node.getLeft().getType();
+    Type rightType = node.getRight().getType();
+
+    if (invalidChildren(leftType, rightType)) {
+        node.setType(new Type(Types.IGNORE));
+        return null;
+    }
+
+
+    if (leftType.equals(rightType)) {
+        if (leftType.getPrimitiveType() == Types.INT || leftType.getPrimitiveType() == Types.FLOAT || leftType.getPrimitiveType() == Types.STRING) {
+            node.setType(leftType); //Int + Int = Int, Float + Float = Float, String + String = String
+        } else {
+            node.setType(new Type(Types.ERROR, node.getLine(), "Expected int, float or string, got " + leftType));
+        }
+        return null;
+    }
+
+    if (leftType.getPrimitiveType() == Types.INT) {
+        if (rightType.getPrimitiveType() == Types.CHAR) {
+            node.setType(rightType); //Int + Char = Char
+        } else if (rightType.getPrimitiveType() == Types.FLOAT) {
+            node.setType(rightType); //Int + Float = Float
+        } else {
+            node.setType(new Type(Types.ERROR,node.getLine(), "Expected int, float or char, got " + rightType));
+        }
+    } else if (leftType.getPrimitiveType() == Types.FLOAT) {
+        if (rightType.getPrimitiveType() == Types.INT) {
+            node.setType(leftType); //Float + Int = Float
+        } else {
+            node.setType(new Type(Types.ERROR,node.getLine(), "Expected int or float, got " + rightType));
+        }
+    } else if (leftType.getPrimitiveType() == Types.CHAR) {
+        if (rightType.getPrimitiveType() == Types.INT) {
+            node.setType(leftType); //Char + Int = Char
+        } else {
+            node.setType(new Type(Types.ERROR, node.getLine(), "Expected int, got " + rightType));
+        }
+    } else {
+        node.setType(new Type(Types.ERROR,node.getLine(), "Expected int, float, string, or got " + leftType));
+    }
+
+    return null;
+}
 
     @Override
     public Void visit(AndNode node) {
@@ -179,42 +230,17 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         for (int i = 0; i < expressionNodes.size(); i++) {
             expressionNodes.get(i).accept(this);
             expressionTypes[i] = expressionNodes.get(i).getType();
-
-            /*
-            if (!expressionTypes[i].isSubtypeOf(expressionTypes[0])) {
-                allSameType = false;
-                errorIndex = i;
-            }
-            */
         }
-
-        Types arrayType = expressionTypes[0].getPrimitiveType();
-        Types highestType = expressionTypes[0].getPrimitiveType();
 
         for (int i = 1; i < expressionNodes.size(); i++) {
             if (!expressionTypes[i].equals(expressionTypes[i - 1])) {
-                if (expressionTypes[i].isSubtypeOf(highestType)) {
-                    try {
-                        highestType = expressionTypes[i].implicitConversion(highestType);
-                    } catch (InvalidConversionException e) {}
-                } else {
-                    errorIndex = i;
-                    allSameType = false;
-                }
-/*
-                try {
-                    arrayType = expressionTypes[i].implicitConversion(expressionTypes[i - 1]);
-                } catch (InvalidConversionException e) {
-                    errorIndex = i;
-                    allSameType = false;
-                    //System.out.println(e.getMessage());
-                }
-*/
+                errorIndex = i;
+                allSameType = false;
             }
         }
 
         if (allSameType) {
-            node.setType(new ArrayType(Types.ARRAY, new Type(arrayType)));
+            node.setType(new ArrayType(Types.ARRAY, expressionTypes[0]));
         } else {
             node.setType(new Type(Types.ERROR, node.getLine(), "Type of element " + (errorIndex + 1) + " was " + expressionTypes[errorIndex] + " expected " + expressionTypes[errorIndex - 1]));
         }
@@ -733,7 +759,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         if (commandType.getPrimitiveType() == Types.STRING) {
-            node.setType(new Type(Types.STRING)); //String
+            node.setType(commandType); //String
         } else {
             node.setType(new Type(Types.ERROR, node.getLine(), "Expected string, got " + commandType));
         }
@@ -755,7 +781,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         if (channelType.getPrimitiveType() == Types.CHANNEL && commandType.getPrimitiveType() == Types.STRING) {
-            node.setType(commandType); //String
+            node.setType(new Type(Types.OK));
         } else {
             node.setType(new Type(Types.ERROR, node.getLine(), "Expected channel and string, got " + channelType + " and " + commandType));
         }
@@ -1001,32 +1027,18 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             return new Type(Types.IGNORE);
         }
 
-        String errorMessage = "Expected " + var + ", got " + exp;
-
+        boolean success;
         if (var instanceof ArrayType && exp instanceof ArrayType) {
-            var = ((ArrayType)var).getInnermostChildType();
-            exp = ((ArrayType)exp).getInnermostChildType();
+            success = exp.equals(var);
+        } else {
+            success = exp.isSubtypeOf(var.getPrimitiveType());
         }
 
-        if (exp.isSubtypeOf(var.getPrimitiveType())) {
+        if (var.getPrimitiveType() == Types.CHAR && exp.getPrimitiveType() == Types.INT || success) {
             return new Type(Types.OK);
         } else {
-            return new Type(Types.ERROR, lineNum, errorMessage);
+            return new Type(Types.ERROR, lineNum, "Expected " + var + ", got " + exp);
         }
-
-        /*
-        if (var.equals(exp)) {
-            return new Type(Types.OK);
-        }
-
-        if (exp.getPrimitiveType() == Types.INT) {
-            if (var.getPrimitiveType() == Types.FLOAT || var.getPrimitiveType() == Types.CHAR) {
-                return new Type(Types.OK);
-            }
-        }
-
-        return new Type(Types.ERROR, lineNum, "Expected " + var + ", got " + exp);
-        */
     }
 
     private Type binaryEquality(InfixExpressionNode node) {
