@@ -129,7 +129,7 @@ public class ArrayLiteralNodeTest {
 
         node.accept(typeCheckVisitor);
 
-        String errMessage = type + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
+        String errMessage = "[" + type + ", " + type2 + "] => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
         if(node.getType() instanceof ArrayType) {
             Assert.assertEquals(errMessage, expectedType, ((ArrayType)node.getType()).getChildType().getPrimitiveType());
         } else {
