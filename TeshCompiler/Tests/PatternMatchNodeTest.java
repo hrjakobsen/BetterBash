@@ -17,13 +17,13 @@ import java.util.Collection;
  * Created by hu on 4/25/17.
  */
 @RunWith(value = Parameterized.class)
-public class ChannelNodeTest {
+public class PatternMatchNodeTest {
 
     @Parameterized.Parameter(value = 0)
-    public Types predicateType;
+    public Types leftType;
 
     @Parameterized.Parameter(value = 1)
-    public Types expessionType;
+    public Types rightType;
 
     @Parameterized.Parameter(value = 2)
     public Types expectedType;
@@ -61,7 +61,7 @@ public class ChannelNodeTest {
                 {Types.STRING, Types.INT, Types.ERROR},
                 {Types.STRING, Types.FLOAT, Types.ERROR},
                 {Types.STRING, Types.CHAR, Types.ERROR},
-                {Types.STRING, Types.STRING, Types.ERROR},
+                {Types.STRING, Types.STRING, Types.BOOL},
                 {Types.STRING, Types.BOOL, Types.ERROR},
                 {Types.STRING, Types.ARRAY, Types.ERROR},
                 {Types.STRING, Types.CHANNEL, Types.ERROR},
@@ -88,7 +88,7 @@ public class ChannelNodeTest {
                 {Types.CHANNEL, Types.INT, Types.ERROR},
                 {Types.CHANNEL, Types.FLOAT, Types.ERROR},
                 {Types.CHANNEL, Types.CHAR, Types.ERROR},
-                {Types.CHANNEL, Types.STRING, Types.OK},
+                {Types.CHANNEL, Types.STRING, Types.ERROR},
                 {Types.CHANNEL, Types.BOOL, Types.ERROR},
                 {Types.CHANNEL, Types.ARRAY, Types.ERROR},
                 {Types.CHANNEL, Types.CHANNEL, Types.ERROR},
@@ -114,24 +114,18 @@ public class ChannelNodeTest {
                 {Types.FILE, Types.FILE, Types.ERROR}
         });
     }
+
     @Test
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
-    public void ChannelNode_CheckBothSides_ExpectedLeftSideToBeChannelRightToBeString() {
+    public void PatternMatchNode_BothSidesToBeStrings_ExpectBool() {
         SymTab symbolTable = new SymbolTable();
         SymTab recordTable = new SymbolTable();
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
 
-        SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
-        idNode.setType(new Type(predicateType));
-        TypeNode typeNode = new TypeNode(predicateType.toString().toLowerCase());
-
-        VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
-        varNode.accept(typeCheckVisitor);
-
-        ChannelNode node = new ChannelNode(idNode, new LiteralNode(0, expessionType));
+        PatternMatchNode node = new PatternMatchNode(new LiteralNode(0, leftType), new LiteralNode(0, rightType));
         node.accept(typeCheckVisitor);
 
-        String errMessage = predicateType + "," + expessionType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
+        String errMessage = leftType + "," + rightType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
         Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
     }
 }
