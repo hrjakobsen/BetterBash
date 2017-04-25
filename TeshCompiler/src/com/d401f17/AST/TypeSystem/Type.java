@@ -35,27 +35,20 @@ public class Type implements Comparable<Type> {
     }
 
     public boolean isSubtypeOf(Types t) {
-        if (t == primitiveType) {
-            return true;
-        }
+        return (t == primitiveType) || (t == Types.FLOAT && primitiveType == Types.INT);
 
-        switch (t) {
-            case FLOAT:
-                return primitiveType == Types.INT;
-            case CHAR:
-                return primitiveType == Types.INT;
-            case STRING:
-                return primitiveType == Types.INT || primitiveType == Types.FLOAT || primitiveType == Types.CHAR || primitiveType == Types.BOOL;
-            default:
-                return false;
-        }
+/*        if (t == primitiveType) {
+            return true;
+        } else {
+            return t == Types.FLOAT && primitiveType == Types.INT;
+        }*/
     }
 
-    public Types implicitConversion(Type type) throws InvalidConversionException {
+    public Types implicitConversion(Type type) {
         return implicitConversion(type.getPrimitiveType());
     }
 
-    public Types implicitConversion(Types t) throws InvalidConversionException {
+    public Types implicitConversion(Types t) {
         switch (t) {
             case INT:
                 switch (primitiveType) {
@@ -63,45 +56,19 @@ public class Type implements Comparable<Type> {
                         return Types.INT;
                     case FLOAT:
                         return Types.FLOAT;
-                    case CHAR:
-                        return Types.CHAR;
-                    case STRING:
-                        return Types.STRING;
                     default:
-                        throw new InvalidConversionException("Could not convert " + primitiveType + " to " + t);
+                        return Types.ERROR;
                 }
             case FLOAT:
                 switch (primitiveType) {
                     case INT:
                     case FLOAT:
                         return Types.FLOAT;
-                    case STRING:
-                        return Types.STRING;
                     default:
-                        throw new InvalidConversionException("Could not convert " + primitiveType + " to " + t);
-                }
-            case CHAR:
-                switch (primitiveType) {
-                    case INT:
-                    case CHAR:
-                        return Types.CHAR;
-                    case STRING:
-                        return Types.STRING;
-                    default:
-                        throw new InvalidConversionException("Could not convert " + primitiveType + " to " + t);
-                }
-            case STRING:
-                switch (primitiveType) {
-                    case INT:
-                    case FLOAT:
-                    case CHAR:
-                    case STRING:
-                        return Types.STRING;
-                    default:
-                        throw new InvalidConversionException("Could not convert " + primitiveType + " to " + t);
+                        return Types.ERROR;
                 }
             default:
-                throw new InvalidConversionException("Could not convert " + primitiveType + " to " + t);
+                return Types.ERROR;
         }
     }
 

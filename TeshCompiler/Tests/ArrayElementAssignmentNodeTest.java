@@ -115,12 +115,12 @@ public class ArrayElementAssignmentNodeTest {
         SymTab recordTable = new SymbolTable();
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
 
-       SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
-       idNode.setType(new Type(leftType));
-       TypeNode typeNode = new TypeNode(leftType.toString().toLowerCase());
+        SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
+        idNode.setType(new Type(leftType));
+        TypeNode typeNode = new TypeNode(leftType.toString().toLowerCase());
 
-       VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
-       varNode.accept(typeCheckVisitor);
+        VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
+        varNode.accept(typeCheckVisitor);
 
         ArrayList<ArithmeticExpressionNode> c = new ArrayList<ArithmeticExpressionNode>(){{
             add(new LiteralNode(0, Types.INT));

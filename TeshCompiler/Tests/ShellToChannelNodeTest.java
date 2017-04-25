@@ -17,10 +17,10 @@ import java.util.Collection;
 public class ShellToChannelNodeTest {
 
     @Parameterized.Parameter(value = 0)
-    public Types leftType;
+    public Types channelType;
 
     @Parameterized.Parameter(value = 1)
-    public Types rightType;
+    public Types commandType;
 
     @Parameterized.Parameter(value = 2)
     public Types expectedType;
@@ -122,8 +122,8 @@ public class ShellToChannelNodeTest {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
 
         SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
-        idNode.setType(new Type(leftType));
-        TypeNode typeNode = new TypeNode(leftType.toString().toLowerCase());
+        idNode.setType(new Type(channelType));
+        TypeNode typeNode = new TypeNode(channelType.toString().toLowerCase());
 
         VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
         varNode.accept(typeCheckVisitor);
@@ -134,10 +134,10 @@ public class ShellToChannelNodeTest {
 
         ArrayAccessNode node = new ArrayAccessNode(idNode,c);
 
-        ArrayElementAssignmentNode a = new ArrayElementAssignmentNode(node, new LiteralNode(0, rightType));
+        ArrayElementAssignmentNode a = new ArrayElementAssignmentNode(node, new LiteralNode(0, commandType));
         a.accept(typeCheckVisitor);
 
-        String errMessage = leftType + ", " + rightType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
+        String errMessage = channelType + ", " + commandType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
         Assert.assertEquals(errMessage, expectedType, a.getType().getPrimitiveType());
     }
 }
