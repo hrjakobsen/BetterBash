@@ -1,6 +1,4 @@
-import com.d401f17.TypeSystem.SymTab;
-import com.d401f17.TypeSystem.SymbolTable;
-import com.d401f17.TypeSystem.Types;
+import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,24 +14,24 @@ import java.util.Collection;
 public class ArrayBuilderNodeTest {
 
     @Parameterized.Parameter(value = 0)
-    public Types predicateType;
+    public Type predicateType;
 
     @Parameterized.Parameter(value = 1)
-    public Types expectedType;
+    public Type expectedType;
 
     @Parameterized.Parameters
     public static Collection<Object[]> data(){
         return Arrays.asList(new Object[][]{
-                {Types.INT, Types.ERROR},
-                {Types.FLOAT, Types.ERROR},
-                {Types.CHAR, Types.ERROR},
-                {Types.STRING, Types.STRING},
-                {Types.BOOL, Types.ERROR},
-                {Types.ARRAY, Types.ERROR},
-                {Types.CHANNEL, Types.ERROR},
-                {Types.RECORD, Types.ERROR},
-                {Types.FILE, Types.ERROR},
-
+                {new IntType(), new ErrorType()},
+                {new FloatType(), new ErrorType()},
+                {new CharType(), new ErrorType()},
+                {new StringType(), new StringType()},
+                {new BoolType(), new ErrorType()},
+                {new ArrayType(), new ErrorType()},
+                {new ChannelType(), new ErrorType()},
+                {new RecordType(), new ErrorType()},
+                {new BinFileType(), new ErrorType()},
+                {new TextFileType(), new ErrorType()}
         });
     }
 

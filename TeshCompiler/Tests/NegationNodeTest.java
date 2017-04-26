@@ -1,8 +1,6 @@
 import com.d401f17.AST.Nodes.NegationNode;
 import com.d401f17.AST.Nodes.LiteralNode;
-import com.d401f17.TypeSystem.SymTab;
-import com.d401f17.TypeSystem.SymbolTable;
-import com.d401f17.TypeSystem.Types;
+import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,23 +17,25 @@ import java.util.Collection;
 public class NegationNodeTest {
 
     @Parameterized.Parameter(value = 0)
-    public Types expressionType;
+    public Type expressionType;
 
     @Parameterized.Parameter(value = 1)
-    public Types expectedType;
+    public Type expectedType;
 
     @Parameterized.Parameters
     public static Collection<Object[]> data(){
         return Arrays.asList(new Object[][]{
-                {Types.INT, Types.ERROR},
-                {Types.FLOAT, Types.ERROR},
-                {Types.CHAR, Types.ERROR},
-                {Types.STRING, Types.ERROR},
-                {Types.BOOL, Types.BOOL},
-                {Types.ARRAY, Types.ERROR},
-                {Types.CHANNEL, Types.ERROR},
-                {Types.RECORD, Types.ERROR},
-                {Types.FILE, Types.ERROR},
+                {new IntType(), new ErrorType()},
+                {new FloatType(), new ErrorType()},
+                {new CharType(), new ErrorType()},
+                {new StringType(), new ErrorType()},
+                {new BoolType(), new BoolType()},
+                {new ArrayType(), new ErrorType()},
+                {new ChannelType(), new ErrorType()},
+                {new RecordType(), new ErrorType()},
+                {new BinFileType(), new ErrorType()},
+                {new TextFileType(), new ErrorType()}
+
 
         });
     }
@@ -50,6 +50,6 @@ public class NegationNodeTest {
         node.accept(typeCheckVisitor);
 
         String errMessage = expressionType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
-        Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
+        Assert.assertEquals(errMessage, expectedType, node.getType());
     }
 }
