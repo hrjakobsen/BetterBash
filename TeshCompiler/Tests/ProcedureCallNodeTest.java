@@ -3,10 +3,6 @@
  */
 
 import com.d401f17.AST.Nodes.*;
-import com.d401f17.AST.TypeSystem.SymTab;
-import com.d401f17.AST.TypeSystem.SymbolTable;
-import com.d401f17.AST.TypeSystem.Type;
-import com.d401f17.AST.TypeSystem.Types;
 import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;

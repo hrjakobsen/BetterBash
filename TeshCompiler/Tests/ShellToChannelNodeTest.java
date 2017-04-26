@@ -17,98 +17,116 @@ import java.util.Collection;
 public class ShellToChannelNodeTest {
 
     @Parameterized.Parameter(value = 0)
-    public Types channelType;
+    public Type channelType;
 
     @Parameterized.Parameter(value = 1)
-    public Types commandType;
+    public Type commandType;
 
     @Parameterized.Parameter(value = 2)
-    public Types expectedType;
+    public Type expectedType;
 
     @Parameterized.Parameters
     public static Collection<Object[]> data(){
         return Arrays.asList(new Object[][]{
-                {Types.INT, Types.INT, Types.IGNORE},
-                {Types.INT, Types.FLOAT, Types.IGNORE},
-                {Types.INT, Types.CHAR, Types.IGNORE},
-                {Types.INT, Types.STRING, Types.ERROR},
-                {Types.INT, Types.BOOL, Types.IGNORE},
-                {Types.INT, Types.ARRAY, Types.IGNORE},
-                {Types.INT, Types.CHANNEL, Types.IGNORE},
-                {Types.INT, Types.RECORD, Types.IGNORE},
-                {Types.INT, Types.FILE, Types.IGNORE},
-                {Types.FLOAT, Types.INT, Types.IGNORE},
-                {Types.FLOAT, Types.FLOAT, Types.IGNORE},
-                {Types.FLOAT, Types.CHAR, Types.IGNORE},
-                {Types.FLOAT, Types.STRING, Types.ERROR},
-                {Types.FLOAT, Types.BOOL, Types.IGNORE},
-                {Types.FLOAT, Types.ARRAY, Types.IGNORE},
-                {Types.FLOAT, Types.CHANNEL, Types.IGNORE},
-                {Types.FLOAT, Types.RECORD, Types.IGNORE},
-                {Types.FLOAT, Types.FILE, Types.IGNORE},
-                {Types.CHAR, Types.INT, Types.IGNORE},
-                {Types.CHAR, Types.FLOAT, Types.IGNORE},
-                {Types.CHAR, Types.STRING, Types.ERROR},
-                {Types.CHAR, Types.BOOL, Types.IGNORE},
-                {Types.CHAR, Types.CHAR, Types.IGNORE},
-                {Types.CHAR, Types.ARRAY, Types.IGNORE},
-                {Types.CHAR, Types.CHANNEL, Types.IGNORE},
-                {Types.CHAR, Types.RECORD, Types.IGNORE},
-                {Types.CHAR, Types.FILE, Types.IGNORE},
-                {Types.STRING, Types.INT, Types.IGNORE},
-                {Types.STRING, Types.FLOAT, Types.IGNORE},
-                {Types.STRING, Types.CHAR, Types.IGNORE},
-                {Types.STRING, Types.STRING, Types.ERROR},
-                {Types.STRING, Types.BOOL, Types.IGNORE},
-                {Types.STRING, Types.ARRAY, Types.IGNORE},
-                {Types.STRING, Types.CHANNEL, Types.IGNORE},
-                {Types.STRING, Types.RECORD, Types.IGNORE},
-                {Types.STRING, Types.FILE, Types.IGNORE},
-                {Types.BOOL, Types.INT, Types.IGNORE},
-                {Types.BOOL, Types.FLOAT, Types.IGNORE},
-                {Types.BOOL, Types.STRING, Types.ERROR},
-                {Types.BOOL, Types.CHAR, Types.IGNORE},
-                {Types.BOOL, Types.BOOL, Types.IGNORE},
-                {Types.BOOL, Types.ARRAY, Types.IGNORE},
-                {Types.BOOL, Types.CHANNEL, Types.IGNORE},
-                {Types.BOOL, Types.RECORD, Types.IGNORE},
-                {Types.BOOL, Types.FILE, Types.IGNORE},
-                {Types.ARRAY, Types.INT, Types.IGNORE},
-                {Types.ARRAY, Types.FLOAT, Types.IGNORE},
-                {Types.ARRAY, Types.CHAR, Types.IGNORE},
-                {Types.ARRAY, Types.STRING, Types.ERROR},
-                {Types.ARRAY, Types.BOOL, Types.IGNORE},
-                {Types.ARRAY, Types.ARRAY, Types.IGNORE},
-                {Types.ARRAY, Types.CHANNEL, Types.IGNORE},
-                {Types.ARRAY, Types.RECORD, Types.IGNORE},
-                {Types.ARRAY, Types.FILE, Types.IGNORE},
-                {Types.CHANNEL, Types.INT, Types.IGNORE},
-                {Types.CHANNEL, Types.FLOAT, Types.IGNORE},
-                {Types.CHANNEL, Types.CHAR, Types.IGNORE},
-                {Types.CHANNEL, Types.STRING, Types.OK},
-                {Types.CHANNEL, Types.BOOL, Types.IGNORE},
-                {Types.CHANNEL, Types.ARRAY, Types.IGNORE},
-                {Types.CHANNEL, Types.CHANNEL, Types.IGNORE},
-                {Types.CHANNEL, Types.RECORD, Types.IGNORE},
-                {Types.CHANNEL, Types.FILE, Types.IGNORE},
-                {Types.RECORD, Types.INT, Types.IGNORE},
-                {Types.RECORD, Types.FLOAT, Types.IGNORE},
-                {Types.RECORD, Types.CHAR, Types.IGNORE},
-                {Types.RECORD, Types.STRING, Types.IGNORE},
-                {Types.RECORD, Types.BOOL, Types.IGNORE},
-                {Types.RECORD, Types.ARRAY, Types.IGNORE},
-                {Types.RECORD, Types.CHANNEL, Types.IGNORE},
-                {Types.RECORD, Types.RECORD, Types.IGNORE},
-                {Types.RECORD, Types.FILE, Types.IGNORE},
-                {Types.FILE, Types.INT, Types.IGNORE},
-                {Types.FILE, Types.FLOAT, Types.IGNORE},
-                {Types.FILE, Types.STRING, Types.ERROR},
-                {Types.FILE, Types.CHAR, Types.IGNORE},
-                {Types.FILE, Types.BOOL, Types.IGNORE},
-                {Types.FILE, Types.ARRAY, Types.IGNORE},
-                {Types.FILE, Types.CHANNEL, Types.IGNORE},
-                {Types.FILE, Types.RECORD, Types.IGNORE},
-                {Types.FILE, Types.FILE, Types.IGNORE}
+                {new IntType(), new IntType(), new IgnoreType()},
+                {new IntType(), new FloatType(), new IgnoreType()},
+                {new IntType(), new CharType(), new IgnoreType()},
+                {new IntType(), new StringType(), new ErrorType()},
+                {new IntType(), new BoolType(), new IgnoreType()},
+                {new IntType(), new ArrayType(), new IgnoreType()},
+                {new IntType(), new ChannelType(), new IgnoreType()},
+                {new IntType(), new RecordType(), new IgnoreType()},
+                {new IntType(), new TextFileType(), new IgnoreType()},
+                {new IntType(), new BinFileType(), new IgnoreType()},
+                {new FloatType(), new IntType(), new IgnoreType()},
+                {new FloatType(), new FloatType(), new IgnoreType()},
+                {new FloatType(), new CharType(), new IgnoreType()},
+                {new FloatType(), new StringType(), new ErrorType()},
+                {new FloatType(), new BoolType(), new IgnoreType()},
+                {new FloatType(), new ArrayType(), new IgnoreType()},
+                {new FloatType(), new ChannelType(), new IgnoreType()},
+                {new FloatType(), new RecordType(), new IgnoreType()},
+                {new FloatType(), new TextFileType(), new IgnoreType()},
+                {new FloatType(), new BinFileType(), new IgnoreType()},
+                {new CharType(), new IntType(), new IgnoreType()},
+                {new CharType(), new FloatType(), new IgnoreType()},
+                {new CharType(), new StringType(), new ErrorType()},
+                {new CharType(), new BoolType(), new IgnoreType()},
+                {new CharType(), new CharType(), new IgnoreType()},
+                {new CharType(), new ArrayType(), new IgnoreType()},
+                {new CharType(), new ChannelType(), new IgnoreType()},
+                {new CharType(), new RecordType(), new IgnoreType()},
+                {new CharType(), new TextFileType(), new IgnoreType()},
+                {new CharType(), new BinFileType(), new IgnoreType()},
+                {new StringType(), new IntType(), new IgnoreType()},
+                {new StringType(), new FloatType(), new IgnoreType()},
+                {new StringType(), new CharType(), new IgnoreType()},
+                {new StringType(), new StringType(), new ErrorType()},
+                {new StringType(), new BoolType(), new IgnoreType()},
+                {new StringType(), new ArrayType(), new IgnoreType()},
+                {new StringType(), new ChannelType(), new IgnoreType()},
+                {new StringType(), new RecordType(), new IgnoreType()},
+                {new StringType(), new TextFileType(), new IgnoreType()},
+                {new StringType(), new BinFileType(), new IgnoreType()},
+                {new BoolType(), new IntType(), new IgnoreType()},
+                {new BoolType(), new FloatType(), new IgnoreType()},
+                {new BoolType(), new StringType(), new ErrorType()},
+                {new BoolType(), new CharType(), new IgnoreType()},
+                {new BoolType(), new BoolType(), new IgnoreType()},
+                {new BoolType(), new ArrayType(), new IgnoreType()},
+                {new BoolType(), new ChannelType(), new IgnoreType()},
+                {new BoolType(), new RecordType(), new IgnoreType()},
+                {new BoolType(), new TextFileType(), new IgnoreType()},
+                {new BoolType(), new BinFileType(), new IgnoreType()},
+                {new ArrayType(), new IntType(), new IgnoreType()},
+                {new ArrayType(), new FloatType(), new IgnoreType()},
+                {new ArrayType(), new CharType(), new IgnoreType()},
+                {new ArrayType(), new StringType(), new ErrorType()},
+                {new ArrayType(), new BoolType(), new IgnoreType()},
+                {new ArrayType(), new ArrayType(), new IgnoreType()},
+                {new ArrayType(), new ChannelType(), new IgnoreType()},
+                {new ArrayType(), new RecordType(), new IgnoreType()},
+                {new ArrayType(), new TextFileType(), new IgnoreType()},
+                {new ArrayType(), new BinFileType(), new IgnoreType()},
+                {new ChannelType(), new IntType(), new IgnoreType()},
+                {new ChannelType(), new FloatType(), new IgnoreType()},
+                {new ChannelType(), new CharType(), new IgnoreType()},
+                {new ChannelType(), new StringType(), new OkType()},
+                {new ChannelType(), new BoolType(), new IgnoreType()},
+                {new ChannelType(), new ArrayType(), new IgnoreType()},
+                {new ChannelType(), new ChannelType(), new IgnoreType()},
+                {new ChannelType(), new RecordType(), new IgnoreType()},
+                {new ChannelType(), new TextFileType(), new IgnoreType()},
+                {new ChannelType(), new BinFileType(), new IgnoreType()},
+                {new RecordType(), new IntType(), new IgnoreType()},
+                {new RecordType(), new FloatType(), new IgnoreType()},
+                {new RecordType(), new CharType(), new IgnoreType()},
+                {new RecordType(), new StringType(), new IgnoreType()},
+                {new RecordType(), new BoolType(), new IgnoreType()},
+                {new RecordType(), new ArrayType(), new IgnoreType()},
+                {new RecordType(), new ChannelType(), new IgnoreType()},
+                {new RecordType(), new RecordType(), new IgnoreType()},
+                {new RecordType(), new TextFileType(), new IgnoreType()},
+                {new RecordType(), new BinFileType(), new IgnoreType()},
+                {new BinFileType(), new IntType(), new IgnoreType()},
+                {new BinFileType(), new FloatType(), new IgnoreType()},
+                {new BinFileType(), new StringType(), new IgnoreType()},
+                {new BinFileType(), new CharType(), new IgnoreType()},
+                {new BinFileType(), new BoolType(), new IgnoreType()},
+                {new BinFileType(), new ArrayType(), new IgnoreType()},
+                {new BinFileType(), new ChannelType(), new IgnoreType()},
+                {new BinFileType(), new RecordType(), new IgnoreType()},
+                {new BinFileType(), new TextFileType(), new IgnoreType()},
+                {new BinFileType(), new BinFileType(), new IgnoreType()},
+                {new TextFileType(), new IntType(), new IgnoreType()},
+                {new TextFileType(), new FloatType(), new IgnoreType()},
+                {new TextFileType(), new StringType(), new IgnoreType()},
+                {new TextFileType(), new CharType(), new IgnoreType()},
+                {new TextFileType(), new BoolType(), new IgnoreType()},
+                {new TextFileType(), new ArrayType(), new IgnoreType()},
+                {new TextFileType(), new ChannelType(), new IgnoreType()},
+                {new TextFileType(), new RecordType(), new IgnoreType()},
+                {new TextFileType(), new TextFileType(), new IgnoreType()}
         });
     }
 
@@ -121,14 +139,14 @@ public class ShellToChannelNodeTest {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
 
         SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
-        idNode.setType(new Type(channelType));
+        idNode.setType(channelType);
         TypeNode typeNode = new TypeNode(channelType.toString().toLowerCase());
 
         VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
         varNode.accept(typeCheckVisitor);
 
         ArrayList<ArithmeticExpressionNode> c = new ArrayList<ArithmeticExpressionNode>(){{
-            add(new LiteralNode(0, Types.INT));
+            add(new LiteralNode(0, new IntType()));
         }};
 
         ShellNode shellCommand = new ShellNode(new LiteralNode(0, commandType));
@@ -138,6 +156,6 @@ public class ShellToChannelNodeTest {
         node.accept(typeCheckVisitor);
 
         String errMessage = channelType + ", " + commandType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
-        Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
+        Assert.assertEquals(errMessage, expectedType, node.getType());
     }
 }

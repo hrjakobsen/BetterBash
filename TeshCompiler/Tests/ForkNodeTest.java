@@ -1,7 +1,5 @@
 import com.d401f17.AST.Nodes.*;
-import com.d401f17.TypeSystem.SymTab;
-import com.d401f17.TypeSystem.SymbolTable;
-import com.d401f17.TypeSystem.Types;
+import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,15 +24,16 @@ public class ForkNodeTest {
     @Parameterized.Parameters
     public static Collection<Object[]> data(){
         return Arrays.asList(new Object[][]{
-                {Types.INT, Types.OK},
-                {Types.FLOAT, Types.OK},
-                {Types.CHAR, Types.OK},
-                {Types.STRING, Types.OK},
-                {Types.BOOL, Types.OK},
-                {Types.ARRAY, Types.OK},
-                {Types.CHANNEL, Types.OK},
-                {Types.RECORD, Types.OK},
-                {Types.FILE, Types.OK},
+                {new IntType(), new OkType()},
+                {new FloatType(), new OkType()},
+                {new CharType(), new OkType()},
+                {new StringType(), new OkType()},
+                {new BoolType(), new OkType()},
+                {new ArrayType(), new OkType()},
+                {new ChannelType(), new OkType()},
+                {new RecordType(), new OkType()},
+                {new BinFileType(), new OkType()},
+                {new TextFileType(), new OkType()},
 
         });
     }
@@ -49,6 +48,6 @@ public class ForkNodeTest {
         node.accept(typeCheckVisitor);
 
         String errMessage = predicateType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
-        Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
+        Assert.assertEquals(errMessage, expectedType, node.getType());
     }
 }

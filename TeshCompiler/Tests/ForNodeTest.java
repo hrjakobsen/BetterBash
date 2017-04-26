@@ -17,23 +17,24 @@ import java.util.Collection;
 public class ForNodeTest {
 
     @Parameterized.Parameter(value = 0)
-    public Types predicateType;
+    public Type predicateType;
 
     @Parameterized.Parameter(value = 1)
-    public Types expectedType;
+    public Type expectedType;
 
     @Parameterized.Parameters
     public static Collection<Object[]> data(){
         return Arrays.asList(new Object[][]{
-                {Types.INT, Types.OK},
-                {Types.FLOAT, Types.OK},
-                {Types.CHAR, Types.OK},
-                {Types.STRING, Types.OK},
-                {Types.BOOL, Types.OK},
-                {Types.ARRAY, Types.OK},
-                {Types.CHANNEL, Types.OK},
-                {Types.RECORD, Types.OK},
-                {Types.FILE, Types.OK}
+                {new IntType(), new OkType()},
+                {new FloatType(), new OkType()},
+                {new CharType(), new OkType()},
+                {new StringType(), new OkType()},
+                {new BoolType(), new OkType()},
+                {new ArrayType(), new OkType()},
+                {new ChannelType(), new OkType()},
+                {new RecordType(), new OkType()},
+                {new BinFileType(), new OkType()},
+                {new TextFileType(), new OkType()}
         });
     }
 
@@ -54,7 +55,7 @@ public class ForNodeTest {
         node.accept(typeCheckVisitor);
 
         String errMessage = predicateType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
-        Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
+        Assert.assertEquals(errMessage, expectedType, node.getType());
     }
 
     @Test
@@ -72,10 +73,10 @@ public class ForNodeTest {
         typeCheckVisitor.visit(array);
 
         ForNode node = new ForNode(new SimpleIdentifierNode(""), array,
-                new LiteralNode(0, ((ArrayType)array.getType()).getChildType().getPrimitiveType()));
+                new LiteralNode(0, ((ArrayType)array.getType()).getChildType()));
         node.accept(typeCheckVisitor);
 
         String errMessage = predicateType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
-        Assert.assertEquals(errMessage, predicateType, node.getType().getPrimitiveType());
+        Assert.assertEquals(errMessage, predicateType, node.getType());
     }
 }

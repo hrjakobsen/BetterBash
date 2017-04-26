@@ -1,8 +1,5 @@
 import com.d401f17.AST.Nodes.*;
-import com.d401f17.AST.TypeSystem.SymTab;
-import com.d401f17.AST.TypeSystem.SymbolTable;
-import com.d401f17.AST.TypeSystem.Type;
-import com.d401f17.AST.TypeSystem.Types;
+import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,101 +18,119 @@ import java.util.Collection;
 public class FunctionNodeTest {
 
     @Parameterized.Parameter(value = 0)
-    public Types predicateType;
+    public Type predicateType;
 
     @Parameterized.Parameter(value = 1)
-    public Types returnType;
+    public Type returnType;
 
     @Parameterized.Parameter(value = 2)
-    public Types expectedType;
+    public Type expectedType;
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {Types.INT, Types.INT, Types.INT},
-                {Types.INT, Types.FLOAT, Types.ERROR},
-                {Types.INT, Types.CHAR, Types.ERROR},
-                {Types.INT, Types.STRING, Types.ERROR},
-                {Types.INT, Types.BOOL, Types.ERROR},
-                {Types.INT, Types.ARRAY, Types.ERROR},
-                {Types.INT, Types.CHANNEL, Types.ERROR},
-                {Types.INT, Types.RECORD, Types.ERROR},
-                {Types.INT, Types.FILE, Types.ERROR},
-                {Types.FLOAT, Types.INT, Types.ERROR},
-                {Types.FLOAT, Types.FLOAT, Types.FLOAT},
-                {Types.FLOAT, Types.CHAR, Types.ERROR},
-                {Types.FLOAT, Types.STRING, Types.ERROR},
-                {Types.FLOAT, Types.BOOL, Types.ERROR},
-                {Types.FLOAT, Types.ARRAY, Types.ERROR},
-                {Types.FLOAT, Types.CHANNEL, Types.ERROR},
-                {Types.FLOAT, Types.RECORD, Types.ERROR},
-                {Types.FLOAT, Types.FILE, Types.ERROR},
-                {Types.CHAR, Types.INT, Types.ERROR},
-                {Types.CHAR, Types.FLOAT, Types.ERROR},
-                {Types.CHAR, Types.STRING, Types.ERROR},
-                {Types.CHAR, Types.BOOL, Types.ERROR},
-                {Types.CHAR, Types.CHAR, Types.CHAR},
-                {Types.CHAR, Types.ARRAY, Types.ERROR},
-                {Types.CHAR, Types.CHANNEL, Types.ERROR},
-                {Types.CHAR, Types.RECORD, Types.ERROR},
-                {Types.CHAR, Types.FILE, Types.ERROR},
-                {Types.STRING, Types.INT, Types.ERROR},
-                {Types.STRING, Types.FLOAT, Types.ERROR},
-                {Types.STRING, Types.CHAR, Types.ERROR},
-                {Types.STRING, Types.STRING, Types.STRING},
-                {Types.STRING, Types.BOOL, Types.ERROR},
-                {Types.STRING, Types.ARRAY, Types.ERROR},
-                {Types.STRING, Types.CHANNEL, Types.ERROR},
-                {Types.STRING, Types.RECORD, Types.ERROR},
-                {Types.STRING, Types.FILE, Types.ERROR},
-                {Types.BOOL, Types.INT, Types.ERROR},
-                {Types.BOOL, Types.FLOAT, Types.ERROR},
-                {Types.BOOL, Types.STRING, Types.ERROR},
-                {Types.BOOL, Types.CHAR, Types.ERROR},
-                {Types.BOOL, Types.BOOL, Types.BOOL},
-                {Types.BOOL, Types.ARRAY, Types.ERROR},
-                {Types.BOOL, Types.CHANNEL, Types.ERROR},
-                {Types.BOOL, Types.RECORD, Types.ERROR},
-                {Types.BOOL, Types.FILE, Types.ERROR},
-                {Types.ARRAY, Types.INT, Types.ERROR},
-                {Types.ARRAY, Types.FLOAT, Types.ERROR},
-                {Types.ARRAY, Types.CHAR, Types.ERROR},
-                {Types.ARRAY, Types.STRING, Types.ERROR},
-                {Types.ARRAY, Types.BOOL, Types.ERROR},
-                {Types.ARRAY, Types.ARRAY, Types.ARRAY},
-                {Types.ARRAY, Types.CHANNEL, Types.ERROR},
-                {Types.ARRAY, Types.RECORD, Types.ERROR},
-                {Types.ARRAY, Types.FILE, Types.ERROR},
-                {Types.CHANNEL, Types.INT, Types.ERROR},
-                {Types.CHANNEL, Types.FLOAT, Types.ERROR},
-                {Types.CHANNEL, Types.CHAR, Types.ERROR},
-                {Types.CHANNEL, Types.STRING, Types.ERROR},
-                {Types.CHANNEL, Types.BOOL, Types.ERROR},
-                {Types.CHANNEL, Types.ARRAY, Types.ERROR},
-                {Types.CHANNEL, Types.CHANNEL, Types.CHANNEL},
-                {Types.CHANNEL, Types.RECORD, Types.ERROR},
-                {Types.CHANNEL, Types.FILE, Types.ERROR},
-                {Types.RECORD, Types.INT, Types.ERROR},
-                {Types.RECORD, Types.FLOAT, Types.ERROR},
-                {Types.RECORD, Types.CHAR, Types.ERROR},
-                {Types.RECORD, Types.STRING, Types.ERROR},
-                {Types.RECORD, Types.BOOL, Types.ERROR},
-                {Types.RECORD, Types.ARRAY, Types.ERROR},
-                {Types.RECORD, Types.CHANNEL, Types.ERROR},
-                {Types.RECORD, Types.RECORD, Types.RECORD},
-                {Types.RECORD, Types.FILE, Types.ERROR},
-                {Types.FILE, Types.INT, Types.ERROR},
-                {Types.FILE, Types.FLOAT, Types.ERROR},
-                {Types.FILE, Types.STRING, Types.ERROR},
-                {Types.FILE, Types.CHAR, Types.ERROR},
-                {Types.FILE, Types.BOOL, Types.ERROR},
-                {Types.FILE, Types.ARRAY, Types.ERROR},
-                {Types.FILE, Types.CHANNEL, Types.ERROR},
-                {Types.FILE, Types.RECORD, Types.ERROR},
-                {Types.FILE, Types.FILE, Types.FILE},
-                {Types.VOID, Types.INT, Types.ERROR},
-                {Types.VOID, Types.FLOAT, Types.ERROR},
-                {Types.INT, Types.VOID, Types.ERROR}
+                {new IntType(), new IntType(), new IntType()},
+                {new IntType(), new FloatType(), new ErrorType()},
+                {new IntType(), new CharType(), new ErrorType()},
+                {new IntType(), new StringType(), new ErrorType()},
+                {new IntType(), new BoolType(), new ErrorType()},
+                {new IntType(), new ArrayType(), new ErrorType()},
+                {new IntType(), new ChannelType(), new ErrorType()},
+                {new IntType(), new RecordType(), new ErrorType()},
+                {new IntType(), new TextFileType(), new ErrorType()},
+                {new IntType(), new BinFileType(), new ErrorType()},
+                {new FloatType(), new IntType(), new ErrorType()},
+                {new FloatType(), new FloatType(), new FloatType()},
+                {new FloatType(), new CharType(), new ErrorType()},
+                {new FloatType(), new StringType(), new ErrorType()},
+                {new FloatType(), new BoolType(), new ErrorType()},
+                {new FloatType(), new ArrayType(), new ErrorType()},
+                {new FloatType(), new ChannelType(), new ErrorType()},
+                {new FloatType(), new RecordType(), new ErrorType()},
+                {new FloatType(), new TextFileType(), new ErrorType()},
+                {new FloatType(), new BinFileType(), new ErrorType()},
+                {new CharType(), new IntType(), new ErrorType()},
+                {new CharType(), new FloatType(), new ErrorType()},
+                {new CharType(), new StringType(), new ErrorType()},
+                {new CharType(), new BoolType(), new ErrorType()},
+                {new CharType(), new CharType(), new CharType()},
+                {new CharType(), new ArrayType(), new ErrorType()},
+                {new CharType(), new ChannelType(), new ErrorType()},
+                {new CharType(), new RecordType(), new ErrorType()},
+                {new CharType(), new TextFileType(), new ErrorType()},
+                {new CharType(), new BinFileType(), new ErrorType()},
+                {new StringType(), new IntType(), new ErrorType()},
+                {new StringType(), new FloatType(), new ErrorType()},
+                {new StringType(), new CharType(), new ErrorType()},
+                {new StringType(), new StringType(), new StringType()},
+                {new StringType(), new BoolType(), new ErrorType()},
+                {new StringType(), new ArrayType(), new ErrorType()},
+                {new StringType(), new ChannelType(), new ErrorType()},
+                {new StringType(), new RecordType(), new ErrorType()},
+                {new StringType(), new TextFileType(), new ErrorType()},
+                {new StringType(), new BinFileType(), new ErrorType()},
+                {new BoolType(), new IntType(), new ErrorType()},
+                {new BoolType(), new FloatType(), new ErrorType()},
+                {new BoolType(), new StringType(), new ErrorType()},
+                {new BoolType(), new CharType(), new ErrorType()},
+                {new BoolType(), new BoolType(), new BoolType()},
+                {new BoolType(), new ArrayType(), new ErrorType()},
+                {new BoolType(), new ChannelType(), new ErrorType()},
+                {new BoolType(), new RecordType(), new ErrorType()},
+                {new BoolType(), new TextFileType(), new ErrorType()},
+                {new BoolType(), new BinFileType(), new ErrorType()},
+                {new ArrayType(), new IntType(), new ErrorType()},
+                {new ArrayType(), new FloatType(), new ErrorType()},
+                {new ArrayType(), new CharType(), new ErrorType()},
+                {new ArrayType(), new StringType(), new ErrorType()},
+                {new ArrayType(), new BoolType(), new ErrorType()},
+                {new ArrayType(), new ArrayType(), new ArrayType()},
+                {new ArrayType(), new ChannelType(), new ErrorType()},
+                {new ArrayType(), new RecordType(), new ErrorType()},
+                {new ArrayType(), new TextFileType(), new ErrorType()},
+                {new ArrayType(), new BinFileType(), new ErrorType()},
+                {new ChannelType(), new IntType(), new ErrorType()},
+                {new ChannelType(), new FloatType(), new ErrorType()},
+                {new ChannelType(), new CharType(), new ErrorType()},
+                {new ChannelType(), new StringType(), new ErrorType()},
+                {new ChannelType(), new BoolType(), new ErrorType()},
+                {new ChannelType(), new ArrayType(), new ErrorType()},
+                {new ChannelType(), new ChannelType(), new ChannelType()},
+                {new ChannelType(), new RecordType(), new ErrorType()},
+                {new ChannelType(), new TextFileType(), new ErrorType()},
+                {new ChannelType(), new BinFileType(), new ErrorType()},
+                {new RecordType(), new IntType(), new ErrorType()},
+                {new RecordType(), new FloatType(), new ErrorType()},
+                {new RecordType(), new CharType(), new ErrorType()},
+                {new RecordType(), new StringType(), new ErrorType()},
+                {new RecordType(), new BoolType(), new ErrorType()},
+                {new RecordType(), new ArrayType(), new ErrorType()},
+                {new RecordType(), new ChannelType(), new ErrorType()},
+                {new RecordType(), new RecordType(), new RecordType()},
+                {new RecordType(), new TextFileType(), new ErrorType()},
+                {new RecordType(), new BinFileType(), new ErrorType()},
+                {new BinFileType(), new IntType(), new ErrorType()},
+                {new BinFileType(), new FloatType(), new ErrorType()},
+                {new BinFileType(), new StringType(), new ErrorType()},
+                {new BinFileType(), new CharType(), new ErrorType()},
+                {new BinFileType(), new BoolType(), new ErrorType()},
+                {new BinFileType(), new ArrayType(), new ErrorType()},
+                {new BinFileType(), new ChannelType(), new ErrorType()},
+                {new BinFileType(), new RecordType(), new ErrorType()},
+                {new BinFileType(), new TextFileType(), new ErrorType()},
+                {new BinFileType(), new BinFileType(), new BinFileType()},
+                {new TextFileType(), new IntType(), new ErrorType()},
+                {new TextFileType(), new FloatType(), new ErrorType()},
+                {new TextFileType(), new StringType(), new ErrorType()},
+                {new TextFileType(), new CharType(), new ErrorType()},
+                {new TextFileType(), new BoolType(), new ErrorType()},
+                {new TextFileType(), new ArrayType(), new ErrorType()},
+                {new TextFileType(), new ChannelType(), new ErrorType()},
+                {new TextFileType(), new RecordType(), new ErrorType()},
+                {new TextFileType(), new TextFileType(), new TextFileType()},
+                {new VoidType(), new IntType(), new ErrorType()},
+                {new VoidType(), new FloatType(), new ErrorType()},
+                {new IntType(), new VoidType(), new Error()}
         });
     }
 
@@ -127,7 +142,7 @@ public class FunctionNodeTest {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
 
         SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
-        idNode.setType(new Type(predicateType));
+        idNode.setType(predicateType);
         TypeNode typeNode = new TypeNode(predicateType.toString().toLowerCase());
 
         VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
@@ -144,7 +159,7 @@ public class FunctionNodeTest {
         node.accept(typeCheckVisitor);
 
         String errMessage = predicateType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
-        Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
+        Assert.assertEquals(errMessage, expectedType, node.getType());
     }
 
     @Test
@@ -155,7 +170,7 @@ public class FunctionNodeTest {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
 
         SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
-        idNode.setType(new Type(predicateType));
+        idNode.setType(predicateType);
         TypeNode typeNode = new TypeNode(predicateType.toString().toLowerCase());
 
         VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
@@ -169,9 +184,9 @@ public class FunctionNodeTest {
         FunctionNode node = new FunctionNode(new SimpleIdentifierNode("funcname"), new TypeNode(predicateType.toString().toLowerCase()), array, new StatementsNode());
         node.accept(typeCheckVisitor);
 
-        String errMessage = predicateType + " => " + Types.ERROR + "\n" + typeCheckVisitor.getAllErrors();
-        if (predicateType != Types.VOID) {
-            Assert.assertEquals(errMessage, Types.ERROR, node.getType().getPrimitiveType());
+        String errMessage = predicateType + " => " + new ErrorType() + "\n" + typeCheckVisitor.getAllErrors();
+        if (predicateType instanceof VoidType) {
+            Assert.assertEquals(errMessage, new ErrorType(), node.getType());
         }
     }
 }
