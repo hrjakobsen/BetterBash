@@ -65,7 +65,7 @@ public class GreaterThanOrEqualNodeTest {
                 {new StringType(), new IntType(), new ErrorType()},
                 {new StringType(), new FloatType(), new ErrorType()},
                 {new StringType(), new CharType(), new ErrorType()},
-                {new StringType(), new StringType(), new StringType()},
+                {new StringType(), new StringType(), new ErrorType()},
                 {new StringType(), new BoolType(), new ErrorType()},
                 {new StringType(), new ArrayType(), new ErrorType()},
                 {new StringType(), new ChannelType(), new ErrorType()},

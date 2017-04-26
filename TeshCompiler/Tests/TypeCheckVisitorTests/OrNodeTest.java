@@ -74,7 +74,7 @@ public class OrNodeTest {
                 {new BoolType(), new FloatType(), new ErrorType()},
                 {new BoolType(), new StringType(), new ErrorType()},
                 {new BoolType(), new CharType(), new ErrorType()},
-                {new BoolType(), new BoolType(), new OkType()},
+                {new BoolType(), new BoolType(), new BoolType()},
                 {new BoolType(), new ArrayType(), new ErrorType()},
                 {new BoolType(), new ChannelType(), new ErrorType()},
                 {new BoolType(), new RecordType(), new ErrorType()},

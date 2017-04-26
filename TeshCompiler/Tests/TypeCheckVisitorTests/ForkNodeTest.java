@@ -18,10 +18,10 @@ import java.util.Collection;
 public class ForkNodeTest {
 
     @Parameterized.Parameter(value = 0)
-    public Types predicateType;
+    public Type predicateType;
 
     @Parameterized.Parameter(value = 1)
-    public Types expectedType;
+    public Type expectedType;
 
     @Parameterized.Parameters
     public static Collection<Object[]> data(){

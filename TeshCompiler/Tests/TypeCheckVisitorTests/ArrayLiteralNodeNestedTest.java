@@ -65,7 +65,7 @@ public class ArrayLiteralNodeNestedTest {
 
         String errMessage = type + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
         if(node.getType() instanceof ArrayType) {
-            Assert.assertEquals(errMessage, expectedType, node);
+            Assert.assertEquals(errMessage, expectedType, node.getType());
         } else {
             Assert.fail();
         }

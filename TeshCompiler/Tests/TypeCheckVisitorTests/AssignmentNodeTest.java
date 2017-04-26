@@ -131,7 +131,7 @@ public class AssignmentNodeTest {
         node.accept(typeCheckVisitor);
 
         String errMessage = leftType + ", " + rightType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
-        Assert.assertEquals(errMessage, expectedType, node);
+        Assert.assertEquals(errMessage, expectedType, node.getType());
     }
 }
 

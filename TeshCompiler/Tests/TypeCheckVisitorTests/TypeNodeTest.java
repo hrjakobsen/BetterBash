@@ -18,10 +18,10 @@ import java.util.Collection;
 public class TypeNodeTest {
 
     @Parameterized.Parameter(value = 0)
-    public Types predicateType;
+    public Type predicateType;
 
     @Parameterized.Parameter(value = 1)
-    public Types expectedType;
+    public Type expectedType;
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
@@ -36,8 +36,8 @@ public class TypeNodeTest {
                 {new RecordType(), new RecordType()},
                 {new BinFileType(), new BinFileType()},
                 {new TextFileType(), new TextFileType()},
-                {new ErrorType(), new IgnoreType()},
-                {new IgnoreType(), new IgnoreType()}
+                {new ErrorType(), new ErrorType()},
+                {new IgnoreType(), new ErrorType()}
         });
     }
 

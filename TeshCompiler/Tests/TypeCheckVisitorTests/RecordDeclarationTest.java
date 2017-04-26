@@ -36,11 +36,8 @@ public class RecordDeclarationTest {
                 {new BoolType(), new BoolType()},
                 {new ArrayType(), new ArrayType()},
                 {new ChannelType(), new ChannelType()},
-                {new RecordType(), new RecordType()},
                 {new BinFileType(), new BinFileType()},
-                {new TextFileType(), new TextFileType()},
-                {new ErrorType(), new IgnoreType()},
-                {new IgnoreType(), new IgnoreType()}
+                {new TextFileType(), new TextFileType()}
         });
     }
     @Test
@@ -62,14 +59,14 @@ public class RecordDeclarationTest {
             }
         };
 
-        RecordDeclarationNode node = new RecordDeclarationNode("record",variables);
+        RecordDeclarationNode node = new RecordDeclarationNode("page",variables);
 
         node.accept(typeCheckVisitor);
         String errMessage = predicateType + ", " + expectedType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
         try {
-            Assert.assertEquals(errMessage, Types.RECORD, recordTable.lookup("record").getType());
+            Assert.assertEquals(errMessage, "RECORD PAGE", recordTable.lookup("page").getType().toString());
             try {
-                Assert.assertEquals(errMessage, symbolTable.lookup("a").getType(), ((RecordType) recordTable.lookup("record").getType()).getMemberType("a"));
+                Assert.assertEquals(errMessage, symbolTable.lookup("a").getType(), ((RecordType) recordTable.lookup("page").getType()).getMemberType("a"));
             } catch (MemberNotFoundException m) {
                 Assert.fail();
             }
@@ -130,7 +127,7 @@ public class RecordDeclarationTest {
 
         try {
             RecordType bookType = ((RecordType)recordTable.lookup("book").getType());
-            Assert.assertEquals(new RecordType(), bookType);
+            Assert.assertEquals("RECORD BOOK", bookType.toString());
             try {
                 RecordType pageType = ((RecordType)bookType.getMemberType("page"));
                 Assert.assertEquals(symbolTable.lookup("a").getType(), pageType.getMemberType("a"));

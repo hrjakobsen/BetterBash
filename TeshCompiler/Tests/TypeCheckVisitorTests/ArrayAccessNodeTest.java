@@ -35,7 +35,6 @@ public class ArrayAccessNodeTest {
                 {new BoolType(), new ErrorType()},
                 {new ArrayType(), new ErrorType()},
                 {new ChannelType(), new ErrorType()},
-                {new RecordType(), new ErrorType()},
                 {new BinFileType(), new ErrorType()},
                 {new TextFileType(), new ErrorType()}
         });
