@@ -1,9 +1,6 @@
 import com.d401f17.AST.Nodes.*;
 
-import com.d401f17.TypeSystem.SymTab;
-import com.d401f17.TypeSystem.SymbolTable;
-import com.d401f17.TypeSystem.Type;
-import com.d401f17.TypeSystem.Types;
+import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,22 +18,24 @@ import java.util.Collection;
 public class ArrayAccessNodeTest {
 
     @Parameterized.Parameter(value = 0)
-    public Types type;
+    public Type type;
 
     @Parameterized.Parameter(value = 1)
-    public Types expectedType;
+    public Type expectedType;
 
     @Parameterized.Parameters
     public static Collection<Object[]> data(){
         return Arrays.asList(new Object[][]{
-                {Types.INT, Types.INT},
-                {Types.FLOAT, Types.ERROR},
-                {Types.CHAR, Types.ERROR},
-                {Types.STRING, Types.ERROR},
-                {Types.BOOL, Types.ERROR},
-                {Types.ARRAY, Types.ERROR},
-                {Types.CHANNEL, Types.ERROR},
-                {Types.FILE, Types.ERROR},
+                {new IntType(), new IntType()},
+                {new FloatType(), new ErrorType()},
+                {new CharType(), new ErrorType()},
+                {new StringType(), new ErrorType()},
+                {new BoolType(), new ErrorType()},
+                {new ArrayType(), new ErrorType()},
+                {new ChannelType(), new ErrorType()},
+                {new RecordType(), new ErrorType()},
+                {new BinFileType(), new ErrorType()},
+                {new TextFileType(), new ErrorType()}
         });
     }
 
@@ -48,7 +47,7 @@ public class ArrayAccessNodeTest {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
 
         SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
-        idNode.setType(new Type(type));
+        idNode.setType(type);
         TypeNode typeNode = new TypeNode(type.toString().toLowerCase());
 
         VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
@@ -62,6 +61,6 @@ public class ArrayAccessNodeTest {
         node.accept(typeCheckVisitor);
 
         String errMessage = type + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
-        Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
+        Assert.assertEquals(errMessage, expectedType, node.getType());
     }
 }

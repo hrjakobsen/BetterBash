@@ -17,13 +17,13 @@ import java.util.Collection;
 public class ArrayLiteralNodeTest {
 
     @Parameterized.Parameter(value = 0)
-    public Types type;
+    public Type type;
 
     @Parameterized.Parameter(value = 1)
-    public Types type2;
+    public Type type2;
 
     @Parameterized.Parameter(value = 2)
-    public Types expectedType;
+    public Type expectedType;
 
     @Parameterized.Parameters
     public static Collection<Object[]> data(){
@@ -131,9 +131,9 @@ public class ArrayLiteralNodeTest {
 
         String errMessage = "[" + type + ", " + type2 + "] => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
         if(node.getType() instanceof ArrayType) {
-            Assert.assertEquals(errMessage, expectedType, ((ArrayType)node.getType()).getChildType().getPrimitiveType());
+            Assert.assertEquals(errMessage, expectedType, ((ArrayType)node.getType()).getChildType());
         } else {
-            Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
+            Assert.assertEquals(errMessage, expectedType, node.getType());
         }
     }
 }

@@ -21,20 +21,21 @@ public class ArrayLiteralNodeNestedTest {
     public Type type;
 
     @Parameterized.Parameter(value = 1)
-    public Types expectedType;
+    public Type expectedType;
 
     @Parameterized.Parameters
     public static Collection<Object[]> data(){
         return Arrays.asList(new Object[][]{
-                {new ArrayType(Types.ARRAY, new Type(Types.INT)), Types.INT},
-                {new ArrayType(Types.ARRAY, new Type(Types.FLOAT)), Types.FLOAT},
-                {new ArrayType(Types.ARRAY, new Type(Types.CHAR)), Types.CHAR},
-                {new ArrayType(Types.ARRAY, new Type(Types.STRING)), Types.STRING},
-                {new ArrayType(Types.ARRAY, new Type(Types.BOOL)), Types.BOOL},
-                {new ArrayType(Types.ARRAY, new Type(Types.ARRAY)), Types.ARRAY},
-                {new ArrayType(Types.ARRAY, new Type(Types.CHANNEL)), Types.CHANNEL},
-                {new ArrayType(Types.ARRAY, new Type(Types.RECORD)), Types.RECORD},
-                {new ArrayType(Types.ARRAY, new Type(Types.FILE)), Types.FILE},
+                {new IntType(), new ArrayType(new ArrayType(new IntType()))},
+                {new FloatType(), new ArrayType(new ArrayType(new FloatType()))},
+                {new CharType(), new ArrayType(new ArrayType(new CharType()))},
+                {new StringType(), new ArrayType(new ArrayType(new StringType()))},
+                {new BoolType(), new ArrayType(new ArrayType(new BoolType()))},
+                {new ArrayType(), new ArrayType(new ArrayType(new ArrayType()))},
+                {new ChannelType(), new ArrayType(new ArrayType(new ChannelType()))},
+                {new RecordType(), new ArrayType(new ArrayType(new RecordType()))},
+                {new BinFileType(), new ArrayType(new ArrayType(new BinFileType()))},
+                {new TextFileType(), new ArrayType(new ArrayType(new TextFileType()))},
         });
     }
 
@@ -47,11 +48,13 @@ public class ArrayLiteralNodeNestedTest {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
         ArrayLiteralNode array = new ArrayLiteralNode(new ArrayList<ArithmeticExpressionNode>() {
             {
-                add(new LiteralNode(0, expectedType));
+                add(new LiteralNode(0, type));
+                add(new LiteralNode(0, type));
             }
         });
         ArrayLiteralNode node = new ArrayLiteralNode(new ArrayList<ArithmeticExpressionNode>() {
             {
+                add(array);
                 add(array);
             }
         });
@@ -60,9 +63,9 @@ public class ArrayLiteralNodeNestedTest {
 
         String errMessage = type + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
         if(node.getType() instanceof ArrayType) {
-            Assert.assertEquals(expectedType, ((ArrayType)((ArrayType)node.getType()).getChildType()).getChildType().getPrimitiveType());
+            Assert.assertEquals(errMessage, expectedType, node);
         } else {
-            Assert.assertEquals(expectedType, node.getType().getPrimitiveType());
+            Assert.fail();
         }
     }
 }

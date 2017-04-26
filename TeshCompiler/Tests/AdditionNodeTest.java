@@ -84,7 +84,7 @@ public class AdditionNodeTest {
                 {new ArrayType(), new CharType(), new ErrorType()},
                 {new ArrayType(), new StringType(), new ErrorType()},
                 {new ArrayType(), new BoolType(), new ErrorType()},
-                {new ArrayType(), new ArrayType(), new ErrorType()},BinFileType
+                {new ArrayType(), new ArrayType(), new ErrorType()},
                 {new ArrayType(), new ChannelType(), new ErrorType()},
                 {new ArrayType(), new RecordType(), new ErrorType()},
                 {new ArrayType(), new BinFileType(), new ErrorType()},
