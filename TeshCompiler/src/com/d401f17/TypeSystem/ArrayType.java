@@ -19,6 +19,7 @@ public class ArrayType extends Type {
     }
 
     public ArrayType() {
+        this(new IntType());
     }
 
     public ArrayType(Type childType) {

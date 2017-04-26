@@ -13,6 +13,10 @@ public class RecordType extends Type {
         return name;
     }
 
+    public RecordType() {
+        this("test", null, null);
+    }
+
     public RecordType(String name, String[] memberNames, Type[] memberTypes) {
         this.name = name;
 
