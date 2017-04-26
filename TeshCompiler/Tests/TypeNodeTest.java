@@ -5,6 +5,7 @@ import com.d401f17.AST.TypeSystem.SymTab;
 import com.d401f17.AST.TypeSystem.SymbolTable;
 import com.d401f17.AST.TypeSystem.Type;
 import com.d401f17.AST.TypeSystem.Types;
+import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
 import org.junit.Test;
@@ -29,15 +30,18 @@ public class TypeNodeTest {
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {Types.INT, Types.INT},
-                {Types.FLOAT, Types.FLOAT},
-                {Types.CHAR, Types.CHAR},
-                {Types.STRING, Types.STRING},
-                {Types.BOOL, Types.BOOL},
-                {Types.ARRAY, Types.ARRAY},
-                {Types.CHANNEL, Types.CHANNEL},
-                {Types.RECORD, Types.RECORD},
-                {Types.FILE, Types.FILE}
+                {new IntType(), new IntType()},
+                {new FloatType(), new FloatType()},
+                {new CharType(), new CharType()},
+                {new StringType(), new StringType()},
+                {new BoolType(), new BoolType()},
+                {new ArrayType(), new ArrayType()},
+                {new ChannelType(), new ChannelType()},
+                {new RecordType(), new RecordType()},
+                {new BinFileType(), new BinFileType()},
+                {new TextFileType(), new TextFileType()},
+                {new ErrorType(), new IgnoreType()},
+                {new IgnoreType(), new IgnoreType()}
         });
     }
 
@@ -52,6 +56,6 @@ public class TypeNodeTest {
         node.accept(typeCheckVisitor);
 
         String errMessage = predicateType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
-        Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
+        Assert.assertEquals(errMessage, expectedType, node.getType());
     }
 }

@@ -19,23 +19,26 @@ public class RecordDeclarationTest {
     public final ExpectedException exception = ExpectedException.none();
 
     @Parameterized.Parameter(value = 0)
-    public Types predicateType;
+    public Type predicateType;
 
     @Parameterized.Parameter(value = 1)
-    public Types expectedType;
+    public Type expectedType;
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {Types.INT, Types.INT},
-                {Types.FLOAT, Types.FLOAT},
-                {Types.CHAR, Types.CHAR},
-                {Types.STRING, Types.STRING},
-                {Types.BOOL, Types.BOOL},
-                {Types.ARRAY, Types.ARRAY},
-                {Types.CHANNEL, Types.CHANNEL},
-                {Types.FILE, Types.FILE}
-
+                {new IntType(), new IntType()},
+                {new FloatType(), new FloatType()},
+                {new CharType(), new CharType()},
+                {new StringType(), new StringType()},
+                {new BoolType(), new BoolType()},
+                {new ArrayType(), new ArrayType()},
+                {new ChannelType(), new ChannelType()},
+                {new RecordType(), new RecordType()},
+                {new BinFileType(), new BinFileType()},
+                {new TextFileType(), new TextFileType()},
+                {new ErrorType(), new IgnoreType()},
+                {new IgnoreType(), new IgnoreType()}
         });
     }
     @Test
@@ -45,7 +48,7 @@ public class RecordDeclarationTest {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
 
         SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
-        idNode.setType(new Type(predicateType));
+        idNode.setType(predicateType);
         TypeNode typeNode = new TypeNode(predicateType.toString().toLowerCase());
 
         VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
@@ -62,9 +65,9 @@ public class RecordDeclarationTest {
         node.accept(typeCheckVisitor);
         String errMessage = predicateType + ", " + expectedType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
         try {
-            Assert.assertEquals(errMessage, Types.RECORD, recordTable.lookup("record").getType().getPrimitiveType());
+            Assert.assertEquals(errMessage, Types.RECORD, recordTable.lookup("record").getType());
             try {
-                Assert.assertEquals(errMessage, symbolTable.lookup("a").getType().getPrimitiveType(), ((RecordType) recordTable.lookup("record").getType()).getMemberType("a").getPrimitiveType());
+                Assert.assertEquals(errMessage, symbolTable.lookup("a").getType(), ((RecordType) recordTable.lookup("record").getType()).getMemberType("a"));
             } catch (MemberNotFoundException m) {
                 Assert.fail();
             }
@@ -81,7 +84,7 @@ public class RecordDeclarationTest {
 
         //Declaration of variable a
         SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
-        idNode.setType(new Type(predicateType));
+        idNode.setType(predicateType);
         TypeNode typeNode = new TypeNode(predicateType.toString().toLowerCase());
         VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
         varNode.accept(typeCheckVisitor);
@@ -101,12 +104,12 @@ public class RecordDeclarationTest {
         variables.remove(0);
         SimpleIdentifierNode nameOfSubRecord = new SimpleIdentifierNode("page");
         String[] a = {"a"};
-        Type[] b = {new Type(predicateType)};
+        Type[] b = {predicateType};
         RecordType recordType = new RecordType("page",a,b);
         nameOfSubRecord.setType(recordType);
         nameOfSubRecord.setName("page");
         VariableDeclarationNode temp = new VariableDeclarationNode(nameOfSubRecord, new TypeNode(recordType.toString().toLowerCase()));
-        temp.setType(new Type(Types.RECORD));
+        temp.setType(new RecordType());
         variables.add(temp);
 
         //Declaring the book record
@@ -116,7 +119,7 @@ public class RecordDeclarationTest {
         //Creates a book variable and add the page record to the book record as its only member
         SimpleIdentifierNode record = new SimpleIdentifierNode("book");
         String[] page = {"page"};
-        Type[] type = {new Type(Types.RECORD)};
+        Type[] type = {new RecordType()};
         RecordType recordType1 = new RecordType("book",page,type);
         record.setType(recordType1);
         record.setName("book");
@@ -125,10 +128,10 @@ public class RecordDeclarationTest {
 
         try {
             RecordType bookType = ((RecordType)recordTable.lookup("book").getType());
-            Assert.assertEquals(Types.RECORD, bookType.getPrimitiveType());
+            Assert.assertEquals(new RecordType(), bookType);
             try {
                 RecordType pageType = ((RecordType)bookType.getMemberType("page"));
-                Assert.assertEquals(symbolTable.lookup("a").getType().getPrimitiveType(), pageType.getMemberType("a").getPrimitiveType());
+                Assert.assertEquals(symbolTable.lookup("a").getType(), pageType.getMemberType("a"));
             } catch (MemberNotFoundException m) {
                 Assert.fail();
             }

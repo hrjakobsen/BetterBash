@@ -1,7 +1,7 @@
 import com.d401f17.AST.Nodes.*;
 import com.d401f17.TypeSystem.SymTab;
 import com.d401f17.TypeSystem.SymbolTable;
-import com.d401f17.TypeSystem.Types;
+import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,29 +17,29 @@ import java.util.Collection;
 @RunWith(value = Parameterized.class)
 public class IfNodeNestedReturnTest {
     @Parameterized.Parameter(value = 0)
-    public Types type1;
+    public Type type1;
 
     @Parameterized.Parameter(value = 1)
-    public Types type2;
+    public Type type2;
 
     @Parameterized.Parameter(value = 2)
-    public Types type3;
+    public Type type3;
 
     @Parameterized.Parameter(value = 3)
-    public Types expectedType;
+    public Type expectedType;
 
     @Parameterized.Parameters
     public static Collection<Object[]> data(){
         return Arrays.asList(new Object[][]{
-                {Types.STRING, Types.STRING, Types.STRING, Types.STRING },
-                {Types.INT, Types.STRING, Types.STRING, Types.IGNORE },
-                {Types.STRING, Types.INT, Types.STRING, Types.IGNORE },
-                {Types.STRING, Types.STRING, Types.INT, Types.IGNORE },
-                {Types.INT, Types.INT, Types.INT, Types.INT },
-                {Types.VOID, Types.INT, Types.INT, Types.IGNORE },
-                {Types.VOID, Types.VOID, Types.INT, Types.IGNORE },
-                {Types.VOID, Types.VOID, Types.VOID, Types.VOID },
-                {Types.CHAR, Types.INT, Types.INT, Types.IGNORE },
+                {new StringType(), new StringType(), new StringType(), new StringType() },
+                {new IntType(), new StringType(), new StringType(), new IgnoreType() },
+                {new StringType(), new IntType(), new StringType(), new IgnoreType() },
+                {new StringType(), new StringType(), new IntType(), new IgnoreType() },
+                {new IntType(), new IntType(), new IntType(), new IntType() },
+                {new VoidType(), new IntType(), new IntType(), new IgnoreType() },
+                {new VoidType(), new VoidType(), new IntType(), new IgnoreType() },
+                {new VoidType(), new VoidType(), new VoidType(), new VoidType() },
+                {new CharType(), new IntType(), new IntType(), new IgnoreType() },
         });
     }
 
@@ -61,39 +61,23 @@ public class IfNodeNestedReturnTest {
         SymTab symbolTable = new SymbolTable();
         SymTab recordTable = new SymbolTable();
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
-        StatementNode node = new StatementsNode(
-                1,
-                new IfNode(
-                        new LiteralNode(true, Types.BOOL),
-                        new StatementsNode(
-                                2,
-                                new IfNode (
-                                        new LiteralNode(false, Types.BOOL),
-                                        new StatementsNode(
-                                                3,
-                                                new ReturnNode(new LiteralNode(0, type1),3)
-                                        ),
-                                        new StatementsNode(
-                                                5,
-                                                new ReturnNode(new LiteralNode(0, type2),5)
-                                        ),
-                                        2
-                                )
-                        ),
-                        new StatementsNode(
-                                8,
-                                new StatementsNode(
-                                        8,
-                                        new ReturnNode(new LiteralNode(0, type3),8)
-                                )
-                        ),
-                        1
-                )
+        StatementNode node = new StatementsNode(1,
+            new IfNode(
+                new LiteralNode(true, new BoolType()),
+                    new StatementsNode(2,
+                        new IfNode (
+                            new LiteralNode(false, new BoolType()),
+                                new StatementsNode(3, new ReturnNode(new LiteralNode(0, type1),3)),
+                                    new StatementsNode(5, new ReturnNode(new LiteralNode(0, type2),5)),2)),
+                                new StatementsNode(8,
+                                    new StatementsNode(8,
+                                        new ReturnNode(new LiteralNode(0, type3),8))
+                                    ), 1)
         );
 
         node.accept(typeCheckVisitor);
 
         String errMessage = type1 + ", " + type2 + ", " + type3 + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
-        Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
+        Assert.assertEquals(errMessage, expectedType, node.getType());
     }
 }

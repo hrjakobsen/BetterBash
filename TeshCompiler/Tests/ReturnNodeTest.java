@@ -1,8 +1,6 @@
 import com.d401f17.AST.Nodes.*;
 
-import com.d401f17.TypeSystem.SymTab;
-import com.d401f17.TypeSystem.SymbolTable;
-import com.d401f17.TypeSystem.Types;
+import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,26 +17,27 @@ import java.util.Collection;
 public class ReturnNodeTest {
 
     @Parameterized.Parameter(value = 0)
-    public Types predicateType;
+    public Type predicateType;
 
     @Parameterized.Parameter(value = 1)
-    public Types expectedType;
+    public Type expectedType;
 
     @Parameterized.Parameters
     public static Collection<Object[]> data(){
         return Arrays.asList(new Object[][]{
-                {Types.INT, Types.INT},
-                {Types.FLOAT, Types.FLOAT},
-                {Types.CHAR, Types.CHAR},
-                {Types.STRING, Types.STRING},
-                {Types.BOOL, Types.BOOL},
-                {Types.ARRAY, Types.ARRAY},
-                {Types.CHANNEL, Types.CHANNEL},
-                {Types.RECORD, Types.RECORD},
-                {Types.FILE, Types.FILE},
-                {Types.IGNORE, Types.IGNORE},
-                {Types.ERROR, Types.IGNORE},
-                {Types.OK, Types.OK}
+                {new IntType(), new IntType()},
+                {new FloatType(), new FloatType()},
+                {new CharType(), new CharType()},
+                {new StringType(), new StringType()},
+                {new BoolType(), new BoolType()},
+                {new ArrayType(), new ArrayType()},
+                {new ChannelType(), new ChannelType()},
+                {new RecordType(), new RecordType()},
+                {new BinFileType(), new BinFileType()},
+                {new TextFileType(), new TextFileType()},
+                {new ErrorType(), new IgnoreType()},
+                {new IgnoreType(), new IgnoreType()},
+                {new OkType(), new OkType()}
         });
     }
 
@@ -52,6 +51,6 @@ public class ReturnNodeTest {
         node.accept(typeCheckVisitor);
 
         String errMessage = predicateType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
-        Assert.assertEquals(errMessage, expectedType, node.getType().getPrimitiveType());
+        Assert.assertEquals(errMessage, expectedType, node.getType());
     }
 }

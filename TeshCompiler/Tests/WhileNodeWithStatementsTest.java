@@ -1,7 +1,5 @@
 import com.d401f17.AST.Nodes.*;
-import com.d401f17.TypeSystem.SymTab;
-import com.d401f17.TypeSystem.SymbolTable;
-import com.d401f17.TypeSystem.Types;
+import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,25 +16,26 @@ import java.util.Collection;
 public class WhileNodeWithStatementsTest {
 
     @Parameterized.Parameter(value = 0)
-    public Types type;
+    public Type type;
 
     @Parameterized.Parameter(value = 1)
-    public Types expectedType;
+    public Type expectedType;
 
     @Parameterized.Parameters
     public static Collection<Object[]> data(){
         return Arrays.asList(new Object[][]{
-                {Types.INT, Types.INT},
-                {Types.FLOAT, Types.FLOAT},
-                {Types.CHAR, Types.CHAR},
-                {Types.STRING, Types.STRING},
-                {Types.BOOL, Types.BOOL},
-                {Types.ARRAY, Types.ARRAY},
-                {Types.CHANNEL, Types.CHANNEL},
-                {Types.RECORD, Types.RECORD},
-                {Types.FILE, Types.FILE},
-                {Types.ERROR, Types.IGNORE},
-                {Types.IGNORE, Types.IGNORE}
+                {new IntType(), new IntType()},
+                {new FloatType(), new FloatType()},
+                {new CharType(), new CharType()},
+                {new StringType(), new StringType()},
+                {new BoolType(), new BoolType()},
+                {new ArrayType(), new ArrayType()},
+                {new ChannelType(), new ChannelType()},
+                {new RecordType(), new RecordType()},
+                {new BinFileType(), new BinFileType()},
+                {new TextFileType(), new TextFileType()},
+                {new ErrorType(), new IgnoreType()},
+                {new IgnoreType(), new IgnoreType()}
         });
     }
 
@@ -46,10 +45,10 @@ public class WhileNodeWithStatementsTest {
         SymTab symbolTable = new SymbolTable();
         SymTab recordTable = new SymbolTable();
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
-        WhileNode node = new WhileNode(new LiteralNode(1, Types.BOOL), new StatementsNode(new ReturnNode(new LiteralNode( 0, type))));
+        WhileNode node = new WhileNode(new LiteralNode(1, new BoolType()), new StatementsNode(new ReturnNode(new LiteralNode(0, type))));
         node.accept(typeCheckVisitor);
 
         //String errMessage = type + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
-        Assert.assertEquals(expectedType, node.getType().getPrimitiveType());
+        Assert.assertEquals(expectedType, node.getType());
     }
 }
