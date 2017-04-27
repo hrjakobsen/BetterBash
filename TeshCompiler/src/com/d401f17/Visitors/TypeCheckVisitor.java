@@ -145,7 +145,55 @@ public Void visit(AdditionNode node) {
 
     @Override
     public Void visit(ArrayBuilderNode node) {
-        //node.get
+        //Visit array identifier
+        node.getArray().accept(this);
+
+        //Get type of array
+        Type arrayType = node.getArray().getType();
+
+        if (invalidChildren(arrayType)) {
+            node.setType(new IgnoreType());
+            return null;
+        }
+
+        if (arrayType instanceof ArrayType) {
+            //Open af new scope for the loop's body and variable
+            st.openScope();
+
+            //Get the type of the array
+            Type varType = ((ArrayType) arrayType).getChildType();
+
+            //Get name of variable
+            String varName = node.getVariable().getName();
+
+            //Insert the variable in the symbol table
+            //Since we're in a brand new empty scope an exception can't possibly be thrown
+            try {
+                st.insert(varName, new Symbol(varType, node));
+                node.setType(varType);
+            } catch (VariableAlreadyDeclaredException e) {}
+
+            //Now that the variable has been declared, we can visit the statements
+            node.getExpression().accept(this);
+            Type expressionType = node.getExpression().getType();
+
+            //Close the scope again, before there is any chance of returning from this method
+            st.closeScope();
+
+            if (invalidChildren(arrayType, expressionType)) {
+                node.setType(new IgnoreType());
+                return null;
+            }
+
+            if (expressionType instanceof BoolType) {
+                node.setType(arrayType);
+            } else {
+                node.setType(new ErrorType(node.getLine(), "Expected a boolean expression, got " + expressionType));
+            }
+        } else {
+            node.setType(new ErrorType(node.getLine(), "Expected an array, got " + arrayType));
+        }
+
         return null;
     }
 
