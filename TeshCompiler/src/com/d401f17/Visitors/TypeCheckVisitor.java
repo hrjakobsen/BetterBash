@@ -102,11 +102,6 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(ArithmeticExpressionNode node) {
-        return null;
-    }
-
-    @Override
     public Void visit(ArrayAccessNode node) {
         node.getArray().accept(this);
         List<ArithmeticExpressionNode> indexNodes = node.getIndices();
@@ -477,15 +472,15 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             return null;
         }
 
+        String funcName = node.getName().getName();
+        Type funcType = node.getTypeNode().getType();
+
         //Check if statements were ok
         Type statementsType = node.getStatements().getType();
         if (invalidChildren(statementsType)) {
-            node.setType(new IgnoreType());
+            node.setType(new ErrorType(node.getLine(), "Failed to declare function " + funcName));
             return null;
         }
-
-        String funcName = node.getName().getName();
-        Type funcType = node.getTypeNode().getType();
 
         //If return is same type as function, create the function and save it in the symbol table
         if (funcType.equals(statementsType) || (funcType instanceof VoidType && statementsType instanceof OkType)) {
@@ -518,8 +513,14 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     @Override
     public Void visit(IfNode node) {
         node.getPredicate().accept(this);
+
+        st.openScope();
         node.getTrueBranch().accept(this);
+        st.closeScope();
+
+        st.openScope();
         node.getFalseBranch().accept(this);
+        st.closeScope();
 
         Type predicateType = node.getPredicate().getType();
         Type trueBranchType = node.getTrueBranch().getType();
@@ -546,11 +547,6 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
                 node.setType(new ErrorType(node.getLine(), "Expected false branch of type " + trueBranchType + ", got " + falseBranchType));
             }
         }
-        return null;
-    }
-
-    @Override
-    public Void visit(InfixExpressionNode node) {
         return null;
     }
 

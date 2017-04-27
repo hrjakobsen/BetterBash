@@ -1,6 +1,10 @@
 #!/bin/tesh
 
 #stdlib begin
+func str(int i) string {
+    string o
+    return o
+}
 func wait() void {
 }
 channel stdio
@@ -22,7 +26,7 @@ func chatHandler() void {
         } else {
             p2Count += 1
         }
-        stdio << "Person 1: " + p1Count + "\nPerson 2:\" hej " + p2Count + "\n"
+        stdio << "Person 1: " + str(p1Count) + "\nPerson 2:\" hej " + str(p2Count) + "\n"
     }
 }
 
