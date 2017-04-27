@@ -107,7 +107,7 @@ public class RecordDeclarationTest {
         RecordType recordType = new RecordType("page",a,b);
         nameOfSubRecord.setType(recordType);
         nameOfSubRecord.setName("page");
-        VariableDeclarationNode temp = new VariableDeclarationNode(nameOfSubRecord, new TypeNode(recordType.toString().toLowerCase()));
+        VariableDeclarationNode temp = new VariableDeclarationNode(nameOfSubRecord, new TypeNode("recordpage"));
         temp.setType(new RecordType());
         variables.add(temp);
 
@@ -122,7 +122,7 @@ public class RecordDeclarationTest {
         RecordType recordType1 = new RecordType("book",page,type);
         record.setType(recordType1);
         record.setName("book");
-        VariableDeclarationNode book = new VariableDeclarationNode(record, new TypeNode(recordType1.toString().toLowerCase()));
+        VariableDeclarationNode book = new VariableDeclarationNode(record, new TypeNode("recordbook"));
         book.accept(typeCheckVisitor);
 
         try {

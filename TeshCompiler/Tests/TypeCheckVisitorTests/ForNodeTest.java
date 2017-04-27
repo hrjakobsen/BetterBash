@@ -77,6 +77,7 @@ public class ForNodeTest {
                 new LiteralNode(0, ((ArrayType)array.getType()).getChildType()));
         node.accept(typeCheckVisitor);
 
+        //ForNode changes its type to the type of the statementsNode, in this case, predicateType
         String errMessage = predicateType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
         Assert.assertEquals(errMessage, predicateType, node.getType());
     }
