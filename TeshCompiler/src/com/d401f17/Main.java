@@ -16,7 +16,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         //InputStream is = new ByteArrayInputStream( "float[][] intArray = [[1, 2], [2, 2]]".getBytes() );
-        InputStream is = Main.class.getResourceAsStream("/bmi.tsh");
+        InputStream is = Main.class.getResourceAsStream("/recordTest.tsh");
 
         CharStream input = CharStreams.fromStream(is);
         TeshLexer lexer = new TeshLexer(input);

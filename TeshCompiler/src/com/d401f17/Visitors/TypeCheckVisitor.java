@@ -51,50 +51,49 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         return sb.toString();
     }
 
+    @Override
+    public Void visit(AdditionNode node) {
+        node.getLeft().accept(this);
+        node.getRight().accept(this);
 
-@Override
-public Void visit(AdditionNode node) {
-    node.getLeft().accept(this);
-    node.getRight().accept(this);
+        Type leftType = node.getLeft().getType();
+        Type rightType = node.getRight().getType();
 
-    Type leftType = node.getLeft().getType();
-    Type rightType = node.getRight().getType();
-
-    if (invalidChildren(leftType, rightType)) {
-        node.setType(new IgnoreType());
-        return null;
-    }
-
-    if (leftType.equals(rightType)) {
-        if (leftType instanceof FloatType || leftType instanceof StringType) {
-            node.setType(leftType); //Int + Int = Int, Float + Float = Float, String + String = String
-        } else {
-            node.setType(new ErrorType(node.getLine(), "Expected int, float or string, got " + leftType));
+        if (invalidChildren(leftType, rightType)) {
+            node.setType(new IgnoreType());
+            return null;
         }
-        return null;
-    }
 
-    if (leftType instanceof FloatType && rightType instanceof FloatType) {
-        if (leftType instanceof IntType && rightType instanceof IntType) {
-            node.setType(leftType); //Int + Int = Int
-        } else {
-            node.setType(new FloatType()); //Int + Float = Float, Float + Int = Float, Float + Float = Float
-        }
-        return null;
-    } else {
-        if (leftType instanceof CharType || rightType instanceof CharType) {
-            if (leftType instanceof IntType || rightType instanceof IntType) {
-                node.setType(new CharType()); //Int + Char = Char, Char + Int = Char
+        if (leftType.equals(rightType)) {
+            if (leftType instanceof FloatType || leftType instanceof StringType) {
+                node.setType(leftType); //Int + Int = Int, Float + Float = Float, String + String = String
             } else {
-                node.setType(new ErrorType(node.getLine(), "Expected char and int or int and char, got " + leftType + " and " + rightType));
+                node.setType(new ErrorType(node.getLine(), "Expected int, float or string, got " + leftType));
             }
             return null;
         }
-    }
 
-    node.setType(new ErrorType(node.getLine(), "Expected addable types, got " + leftType + " and " + rightType));
-    return null;
-}
+        if (leftType instanceof FloatType && rightType instanceof FloatType) {
+            if (leftType instanceof IntType && rightType instanceof IntType) {
+                node.setType(leftType); //Int + Int = Int
+            } else {
+                node.setType(new FloatType()); //Int + Float = Float, Float + Int = Float, Float + Float = Float
+            }
+            return null;
+        } else {
+            if (leftType instanceof CharType || rightType instanceof CharType) {
+                if (leftType instanceof IntType || rightType instanceof IntType) {
+                    node.setType(new CharType()); //Int + Char = Char, Char + Int = Char
+                } else {
+                    node.setType(new ErrorType(node.getLine(), "Expected char and int or int and char, got " + leftType + " and " + rightType));
+                }
+                return null;
+            }
+        }
+
+        node.setType(new ErrorType(node.getLine(), "Expected addable types, got " + leftType + " and " + rightType));
+        return null;
+    }
 
     @Override
     public Void visit(AndNode node) {
@@ -358,8 +357,9 @@ public Void visit(AdditionNode node) {
         node.getChild().accept(this);
         st.closeScope();
 
-        Type statementType = node.getChild().getType();
-        if (invalidChildren(statementType)) {
+        Type childType = node.getChild().getType();
+
+        if (invalidChildren(childType)) {
             node.setType(new IgnoreType());
             return null;
         }
@@ -699,7 +699,7 @@ public Void visit(AdditionNode node) {
                     Type terminalType = ((RecordType)previous.getType()).getMemberType(traveller.getName());
                     node.setType(terminalType);
                 } catch (MemberNotFoundException e) {
-                    node.setType(new ErrorType(node.getLine(),": " + e.getMessage()));
+                    node.setType(new ErrorType(node.getLine(),e.getMessage()));
                 }
                 return null;
             } else {
@@ -711,7 +711,7 @@ public Void visit(AdditionNode node) {
                     //node.setType(new Type(Types.ERROR, node.getLine(), "Record " + e.getMessage()));
                     //return null;
                 } catch (MemberNotFoundException e) {
-                    node.setType(new ErrorType(node.getLine(), ": " + e.getMessage()));
+                    node.setType(new ErrorType(node.getLine(), e.getMessage()));
                     return null;
                 }
 
@@ -1057,7 +1057,7 @@ public Void visit(AdditionNode node) {
         } else if (leftType instanceof BoolType && rightType instanceof BoolType) {
             return new BoolType(); //Bool == Bool
         } else {
-            return new ErrorType(node.getLine(), "Expected similar types, got " + leftType + " and " + rightType);
+            return new ErrorType(node.getLine(), "Expected equalable types, got " + leftType + " and " + rightType);
         }
     }
 
