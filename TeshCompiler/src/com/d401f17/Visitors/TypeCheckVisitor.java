@@ -120,18 +120,20 @@ public Void visit(AdditionNode node) {
             return null;
         }
 
-        for (int i = 0; i < indexNodes.size(); i++) {
-            indexNodes.get(i).accept(this);
-            indexTypes[i] = indexNodes.get(i).getType();
+        if (arrayType instanceof ArrayType) {
+            arrayType = ((ArrayType)arrayType).getChildType();
 
-            if (!(indexTypes[i] instanceof IntType)) {
-                node.setType(new ErrorType(node.getLine(), Helper.ordinal(i + 1) + " index expected int, got " + indexTypes[i]));
-                return null;
-            }
+            for (int i = 0; i < indexNodes.size(); i++) {
+                indexNodes.get(i).accept(this);
+                indexTypes[i] = indexNodes.get(i).getType();
 
-            if (arrayType instanceof ArrayType) {
-                arrayType = ((ArrayType)arrayType).getChildType();
+                if (!(indexTypes[i] instanceof IntType)) {
+                    node.setType(new ErrorType(node.getLine(), Helper.ordinal(i + 1) + " index expected int, got " + indexTypes[i]));
+                    return null;
+                }
             }
+        } else {
+            node.setType(new ErrorType(node.getLine(), "Expected array, got " + arrayType));
         }
 
         if (invalidChildren(indexTypes)) {
