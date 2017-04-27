@@ -178,7 +178,13 @@ public class RecordAllNodesTest {
         }
 
         idNode.setType(arrayType);
-        TypeNode typeNode = new TypeNode(arrayType.toString().toLowerCase());
+        TypeNode typeNode;
+        //multiple spaces between Record and page for the typenode. Only happens during tests
+        if (!(arrayType.getChildType() instanceof RecordType)) {
+            typeNode = new TypeNode(arrayType.toString().toLowerCase());
+        } else {
+            typeNode = new TypeNode("recordpage");
+        }
 
         VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
         varNode.accept(typeCheckVisitor);
@@ -191,7 +197,7 @@ public class RecordAllNodesTest {
         node.accept(typeCheckVisitor);
         ArrayElementAssignmentNode a;
 
-        if (leftType instanceof RecordType) {
+        if (leftType instanceof RecordType && !(rightType instanceof RecordType)) {
             a = new ArrayElementAssignmentNode(node, new LiteralNode(0, rightType));
         } else
             a = new ArrayElementAssignmentNode(node, new LiteralNode(0, recordType));
