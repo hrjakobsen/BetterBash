@@ -3,10 +3,6 @@
 #stdlib begin
 func wait() void {
 }
-func makeFile(string str) file {
-    file f
-    return f
-}
 channel stdio
 #stdlib end
 
@@ -18,7 +14,6 @@ func chatHandler() void {
     int p1Count = 0
     int p2Count = 0
     string line
-    file f = makeFile("hej")
 
     while true {
         line << chn
