@@ -1,3 +1,18 @@
+func str(int i) string {
+	string o
+	return o
+}
+
+func str(float i) string {
+	string o
+	return o
+}
+
+func str(char i) string {
+	string o
+	return o
+}
+
 char c = 'a'
 
 func myFun(int a, string b) void {
@@ -42,7 +57,7 @@ func myFun2(int a, string b) int {
 		return i
 	} else {
 		float f = 2.3
-		b = "" + f + a + 2 + c
+		b = str(f) + str(a) + str(2) + str(c)
 		return 42
 	}
 
@@ -66,16 +81,4 @@ func wontwork() string {
 	string b = "hej"
 
 	return b
-}
-
-func two() int {
-	string b = "2"
-
-	if true {
-		return 1
-	} else {
-		return 2
-	}
-
-	return 2
 }

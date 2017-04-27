@@ -404,4 +404,132 @@ public class RecordAllNodesTest {
         node.accept(typeCheckVisitor);
         Assert.assertEquals(new ErrorType(), node.getType());
     }
+
+    @Test
+    public void PatternMatchNode() {
+        PatternMatchNode node;
+        if (leftType instanceof RecordType && rightType instanceof RecordType) {
+            node = new PatternMatchNode(myPage, myPage);
+        } else if (leftType instanceof RecordType) {
+            node = new PatternMatchNode(myPage, new LiteralNode(0, rightType));
+        } else {
+            node = new PatternMatchNode(new LiteralNode(0, leftType), myPage);
+        }
+        node.accept(typeCheckVisitor);
+        Assert.assertEquals(new ErrorType(), node.getType());
+    }
+
+    @Test
+    public void FunctioncallNode() {
+        FunctionCallNode node;
+        ArrayList<VariableDeclarationNode> array = new ArrayList<VariableDeclarationNode>();
+        StatementsNode returnStatement;
+        if (leftType instanceof RecordType) {
+            returnStatement = new StatementsNode(new ReturnNode(new LiteralNode(0, recordType)));
+        } else {
+            returnStatement = new StatementsNode(new ReturnNode(new LiteralNode(0, leftType)));
+        }
+        returnStatement.accept(typeCheckVisitor);
+        FunctionNode functionNode;
+        if (rightType instanceof RecordType) {
+            functionNode = new FunctionNode(new SimpleIdentifierNode("funcname"), new TypeNode("recordpage"), array, returnStatement);
+        } else {
+            functionNode = new FunctionNode(new SimpleIdentifierNode("funcname"), new TypeNode(rightType.toString()), array, returnStatement);
+        }
+        functionNode.accept(typeCheckVisitor);
+        node = new FunctionCallNode(functionNode.getName());
+
+        node.accept(typeCheckVisitor);
+
+        if (leftType instanceof RecordType && rightType instanceof RecordType) {
+            Assert.assertEquals(recordType, node.getType());
+        } else {
+            Assert.assertEquals(expectedType, node.getType());
+        }
+    }
+
+    @Test
+    public void ifReturn() {
+        Type type1, type2;
+
+        if (leftType instanceof RecordType && rightType instanceof RecordType) {
+            type1 = recordType;
+            type2 = recordType;
+        } else if (leftType instanceof RecordType) {
+            type1 = recordType;
+            type2 = rightType;
+        } else {
+            type1 = leftType;
+            type2 = recordType;
+        }
+        /*
+        1   if true {
+        2       if false {
+        3           return type1
+        4       } else {
+        5           return type2
+        6       }
+        7   } else {
+        8       return type2
+        9   }
+         */
+        StatementNode node = new StatementsNode(1,
+                new IfNode(
+                        new LiteralNode(true, new BoolType()),
+                        new StatementsNode(2,
+                                new IfNode(
+                                        new LiteralNode(false, new BoolType()),
+                                        new StatementsNode(3, new ReturnNode(new LiteralNode(0, type1), 3)),
+                                        new StatementsNode(5, new ReturnNode(new LiteralNode(0, type2), 5)), 2)),
+                        new StatementsNode(8,
+                                new StatementsNode(8,
+                                        new ReturnNode(new LiteralNode(0, type2), 8))
+                        ), 1)
+        );
+        node.accept(typeCheckVisitor);
+
+        if (leftType instanceof RecordType && rightType instanceof RecordType) {
+            Assert.assertEquals(recordType, node.getType());
+        } else {
+            Assert.assertEquals(new IgnoreType(), node.getType());
+        }
+    }
+
+    @Test
+    public void whileNode() {
+        WhileNode node;
+        StatementsNode returnNodeTrue;
+        StatementsNode returnNodeFalse;
+        if (leftType instanceof RecordType && rightType instanceof RecordType) {
+            returnNodeTrue = new StatementsNode(new ReturnNode(new LiteralNode(0, recordType)));
+            returnNodeFalse = new StatementsNode(new ReturnNode(new LiteralNode(0, recordType)));
+        } else if (leftType instanceof RecordType) {
+            returnNodeTrue = new StatementsNode(new ReturnNode(new LiteralNode(0, recordType)));
+            returnNodeFalse = new StatementsNode(new ReturnNode(new LiteralNode(0, rightType)));
+        } else {
+            returnNodeTrue = new StatementsNode(new ReturnNode(new LiteralNode(0, leftType)));
+            returnNodeFalse = new StatementsNode(new ReturnNode(new LiteralNode(0, recordType)));
+        }
+
+        StatementsNode ifNode = new StatementsNode(new IfNode(new LiteralNode(1, new BoolType()), returnNodeTrue, returnNodeFalse));
+
+        /*
+        while b {
+            if b {
+                return returnNodeTrue
+            } else {
+                return returnNodeFalse
+            }
+        }
+         */
+        node = new WhileNode(new LiteralNode(1, new BoolType()), ifNode);
+        node.accept(typeCheckVisitor);
+
+        if (leftType instanceof RecordType && rightType instanceof RecordType) {
+            Assert.assertEquals(recordType, node.getType());
+        } else {
+            Assert.assertEquals(new IgnoreType(), node.getType());
+        }
+    }
 }
+
