@@ -545,11 +545,6 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(InfixExpressionNode node) {
-        return null;
-    }
-
-    @Override
     public Void visit(LessThanNode node) {
         node.setType(binaryComparison(node));
         return null;

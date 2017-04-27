@@ -32,7 +32,6 @@ public interface ASTVisitor<T> {
     T visit(GreaterThanNode node);
     T visit(GreaterThanOrEqualNode node);
     T visit(IfNode node);
-    T visit(InfixExpressionNode node);
     T visit(LessThanNode node);
     T visit(LessThanOrEqualNode node);
     T visit(ModuloNode node);

@@ -186,11 +186,6 @@ public class InterpretVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(InfixExpressionNode node) {
-        return null;
-    }
-
-    @Override
     public Void visit(LessThanNode node) {
         return null;
     }

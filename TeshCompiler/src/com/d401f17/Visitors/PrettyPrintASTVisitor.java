@@ -196,11 +196,6 @@ public class PrettyPrintASTVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(InfixExpressionNode node) {
-        return null;
-    }
-
-    @Override
     public Void visit(LessThanNode node) {
         makeNode("<", node.getLeft(), node.getRight());
         return null;
