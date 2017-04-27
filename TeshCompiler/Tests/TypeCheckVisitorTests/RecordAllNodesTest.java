@@ -513,6 +513,15 @@ public class RecordAllNodesTest {
 
         StatementsNode ifNode = new StatementsNode(new IfNode(new LiteralNode(1, new BoolType()), returnNodeTrue, returnNodeFalse));
 
+        /*
+        while b {
+            if b {
+                return returnNodeTrue
+            } else {
+                return returnNodeFalse
+            }
+        }
+         */
         node = new WhileNode(new LiteralNode(1, new BoolType()), ifNode);
         node.accept(typeCheckVisitor);
 
