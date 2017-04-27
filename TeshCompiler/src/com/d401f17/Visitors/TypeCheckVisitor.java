@@ -174,6 +174,11 @@ public Void visit(AdditionNode node) {
     }
 
     @Override
+    public Void visit(ArrayAppendNode node) {
+        return null;
+    }
+
+    @Override
     public Void visit(ArithmeticExpressionNode node) {
         return null;
     }

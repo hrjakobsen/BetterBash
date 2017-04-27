@@ -63,6 +63,8 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
                 return new AssignmentNode(variable, new MultiplicationNode(variable, expression, lineNum), lineNum);
             case TeshParser.OP_DIVIDE:
                 return new AssignmentNode(variable, new DivisionNode(variable, expression, lineNum), lineNum);
+            case TeshParser.OP_APPEND:
+                return new ArrayAppendNode(variable, expression, lineNum);
         }
         return null;
     }

@@ -24,6 +24,7 @@ CHANNEL_OP: '<<';
 NOT: '!';
 PARENTHESIS_START:'(';
 PARENTHESIS_END:')';
+OP_APPEND: '::=';
 OP_INCREMENT: '+=';
 OP_DECREMENT: '-=';
 OP_SCALE: '*=';

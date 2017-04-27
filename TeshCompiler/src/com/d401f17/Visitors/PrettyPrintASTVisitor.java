@@ -42,6 +42,12 @@ public class PrettyPrintASTVisitor extends BaseVisitor<Void> {
     }
 
     @Override
+    public Void visit(ArrayAppendNode node) {
+        makeNode("::=", node.getVariable(), node.getExpression());
+        return null;
+    }
+
+    @Override
     public Void visit(ArithmeticExpressionNode node) {
         return null;
     }

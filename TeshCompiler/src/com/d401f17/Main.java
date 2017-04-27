@@ -37,7 +37,7 @@ public class Main {
             System.out.println(err);
         }
 
-        /*
+
         PrettyPrintASTVisitor p = new PrettyPrintASTVisitor();
         ast.accept(p);
         PrintWriter writer =
@@ -46,6 +46,6 @@ public class Main {
         writer.print("graph {\n" + p.toString() + "\n}\n");
         writer.flush();
         writer.close();
-        */
+
     }
 }
