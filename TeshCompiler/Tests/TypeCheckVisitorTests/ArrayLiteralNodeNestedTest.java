@@ -35,7 +35,6 @@ public class ArrayLiteralNodeNestedTest {
                 {new BoolType(), new ArrayType(new ArrayType(new BoolType()))},
                 {new ArrayType(), new ArrayType(new ArrayType(new ArrayType()))},
                 {new ChannelType(), new ArrayType(new ArrayType(new ChannelType()))},
-                {new RecordType(), new ArrayType(new ArrayType(new RecordType()))},
                 {new BinFileType(), new ArrayType(new ArrayType(new BinFileType()))},
                 {new TextFileType(), new ArrayType(new ArrayType(new TextFileType()))},
         });

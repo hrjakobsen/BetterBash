@@ -33,7 +33,6 @@ public class TypeNodeTest {
                 {new BoolType(), new BoolType()},
                 {new ArrayType(), new ArrayType()},
                 {new ChannelType(), new ChannelType()},
-                {new RecordType(), new RecordType()},
                 {new BinFileType(), new BinFileType()},
                 {new TextFileType(), new TextFileType()},
                 {new ErrorType(), new ErrorType()},

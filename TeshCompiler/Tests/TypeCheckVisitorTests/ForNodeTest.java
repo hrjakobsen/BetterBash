@@ -34,7 +34,6 @@ public class ForNodeTest {
                 {new BoolType(), new OkType()},
                 {new ArrayType(), new OkType()},
                 {new ChannelType(), new OkType()},
-                {new RecordType(), new OkType()},
                 {new BinFileType(), new OkType()},
                 {new TextFileType(), new OkType()}
         });
