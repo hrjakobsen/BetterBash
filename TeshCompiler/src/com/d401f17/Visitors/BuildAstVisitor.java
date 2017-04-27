@@ -525,6 +525,6 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
 
     @Override
     public AST visitParenthesisExpr(TeshParser.ParenthesisExprContext ctx) {
-        return visit(ctx.arithmeticExpression());
+        return visit(ctx.expression());
     }
 }

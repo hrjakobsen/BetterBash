@@ -1,0 +1,9 @@
+bool a = "hej" ?= ".*"
+float i = 100 / 9
+float b = 12 + 2.0
+
+if 123 == 123 {
+    float c = 14 * 0.99
+} else {
+    float d = 15 * 2.0
+}

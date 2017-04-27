@@ -23,6 +23,10 @@ public class InterpretVisitor extends BaseVisitor<Void> {
                             ToFloat(node.getLeft().getNodeValue().getValue()) + ToFloat(node.getRight().getNodeValue().getValue())
                     )
             );
+        } else if (node.getLeft().getType() instanceof StringType) {
+            node.setNodeValue(new StringLiteralNode(
+                    (String)node.getLeft().getNodeValue().getValue() + (String)node.getRight().getNodeValue().getValue()
+            ));
         }
 
         //TODO: Add rest of addition node things
@@ -142,6 +146,23 @@ public class InterpretVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(EqualNode node) {
+        node.getLeft().accept(this);
+        node.getRight().accept(this);
+        Type childType = node.getLeft().getType();
+        if (childType instanceof FloatType) {
+            node.setNodeValue(
+                    new BoolLiteralNode(
+                        ToFloat(node.getLeft().getNodeValue().getValue()).equals(ToFloat(node.getRight().getNodeValue().getValue()))
+                    )
+            );
+        } else if (childType instanceof StringType || childType instanceof CharType || childType instanceof BoolType) {
+            node.setNodeValue(
+                    new BoolLiteralNode(
+                            (node.getLeft().getNodeValue().getValue()).equals((node.getRight().getNodeValue().getValue()))
+                    )
+            );
+        }
+
         return null;
     }
 
@@ -172,31 +193,99 @@ public class InterpretVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(GreaterThanNode node) {
+        node.getLeft().accept(this);
+        node.getRight().accept(this);
+
+        Type childType = node.getLeft().getType();
+        if (childType instanceof FloatType) {
+            node.setNodeValue(new BoolLiteralNode(
+                    ToFloat(node.getLeft().getNodeValue()) > ToFloat(node.getRight().getNodeValue())
+            ));
+        } else if (childType instanceof CharType) {
+            node.setNodeValue(new BoolLiteralNode(
+                    ((CharLiteralNode) node.getLeft().getNodeValue()).getValue() > ((CharLiteralNode) node.getRight().getNodeValue()).getValue()
+            ));
+        }
         return null;
     }
 
     @Override
     public Void visit(GreaterThanOrEqualNode node) {
+        node.getLeft().accept(this);
+        node.getRight().accept(this);
+
+        Type childType = node.getLeft().getType();
+        if (childType instanceof FloatType) {
+            node.setNodeValue(new BoolLiteralNode(
+                    ToFloat(node.getLeft().getNodeValue()) >= ToFloat(node.getRight().getNodeValue())
+            ));
+        } else if (childType instanceof CharType) {
+            node.setNodeValue(new BoolLiteralNode(
+                    ((CharLiteralNode) node.getLeft().getNodeValue()).getValue() >= ((CharLiteralNode) node.getRight().getNodeValue()).getValue()
+            ));
+        }
         return null;
     }
 
     @Override
     public Void visit(IfNode node) {
+        ArithmeticExpressionNode predicate = node.getPredicate();
+        predicate.accept(this);
+        if (((BoolLiteralNode)predicate.getNodeValue()).getValue()) {
+            node.getTrueBranch().accept(this);
+        } else {
+            node.getFalseBranch().accept(this);
+        }
         return null;
     }
 
     @Override
     public Void visit(LessThanNode node) {
+        node.getLeft().accept(this);
+        node.getRight().accept(this);
+
+        Type childType = node.getLeft().getType();
+        if (childType instanceof FloatType) {
+            node.setNodeValue(new BoolLiteralNode(
+                    ToFloat(node.getLeft().getNodeValue()) < ToFloat(node.getRight().getNodeValue())
+            ));
+        } else if (childType instanceof CharType) {
+            node.setNodeValue(new BoolLiteralNode(
+                    ((CharLiteralNode) node.getLeft().getNodeValue()).getValue() < ((CharLiteralNode) node.getRight().getNodeValue()).getValue()
+            ));
+        }
         return null;
     }
 
     @Override
     public Void visit(LessThanOrEqualNode node) {
+        node.getLeft().accept(this);
+        node.getRight().accept(this);
+
+        Type childType = node.getLeft().getType();
+        if (childType instanceof FloatType) {
+            node.setNodeValue(new BoolLiteralNode(
+                    ToFloat(node.getLeft().getNodeValue()) <= ToFloat(node.getRight().getNodeValue())
+            ));
+        } else if (childType instanceof CharType) {
+            node.setNodeValue(new BoolLiteralNode(
+                    ((CharLiteralNode) node.getLeft().getNodeValue()).getValue() <= ((CharLiteralNode) node.getRight().getNodeValue()).getValue()
+            ));
+        }
         return null;
     }
 
     @Override
     public Void visit(ModuloNode node) {
+        node.getLeft().accept(this);
+        node.getRight().accept(this);
+
+        int a1 = ((IntLiteralNode)node.getLeft().getNodeValue()).getValue();
+        int a2 = ((IntLiteralNode)node.getRight().getNodeValue()).getValue();
+
+        node.setNodeValue(new IntLiteralNode(
+                a1 % a2
+        ));
         return null;
     }
 
@@ -332,6 +421,15 @@ public class InterpretVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(PatternMatchNode node) {
+        node.getLeft().accept(this);
+        node.getRight().accept(this);
+
+        String text = ((StringLiteralNode)node.getLeft().getNodeValue()).getValue();
+        String pattern = ((StringLiteralNode)node.getRight().getNodeValue()).getValue();
+
+        node.setNodeValue(new BoolLiteralNode(
+                text.matches(pattern)
+        ));
         return null;
     }
 

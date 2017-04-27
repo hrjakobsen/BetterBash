@@ -4,6 +4,7 @@ import com.d401f17.AST.Nodes.*;
 import com.d401f17.TypeSystem.SymTab;
 import com.d401f17.TypeSystem.SymbolTable;
 import com.d401f17.Visitors.BuildAstVisitor;
+import com.d401f17.Visitors.InterpretVisitor;
 import com.d401f17.Visitors.PrettyPrintASTVisitor;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.antlr.v4.runtime.CharStream;
@@ -15,8 +16,8 @@ import java.io.*;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        //InputStream is = new ByteArrayInputStream( "float[][] intArray = [[1, 2], [2, 2]]".getBytes() );
-        InputStream is = Main.class.getResourceAsStream("/recordTest.tsh");
+        //InputStream is = new ByteArrayInputStream( "bool a = (10 * 0.1 == 1 && \"hej\" == (\"hej2\"))".getBytes() );
+        InputStream is = Main.class.getResourceAsStream("/interpreterTest.tsh");
 
         CharStream input = CharStreams.fromStream(is);
         TeshLexer lexer = new TeshLexer(input);
@@ -24,6 +25,7 @@ public class Main {
         TeshParser parser = new TeshParser(tokenStream);
 
         TeshParser.CompileUnitContext unit = parser.compileUnit();
+
         AST ast = new BuildAstVisitor().visitCompileUnit(unit);
 
         SymTab symbolTable = new SymbolTable();
@@ -32,8 +34,14 @@ public class Main {
         ast.accept(typeCheck);
 
         for (String err : typeCheck.getErrors()) {
-            System.out.println(err);
+            System.err.println(err);
         }
+
+        if (typeCheck.getErrors().size() > 0) return;
+
+        InterpretVisitor run = new InterpretVisitor();
+
+            ast.accept(run);
 
 /*
         PrettyPrintASTVisitor p = new PrettyPrintASTVisitor();
