@@ -8,6 +8,7 @@ import com.d401f17.AST.Nodes.*;
 public interface ASTVisitor<T> {
     T visit(AdditionNode node);
     T visit(AndNode node);
+    T visit(ArrayAppendNode node);
     T visit(ArithmeticExpressionNode node);
     T visit(ArrayAccessNode node);
     T visit(ArrayBuilderNode node);

@@ -39,6 +39,7 @@ floatArray1[0] = 2.3
 
 #OK
 floatArray1[1] = 2
+floatArray1 ::= 4.3
 
 #OK
 for i in intArray {
