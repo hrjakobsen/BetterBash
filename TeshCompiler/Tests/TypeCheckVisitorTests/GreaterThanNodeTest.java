@@ -34,7 +34,7 @@ public class GreaterThanNodeTest {
         return Arrays.asList(new Object[][]{
                 {new IntType(), new IntType(), new BoolType()},
                 {new IntType(), new FloatType(), new BoolType()},
-                {new IntType(), new CharType(), new BoolType()},
+                {new IntType(), new CharType(), new ErrorType()},
                 {new IntType(), new StringType(), new ErrorType()},
                 {new IntType(), new BoolType(), new ErrorType()},
                 {new IntType(), new ArrayType(), new ErrorType()},
@@ -50,7 +50,7 @@ public class GreaterThanNodeTest {
                 {new FloatType(), new ChannelType(), new ErrorType()},
                 {new FloatType(), new BinFileType(), new ErrorType()},
                 {new FloatType(), new TextFileType(), new ErrorType()},
-                {new CharType(), new IntType(), new BoolType()},
+                {new CharType(), new IntType(), new ErrorType()},
                 {new CharType(), new FloatType(), new ErrorType()},
                 {new CharType(), new StringType(), new ErrorType()},
                 {new CharType(), new BoolType(), new ErrorType()},

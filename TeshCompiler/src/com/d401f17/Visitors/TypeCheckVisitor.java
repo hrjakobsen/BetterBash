@@ -627,9 +627,9 @@ public Void visit(AdditionNode node) {
         }
 
         if (expressionType instanceof BoolType) {
-            node.setType(new ErrorType(node.getLine(), "Expected bool, got " + expressionType));
-        } else {
             node.setType(expressionType);
+        } else {
+            node.setType(new ErrorType(node.getLine(), "Expected bool, got " + expressionType));
         }
 
         return null;
@@ -855,8 +855,8 @@ public Void visit(AdditionNode node) {
             }
             return null;
         } else {
-            if (leftType instanceof IntType && rightType instanceof CharType) {
-                node.setType(rightType); //Char - Int = Char
+            if (leftType instanceof CharType && rightType instanceof IntType) {
+                node.setType(leftType); //Char - Int = Char
                 return null;
             }
         }

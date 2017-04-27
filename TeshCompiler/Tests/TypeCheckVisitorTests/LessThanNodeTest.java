@@ -34,7 +34,7 @@ public class LessThanNodeTest {
         return Arrays.asList(new Object[][]{
                 {new IntType(), new IntType(), new BoolType()},
                 {new IntType(), new FloatType(), new BoolType()},
-                {new IntType(), new CharType(), new BoolType()},
+                {new IntType(), new CharType(), new ErrorType()},
                 {new IntType(), new StringType(), new ErrorType()},
                 {new IntType(), new BoolType(), new ErrorType()},
                 {new IntType(), new ArrayType(), new ErrorType()},
@@ -50,7 +50,7 @@ public class LessThanNodeTest {
                 {new FloatType(), new ChannelType(), new ErrorType()},
                 {new FloatType(), new BinFileType(), new ErrorType()},
                 {new FloatType(), new TextFileType(), new ErrorType()},
-                {new CharType(), new IntType(), new BoolType()},
+                {new CharType(), new IntType(), new ErrorType()},
                 {new CharType(), new FloatType(), new ErrorType()},
                 {new CharType(), new StringType(), new ErrorType()},
                 {new CharType(), new BoolType(), new ErrorType()},
@@ -119,9 +119,7 @@ public class LessThanNodeTest {
     @Test
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void LessThanNode_typeCheckWithParameters_expected() {
-        SymTab symbolTable = new SymbolTable();
-        SymTab recordTable = new SymbolTable();
-        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
+        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
         LessThanNode node = new LessThanNode(new LiteralNode(1, leftType), new LiteralNode(1, rightType),0);
         node.accept(typeCheckVisitor);
 

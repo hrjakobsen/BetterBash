@@ -32,13 +32,13 @@ public class NotEqualNodeTest {
         return Arrays.asList(new Object[][]{
                 {new IntType(), new IntType(), new BoolType()},
                 {new IntType(), new FloatType(), new BoolType()},
-                {new IntType(), new CharType(), new BoolType()},
+                {new IntType(), new CharType(), new ErrorType()},
                 {new IntType(), new StringType(), new ErrorType()},
                 {new IntType(), new BoolType(), new ErrorType()},
                 {new IntType(), new ArrayType(), new ErrorType()},
                 {new IntType(), new ChannelType(), new ErrorType()},
-                {new IntType(), new TextFileType(), new ErrorType()},
                 {new IntType(), new BinFileType(), new ErrorType()},
+                {new IntType(), new TextFileType(), new ErrorType()},
                 {new FloatType(), new IntType(), new BoolType()},
                 {new FloatType(), new FloatType(), new BoolType()},
                 {new FloatType(), new CharType(), new ErrorType()},
@@ -46,17 +46,17 @@ public class NotEqualNodeTest {
                 {new FloatType(), new BoolType(), new ErrorType()},
                 {new FloatType(), new ArrayType(), new ErrorType()},
                 {new FloatType(), new ChannelType(), new ErrorType()},
-                {new FloatType(), new TextFileType(), new ErrorType()},
                 {new FloatType(), new BinFileType(), new ErrorType()},
-                {new CharType(), new IntType(), new BoolType()},
+                {new FloatType(), new TextFileType(), new ErrorType()},
+                {new CharType(), new IntType(), new ErrorType()},
                 {new CharType(), new FloatType(), new ErrorType()},
                 {new CharType(), new StringType(), new ErrorType()},
                 {new CharType(), new BoolType(), new ErrorType()},
                 {new CharType(), new CharType(), new BoolType()},
                 {new CharType(), new ArrayType(), new ErrorType()},
                 {new CharType(), new ChannelType(), new ErrorType()},
-                {new CharType(), new TextFileType(), new ErrorType()},
                 {new CharType(), new BinFileType(), new ErrorType()},
+                {new CharType(), new TextFileType(), new ErrorType()},
                 {new StringType(), new IntType(), new ErrorType()},
                 {new StringType(), new FloatType(), new ErrorType()},
                 {new StringType(), new CharType(), new ErrorType()},
@@ -64,8 +64,8 @@ public class NotEqualNodeTest {
                 {new StringType(), new BoolType(), new ErrorType()},
                 {new StringType(), new ArrayType(), new ErrorType()},
                 {new StringType(), new ChannelType(), new ErrorType()},
-                {new StringType(), new TextFileType(), new ErrorType()},
                 {new StringType(), new BinFileType(), new ErrorType()},
+                {new StringType(), new TextFileType(), new ErrorType()},
                 {new BoolType(), new IntType(), new ErrorType()},
                 {new BoolType(), new FloatType(), new ErrorType()},
                 {new BoolType(), new StringType(), new ErrorType()},
@@ -73,26 +73,26 @@ public class NotEqualNodeTest {
                 {new BoolType(), new BoolType(), new BoolType()},
                 {new BoolType(), new ArrayType(), new ErrorType()},
                 {new BoolType(), new ChannelType(), new ErrorType()},
-                {new BoolType(), new TextFileType(), new ErrorType()},
                 {new BoolType(), new BinFileType(), new ErrorType()},
+                {new BoolType(), new TextFileType(), new ErrorType()},
                 {new ArrayType(), new IntType(), new ErrorType()},
                 {new ArrayType(), new FloatType(), new ErrorType()},
                 {new ArrayType(), new CharType(), new ErrorType()},
                 {new ArrayType(), new StringType(), new ErrorType()},
                 {new ArrayType(), new BoolType(), new ErrorType()},
-                {new ArrayType(), new ArrayType(), new BoolType()},
+                {new ArrayType(), new ArrayType(), new ErrorType()},
                 {new ArrayType(), new ChannelType(), new ErrorType()},
-                {new ArrayType(), new TextFileType(), new ErrorType()},
                 {new ArrayType(), new BinFileType(), new ErrorType()},
+                {new ArrayType(), new TextFileType(), new ErrorType()},
                 {new ChannelType(), new IntType(), new ErrorType()},
                 {new ChannelType(), new FloatType(), new ErrorType()},
                 {new ChannelType(), new CharType(), new ErrorType()},
                 {new ChannelType(), new StringType(), new ErrorType()},
                 {new ChannelType(), new BoolType(), new ErrorType()},
                 {new ChannelType(), new ArrayType(), new ErrorType()},
-                {new ChannelType(), new ChannelType(), new BoolType()},
-                {new ChannelType(), new TextFileType(), new ErrorType()},
+                {new ChannelType(), new ChannelType(), new ErrorType()},
                 {new ChannelType(), new BinFileType(), new ErrorType()},
+                {new ChannelType(), new TextFileType(), new ErrorType()},
                 {new BinFileType(), new IntType(), new ErrorType()},
                 {new BinFileType(), new FloatType(), new ErrorType()},
                 {new BinFileType(), new StringType(), new ErrorType()},
@@ -100,8 +100,8 @@ public class NotEqualNodeTest {
                 {new BinFileType(), new BoolType(), new ErrorType()},
                 {new BinFileType(), new ArrayType(), new ErrorType()},
                 {new BinFileType(), new ChannelType(), new ErrorType()},
+                {new BinFileType(), new BinFileType(), new ErrorType()},
                 {new BinFileType(), new TextFileType(), new ErrorType()},
-                {new BinFileType(), new BinFileType(), new BoolType()},
                 {new TextFileType(), new IntType(), new ErrorType()},
                 {new TextFileType(), new FloatType(), new ErrorType()},
                 {new TextFileType(), new StringType(), new ErrorType()},
@@ -109,16 +109,15 @@ public class NotEqualNodeTest {
                 {new TextFileType(), new BoolType(), new ErrorType()},
                 {new TextFileType(), new ArrayType(), new ErrorType()},
                 {new TextFileType(), new ChannelType(), new ErrorType()},
-                {new TextFileType(), new TextFileType(), new BoolType()},
+                {new TextFileType(), new BinFileType(), new ErrorType()},
+                {new TextFileType(), new TextFileType(), new ErrorType()}
         });
     }
 
     @Test
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void NotEqualsNode_typeCheckWithParameters_expected() {
-        SymTab symbolTable = new SymbolTable();
-        SymTab recordTable = new SymbolTable();
-        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
+        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
         NotEqualNode node = new NotEqualNode(new LiteralNode(1, leftType), new LiteralNode(1, rightType),0);
         node.accept(typeCheckVisitor);
 

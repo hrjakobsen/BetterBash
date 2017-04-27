@@ -44,9 +44,7 @@ public class NegationNodeTest {
     @Test
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void NegationNode_typeCheckWithParameters_expected() {
-        SymTab symbolTable = new SymbolTable();
-        SymTab recordTable = new SymbolTable();
-        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
+        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
         NegationNode node = new NegationNode(new LiteralNode(1, expressionType),0);
         node.accept(typeCheckVisitor);
 

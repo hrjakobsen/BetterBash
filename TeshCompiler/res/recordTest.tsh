@@ -9,6 +9,9 @@ record book {
     record page pageInBook
 }
 
+record book[] myBookArray
+
+
 record book myBook
 record page myPage
 
@@ -22,7 +25,7 @@ myBook.pageInBook = notAPage
 
 myBook2.pageInBook = myPage
 myBook.pageInBook.year = myPage
-myBook.notPageInBook = notAPage
+myBook.notPageInBook = notAPag	e
 
 #myBook.pageInBook.number = 1994
 

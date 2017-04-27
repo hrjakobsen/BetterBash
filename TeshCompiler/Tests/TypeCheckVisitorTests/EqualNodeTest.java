@@ -118,9 +118,7 @@ public class EqualNodeTest {
     @Test
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void EqualsNode_typeCheckWithParameters_expected() {
-        SymTab symbolTable = new SymbolTable();
-        SymTab recordTable = new SymbolTable();
-        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
+        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
         EqualNode node = new EqualNode(new LiteralNode(1, leftType), new LiteralNode(1, rightType));
         node.accept(typeCheckVisitor);
 
