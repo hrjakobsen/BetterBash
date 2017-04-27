@@ -1003,7 +1003,7 @@ public Void visit(AdditionNode node) {
         if (var instanceof ArrayType && exp instanceof ArrayType) {
             success = exp.equals(var);
         } else {
-            success = exp.getClass().isInstance(var);
+            success = var.getClass().isInstance(exp);
         }
 
         if (var instanceof CharType && exp instanceof IntType || success) {

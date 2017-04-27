@@ -5,7 +5,6 @@ import com.d401f17.TeshBaseVisitor;
 import com.d401f17.TeshParser;
 import com.d401f17.TypeSystem.CharType;
 import com.d401f17.TypeSystem.IntType;
-import com.d401f17.TypeSystem.Types;
 import com.d401f17.TypeSystem.VoidType;
 import org.antlr.v4.runtime.tree.ParseTree;
 

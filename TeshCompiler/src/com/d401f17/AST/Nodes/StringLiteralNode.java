@@ -1,8 +1,6 @@
 package com.d401f17.AST.Nodes;
 
-import com.d401f17.TypeSystem.FloatType;
 import com.d401f17.TypeSystem.StringType;
-import com.d401f17.TypeSystem.Types;
 import com.d401f17.Visitors.ASTVisitor;
 
 /**

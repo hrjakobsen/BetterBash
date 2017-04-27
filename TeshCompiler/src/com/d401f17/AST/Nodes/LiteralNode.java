@@ -1,7 +1,6 @@
 package com.d401f17.AST.Nodes;
 
 import com.d401f17.TypeSystem.Type;
-import com.d401f17.TypeSystem.Types;
 import com.d401f17.Visitors.ASTVisitor;
 
 public class LiteralNode extends ArithmeticExpressionNode {

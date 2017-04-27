@@ -10,4 +10,9 @@ public class ErrorType extends Type {
     public ErrorType(int lineNum, String errorMessage) {
         super(lineNum, errorMessage);
     }
+
+    @Override
+    public String toString() {
+        return "ERROR";
+    }
 }
