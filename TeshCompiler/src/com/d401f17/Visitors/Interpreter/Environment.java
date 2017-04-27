@@ -1,4 +1,4 @@
-package com.d401f17.Visitors;
+package com.d401f17.Visitors.Interpreter;
 
 
 import com.d401f17.TypeSystem.SymbolTable;

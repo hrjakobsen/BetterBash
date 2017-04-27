@@ -4,7 +4,7 @@ import com.d401f17.AST.Nodes.*;
 import com.d401f17.TypeSystem.SymTab;
 import com.d401f17.TypeSystem.SymbolTable;
 import com.d401f17.Visitors.BuildAstVisitor;
-import com.d401f17.Visitors.InterpretVisitor;
+import com.d401f17.Visitors.Interpreter.InterpretVisitor;
 import com.d401f17.Visitors.PrettyPrintASTVisitor;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.antlr.v4.runtime.CharStream;
@@ -41,7 +41,7 @@ public class Main {
 
         InterpretVisitor run = new InterpretVisitor();
 
-            ast.accept(run);
+        ast.accept(run);
 
 /*
         PrettyPrintASTVisitor p = new PrettyPrintASTVisitor();

@@ -26,4 +26,9 @@ public class StringLiteralNode extends LiteralNode {
     public void accept(ASTVisitor visitor) {
         visitor.visit(this);
     }
+
+    @Override
+    public String toString() {
+        return getValue();
+    }
 }

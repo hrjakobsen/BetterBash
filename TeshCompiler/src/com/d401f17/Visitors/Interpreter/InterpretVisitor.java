@@ -1,12 +1,21 @@
-package com.d401f17.Visitors;
+package com.d401f17.Visitors.Interpreter;
 
 import com.d401f17.AST.Nodes.*;
 import com.d401f17.TypeSystem.*;
+import com.d401f17.Visitors.BaseVisitor;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.function.Function;
 
 /**
  * Created by mathias on 4/27/17.
  */
 public class InterpretVisitor extends BaseVisitor<Void> {
+    private Store store = new Store();
+    private SymTab symtab = new SymbolTable();
+
     @Override
     public Void visit(AdditionNode node) {
         node.getLeft().accept(this);
@@ -53,6 +62,23 @@ public class InterpretVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ArrayAccessNode node) {
+        Symbol entry;
+
+        try {
+            entry = symtab.lookup(node.getArray().getName());
+            ValueArrayLiteralNode values = (ValueArrayLiteralNode) store.getElement(entry.getAddress());
+            List<ArithmeticExpressionNode> indices = node.getIndices();
+            for (int i = 0, indicesSize = indices.size(); i < indicesSize - 1; i++) {
+                ArithmeticExpressionNode child = indices.get(i);
+                child.accept(this);
+                values = (ValueArrayLiteralNode)values.getValue().get((int)child.getNodeValue().getValue());
+            }
+            ArithmeticExpressionNode last = node.getIndices().get(node.getIndices().size() - 1);
+            last.accept(this);
+            node.setNodeValue(values.getValue().get((int)last.getNodeValue().getValue()));
+        } catch (VariableNotDeclaredException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -63,6 +89,12 @@ public class InterpretVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ArrayLiteralNode node) {
+        List<LiteralNode> childValues = new ArrayList<>();
+        for (ArithmeticExpressionNode child : node.getValue()) {
+            child.accept(this);
+            childValues.add(child.getNodeValue());
+        }
+        node.setNodeValue(new ValueArrayLiteralNode(childValues));
         return null;
     }
 
@@ -74,7 +106,17 @@ public class InterpretVisitor extends BaseVisitor<Void> {
     @Override
     public Void visit(AssignmentNode node) {
         node.getExpression().accept(this);
-        System.out.println(node.getExpression().getNodeValue().getValue());
+        String name = node.getVariable().toString();
+        Symbol entry = null;
+        try {
+            entry = symtab.lookup(name);
+        } catch (VariableNotDeclaredException e) {
+            e.printStackTrace();
+        }
+        if (node.getVariable().getType() instanceof FloatType) {
+            store.setElement(entry.getAddress(), ToFloat(node.getExpression().getNodeValue()));
+        }
+        store.setElement(entry.getAddress(), node.getExpression().getNodeValue());
         return null;
     }
 
@@ -178,6 +220,32 @@ public class InterpretVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(FunctionCallNode node) {
+
+        HashMap<String, Function<LiteralNode, LiteralNode>> standardFunctions= new HashMap<>();
+        standardFunctions.put("str(FLOAT)", StandardLib::LiteralToString);
+        standardFunctions.put("str(CHAR)", StandardLib::LiteralToString);
+        standardFunctions.put("str(STRING)", StandardLib::LiteralToString);
+        standardFunctions.put("str(INT)", StandardLib::LiteralToString);
+        standardFunctions.put("str(BOOL)", StandardLib::LiteralToString);
+        standardFunctions.put("intval(FLOAT)", StandardLib::FloatToInt);
+
+        List<ArithmeticExpressionNode> arguments = node.getArguments();
+        Type[] argumentTypes = new Type[arguments.size()];
+
+        //Visit argument nodes
+        for (int i = 0; i < arguments.size(); i++) {
+            arguments.get(i).accept(this);
+            argumentTypes[i] = arguments.get(i).getType();
+        }
+
+        FunctionType func = new FunctionType(node.getName().getName(), argumentTypes, new VoidType());
+        String signature = func.getSignature();
+        if (standardFunctions.containsKey(signature)) {
+            Function stdFunc = standardFunctions.get(func.getSignature());
+            node.setNodeValue((LiteralNode) stdFunc.apply(node.getArguments().get(0).getNodeValue()));
+            return null;
+        }
+
         return null;
     }
 
@@ -363,6 +431,13 @@ public class InterpretVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(SimpleIdentifierNode node) {
+        try {
+            Symbol entry = symtab.lookup(node.getName());
+            node.setNodeValue((LiteralNode) store.getElement(entry.getAddress()));
+
+        } catch (VariableNotDeclaredException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -401,6 +476,14 @@ public class InterpretVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(VariableDeclarationNode node) {
+        try {
+            Symbol entry = new Symbol(node.getType(),node);
+            entry.setAddress(store.getNext());
+            symtab.insert(node.getName().getName(), entry);
+
+        } catch (VariableAlreadyDeclaredException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -416,6 +499,10 @@ public class InterpretVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ChannelNode node) {
+        node.getExpression().accept(this);
+        if (node.getIdentifier().getName().equals("stdio")) {
+            System.out.println(node.getExpression().getNodeValue().getValue());
+        }
         return null;
     }
 

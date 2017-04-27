@@ -1,9 +1,32 @@
+#stdlib
+channel stdio
+
+func str(float f) string {
+    return ""
+}
+func str(int f) string {
+    return ""
+}
+func intval(float f) int {
+    return 0
+}
+#stdlib end
+
 bool a = "hej" ?= ".*"
 float i = 100 / 9
-float b = 12 + 2.0
+float b = 12 + 2.0 + i + 0.5
+int[] arr = [1, 2, 3]
+
+int integer = arr[2] + 3
+
+int[][] arrv2 = [arr, [1, 2, 3]]
+
+stdio << str(arrv2[0][2])
 
 if 123 == 123 {
     float c = 14 * 0.99
 } else {
     float d = 15 * 2.0
 }
+
+stdio << "The value of b is " + str(b) + " in other words (int words) this is " + str(intval(b))
