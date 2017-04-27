@@ -102,11 +102,6 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(ArithmeticExpressionNode node) {
-        return null;
-    }
-
-    @Override
     public Void visit(ArrayAccessNode node) {
         node.getArray().accept(this);
         List<ArithmeticExpressionNode> indexNodes = node.getIndices();
@@ -552,11 +547,6 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
                 node.setType(new ErrorType(node.getLine(), "Expected false branch of type " + trueBranchType + ", got " + falseBranchType));
             }
         }
-        return null;
-    }
-
-    @Override
-    public Void visit(InfixExpressionNode node) {
         return null;
     }
 

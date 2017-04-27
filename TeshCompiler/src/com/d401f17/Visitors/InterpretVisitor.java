@@ -24,11 +24,20 @@ public class InterpretVisitor extends BaseVisitor<Void> {
                     )
             );
         }
+
+        //TODO: Add rest of addition node things
         return null;
     }
 
     @Override
     public Void visit(AndNode node) {
+        node.getLeft().accept(this);
+        node.getRight().accept(this);
+
+        BoolLiteralNode left = (BoolLiteralNode) node.getLeft().getNodeValue();
+        BoolLiteralNode right = (BoolLiteralNode) node.getRight().getNodeValue();
+
+        node.setNodeValue(new BoolLiteralNode(left.getValue() && right.getValue()));
         return null;
     }
 
@@ -37,10 +46,6 @@ public class InterpretVisitor extends BaseVisitor<Void> {
         return null;
     }
 
-    @Override
-    public Void visit(ArithmeticExpressionNode node) {
-        return null;
-    }
 
     @Override
     public Void visit(ArrayAccessNode node) {
@@ -181,11 +186,6 @@ public class InterpretVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(InfixExpressionNode node) {
-        return null;
-    }
-
-    @Override
     public Void visit(LessThanNode node) {
         return null;
     }
@@ -222,6 +222,11 @@ public class InterpretVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(NegationNode node) {
+        node.getExpression().accept(this);
+
+        BoolLiteralNode child = (BoolLiteralNode) node.getExpression().getNodeValue();
+
+        node.setNodeValue(new BoolLiteralNode(!child.getValue()));
         return null;
     }
 
@@ -232,6 +237,13 @@ public class InterpretVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(OrNode node) {
+        node.getLeft().accept(this);
+        node.getRight().accept(this);
+
+        BoolLiteralNode left = (BoolLiteralNode) node.getLeft().getNodeValue();
+        BoolLiteralNode right = (BoolLiteralNode) node.getRight().getNodeValue();
+
+        node.setNodeValue(new BoolLiteralNode(left.getValue() || right.getValue()));
         return null;
     }
 
@@ -323,7 +335,7 @@ public class InterpretVisitor extends BaseVisitor<Void> {
         return null;
     }
 
-    public static Float ToFloat(Object o) {
+    private static Float ToFloat(Object o) {
         if (o instanceof Float) return (Float)o;
         if (o instanceof Integer) {
             return ((Integer)o).floatValue();
