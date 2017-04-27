@@ -35,7 +35,6 @@ public class Main {
             System.out.println(err);
         }
 
-
 /*
         PrettyPrintASTVisitor p = new PrettyPrintASTVisitor();
         ast.accept(p);

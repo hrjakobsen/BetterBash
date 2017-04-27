@@ -280,7 +280,6 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         return null;
     }
 
-
     @Override
     public Void visit(AST node) {
         return null;
@@ -699,7 +698,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
                     Type terminalType = ((RecordType)previous.getType()).getMemberType(traveller.getName());
                     node.setType(terminalType);
                 } catch (MemberNotFoundException e) {
-                    node.setType(new ErrorType(node.getLine(),e.getMessage()));
+                    node.setType(new ErrorType(node.getLine(), e.getMessage()));
                 }
                 return null;
             } else {
@@ -1024,7 +1023,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         boolean success;
-        if (var instanceof ArrayType && exp instanceof ArrayType) {
+        if ((var instanceof ArrayType && exp instanceof ArrayType) || (var instanceof RecordType && exp instanceof RecordType)) {
             success = exp.equals(var);
         } else {
             success = var.getClass().isInstance(exp);
