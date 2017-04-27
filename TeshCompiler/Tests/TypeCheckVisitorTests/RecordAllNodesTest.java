@@ -32,6 +32,14 @@ public class RecordAllNodesTest {
 
     @Before
     public void SetUp() {
+        /*
+        record page {
+            int child;
+        }
+
+        page mypage;
+
+         */
         symbolTable = new SymbolTable();
         recordTable = new SymbolTable();
         typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
@@ -54,13 +62,10 @@ public class RecordAllNodesTest {
         recorddcl.accept(typeCheckVisitor);
         recordType = recorddcl.getType();
 
-        variables.remove(0);
-        page = new SimpleIdentifierNode("page");
-        String[] a = {"child"};
-        Type[] b = {intType};
-        recordType = new RecordType("page",a,b);
+        page = new SimpleIdentifierNode("mypage");
+        recordType = new RecordType("page");
         page.setType(recordType);
-        page.setName("page");
+        page.setName("mypage");
         VariableDeclarationNode recordInstance = new VariableDeclarationNode(page, new TypeNode(recordType.toString().toLowerCase()));
         recordInstance.setType(recordType);
         recordInstance.accept(typeCheckVisitor);
@@ -247,5 +252,18 @@ public class RecordAllNodesTest {
         } else {
             Assert.assertEquals(expectedType, node.getType());
         }
+    }
+
+    @Test
+    public void ForNode() {
+        ForNode node;
+        ArrayLiteralNode array = new ArrayLiteralNode(new ArrayList<ArithmeticExpressionNode>() {{
+                add(new LiteralNode(0, recordType));
+                add(new LiteralNode(0, recordType));
+            }});
+        array.accept(typeCheckVisitor);
+        node = new ForNode(page, array,new LiteralNode(0));
+        node.accept(typeCheckVisitor);
+        Assert.assertEquals(new OkType(), node.getType());
     }
 }
