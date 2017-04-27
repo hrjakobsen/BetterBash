@@ -134,7 +134,7 @@ public class ArrayElementAssignmentNodeTest {
         ArrayList<ArithmeticExpressionNode> indices = new ArrayList<ArithmeticExpressionNode>(){{
             add(new LiteralNode(0, new IntType()));
         }};
-        
+
         ArrayAccessNode node = new ArrayAccessNode(idNode, indices);
         node.accept(typeCheckVisitor);
         ArrayElementAssignmentNode a = new ArrayElementAssignmentNode(node, new LiteralNode(0, rightType));

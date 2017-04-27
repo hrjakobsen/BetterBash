@@ -48,8 +48,9 @@ public class ArrayAccessNodeTest {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
 
         SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
-        idNode.setType(type);
-        TypeNode typeNode = new TypeNode(type.toString().toLowerCase());
+        ArrayType arrayType = new ArrayType(type);
+        idNode.setType(arrayType);
+        TypeNode typeNode = new TypeNode(arrayType.toString().toLowerCase());
 
         VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
         varNode.accept(typeCheckVisitor);
@@ -61,7 +62,7 @@ public class ArrayAccessNodeTest {
 
         node.accept(typeCheckVisitor);
 
-        String errMessage = type + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
+        String errMessage = arrayType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
         Assert.assertEquals(errMessage, expectedType, node.getType());
     }
 }
