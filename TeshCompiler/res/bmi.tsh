@@ -23,8 +23,8 @@ func intVal(string str) int {
 }
 func wait() void {
 }
-func makeFile(string str) file {
-    file f
+func makeFile(string str) textfile {
+    textfile f
     return f
 }
 channel stdio
