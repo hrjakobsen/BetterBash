@@ -1,0 +1,50 @@
+package com.d401f17.Visitors;
+
+import com.d401f17.AST.TypeSystem.SymbolTable;
+
+import java.util.Stack;
+
+/**
+ * Created by mathias on 4/27/17.
+ */
+public class Environment {
+    private SymbolTable variableTable;
+    private SymbolTable recordTable;
+
+    public Environment(SymbolTable variableTable, SymbolTable recordTable) {
+        this.variableTable = variableTable;
+        this.recordTable = recordTable;
+    }
+
+    public Environment() {
+        this.variableTable = new SymbolTable();
+        this.recordTable = new SymbolTable();
+    }
+
+    public SymbolTable getVariableTable() {
+
+        return variableTable;
+    }
+
+    public void setVariableTable(SymbolTable variableTable) {
+        this.variableTable = variableTable;
+    }
+
+    public SymbolTable getRecordTable() {
+        return recordTable;
+    }
+
+    public void setRecordTable(SymbolTable recordTable) {
+        this.recordTable = recordTable;
+    }
+
+    public void openScope() {
+        variableTable.openScope();
+        recordTable.openScope();
+    }
+
+    public void closeScope() {
+        variableTable.closeScope();
+        recordTable.closeScope();
+    }
+}
