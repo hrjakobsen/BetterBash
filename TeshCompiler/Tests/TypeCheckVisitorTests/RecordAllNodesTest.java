@@ -109,34 +109,90 @@ public class RecordAllNodesTest {
     @Test
     public void AdditionNode() {
         AdditionNode node;
-        String errMessage = recordType + " + " + expectedType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
-        if (leftType instanceof RecordType && !(rightType instanceof RecordType)) {
-            // myPage + rightType
-            node = new AdditionNode(myPage, new LiteralNode(0, rightType));
-        } else if (rightType instanceof RecordType && !(leftType instanceof RecordType)) {
-            //leftType + myPage
-            node = new AdditionNode(new LiteralNode(0, leftType), myPage);
-        } else {
-            //myPage + myPage
+        if(leftType instanceof RecordType && rightType instanceof RecordType) {
             node = new AdditionNode(myPage, myPage);
+        } else if (leftType instanceof RecordType) {
+            node = new AdditionNode(myPage, new LiteralNode(0, rightType));
+        } else {
+            node = new AdditionNode(new LiteralNode(0, leftType), myPage);
         }
         node.accept(typeCheckVisitor);
-        Assert.assertEquals(errMessage, new ErrorType(), node.getType());
+        Assert.assertEquals(new ErrorType(), node.getType());
+    }
+
+    @Test
+    public void SubtractionNode() {
+        SubtractionNode node;
+        if(leftType instanceof RecordType && rightType instanceof RecordType) {
+            node = new SubtractionNode(myPage, myPage);
+        } else if (leftType instanceof RecordType) {
+            node = new SubtractionNode(myPage, new LiteralNode(0, rightType));
+        } else {
+            node = new SubtractionNode(new LiteralNode(0, leftType), myPage);
+        }
+        node.accept(typeCheckVisitor);
+        Assert.assertEquals(new ErrorType(), node.getType());
+    }
+
+    @Test
+    public void MultiplicationNode() {
+        MultiplicationNode node;
+        if(leftType instanceof RecordType && rightType instanceof RecordType) {
+            node = new MultiplicationNode(myPage, myPage);
+        } else if (leftType instanceof RecordType) {
+            node = new MultiplicationNode(myPage, new LiteralNode(0, rightType));
+        } else {
+            node = new MultiplicationNode(new LiteralNode(0, leftType), myPage);
+        }
+        node.accept(typeCheckVisitor);
+        Assert.assertEquals(new ErrorType(), node.getType());
+    }
+
+    @Test
+    public void DivisionNode() {
+        DivisionNode node;
+        if(leftType instanceof RecordType && rightType instanceof RecordType) {
+            node = new DivisionNode(myPage, myPage);
+        } else if (leftType instanceof RecordType) {
+            node = new DivisionNode(myPage, new LiteralNode(0, rightType));
+        } else {
+            node = new DivisionNode(new LiteralNode(0, leftType), myPage);
+        }
+        node.accept(typeCheckVisitor);
+        Assert.assertEquals(new ErrorType(), node.getType());
     }
 
     @Test
     public void AndNode() {
         AndNode node;
         String errMessage = recordType + " && " + expectedType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
-        if (leftType instanceof RecordType && !(rightType instanceof RecordType)) {
-            //myPage && rightType
-            node = new AndNode(myPage, new LiteralNode(0, rightType));
-        } else if (rightType instanceof RecordType && !(leftType instanceof RecordType)) {
-            //leftType && myPage
-            node = new AndNode(new LiteralNode(0, leftType), myPage);
-        } else {
+        if (leftType instanceof RecordType && rightType instanceof RecordType) {
             //myPage && myPage
             node = new AndNode(myPage, myPage);
+        } else if (leftType instanceof RecordType) {
+            //myPage && rightType
+            node = new AndNode(myPage, new LiteralNode(0, rightType));
+        } else {
+            //leftType && myPage
+            node = new AndNode(new LiteralNode(0, leftType), myPage);
+        }
+        node.accept(typeCheckVisitor);
+        Assert.assertEquals(errMessage, new ErrorType(), node.getType());
+    }
+
+    @Test
+    public void OrNode() {
+        OrNode node;
+        String errMessage = recordType + " && " + expectedType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
+        if (leftType instanceof RecordType && rightType instanceof RecordType) {
+            //myPage && myPage
+            node = new OrNode(myPage, myPage);
+        } else if (leftType instanceof RecordType) {
+            //myPage && rightType
+            node = new OrNode(myPage, new LiteralNode(0, rightType));
+        } else {
+            //leftType && myPage
+            node = new OrNode(new LiteralNode(0, leftType), myPage);
         }
         node.accept(typeCheckVisitor);
         Assert.assertEquals(errMessage, new ErrorType(), node.getType());
@@ -218,10 +274,13 @@ public class RecordAllNodesTest {
     public void AssignmentNode() {
         AssignmentNode node;
         String errMessage;
-        if (leftType instanceof RecordType && !(rightType instanceof RecordType)) {
+        if (leftType instanceof RecordType && rightType instanceof RecordType) {
+            node = new AssignmentNode(myPage, myPage);
+            errMessage = recordType + ", " + recordType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
+        } else if (leftType instanceof RecordType) {
             node = new AssignmentNode(myPage, new LiteralNode(1, rightType));
             errMessage = recordType + ", " + rightType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
-        } else if (rightType instanceof RecordType && !(leftType instanceof RecordType)){
+        } else {
             SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
             idNode.setType(leftType);
             TypeNode typeNode = new TypeNode(leftType.toString().toLowerCase());
@@ -230,9 +289,6 @@ public class RecordAllNodesTest {
 
             node = new AssignmentNode(idNode, myPage);
             errMessage = leftType + ", " + recordType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
-        } else {
-            node = new AssignmentNode(myPage, myPage);
-            errMessage = recordType + ", " + recordType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
         }
         node.accept(typeCheckVisitor);
         Assert.assertEquals(errMessage, expectedType, node.getType());
@@ -241,20 +297,29 @@ public class RecordAllNodesTest {
     @Test
     public void EqualNode() {
         EqualNode node;
-        if (leftType instanceof RecordType && !(rightType instanceof RecordType)) {
-            node = new EqualNode(myPage,new LiteralNode(0,rightType));
-        } else if (rightType instanceof RecordType && !(leftType instanceof RecordType)) {
-            node = new EqualNode(new LiteralNode(0, leftType), myPage);
-        } else {
+        if (leftType instanceof RecordType && rightType instanceof RecordType) {
             node = new EqualNode(myPage, myPage);
+        } else if (leftType instanceof RecordType) {
+            node = new EqualNode(myPage, new LiteralNode(0, rightType));
+        } else {
+            node = new EqualNode(new LiteralNode(0, leftType), myPage);
         }
         node.accept(typeCheckVisitor);
+        Assert.assertEquals(new ErrorType(), node.getType());
+    }
 
+    @Test
+    public void NotEqualNode() {
+        NotEqualNode node;
         if (leftType instanceof RecordType && rightType instanceof RecordType) {
-            Assert.assertEquals(new ErrorType(), node.getType());
+            node = new NotEqualNode(myPage, myPage);
+        } else if (leftType instanceof RecordType) {
+            node = new NotEqualNode(myPage, new LiteralNode(0, rightType));
         } else {
-            Assert.assertEquals(expectedType, node.getType());
+            node = new NotEqualNode(new LiteralNode(0,leftType), myPage);
         }
+        node.accept(typeCheckVisitor);
+        Assert.assertEquals(new ErrorType(), node.getType());
     }
 
     @Test
@@ -281,7 +346,6 @@ public class RecordAllNodesTest {
             node = new GreaterThanNode(new LiteralNode(0, leftType), myPage);
         }
         node.accept(typeCheckVisitor);
-
         Assert.assertEquals(new ErrorType(), node.getType());
     }
 
@@ -296,7 +360,6 @@ public class RecordAllNodesTest {
             node = new GreaterThanOrEqualNode(new LiteralNode(0, leftType), myPage);
         }
         node.accept(typeCheckVisitor);
-
         Assert.assertEquals(new ErrorType(), node.getType());
     }
 
@@ -311,7 +374,6 @@ public class RecordAllNodesTest {
             node = new LessThanOrEqualNode(new LiteralNode(0, leftType), myPage);
         }
         node.accept(typeCheckVisitor);
-
         Assert.assertEquals(new ErrorType(), node.getType());
     }
 
@@ -326,7 +388,6 @@ public class RecordAllNodesTest {
             node = new LessThanNode(new LiteralNode(0, leftType), myPage);
         }
         node.accept(typeCheckVisitor);
-
         Assert.assertEquals(new ErrorType(), node.getType());
     }
 
@@ -341,7 +402,6 @@ public class RecordAllNodesTest {
             node = new ModuloNode(new LiteralNode(0, leftType), myPage);
         }
         node.accept(typeCheckVisitor);
-
         Assert.assertEquals(new ErrorType(), node.getType());
     }
 }
