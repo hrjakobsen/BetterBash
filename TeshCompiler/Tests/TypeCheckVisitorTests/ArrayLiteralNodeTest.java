@@ -128,6 +128,7 @@ public class ArrayLiteralNodeTest {
                 {new TextFileType(), new ArrayType(), new ErrorType()},
                 {new TextFileType(), new ChannelType(), new ErrorType()},
                 {new TextFileType(), new RecordType(), new ErrorType()},
+                {new TextFileType(), new BinFileType(), new TextFileType()},
                 {new TextFileType(), new TextFileType(), new TextFileType()}
         });
     }
@@ -155,6 +156,5 @@ public class ArrayLiteralNodeTest {
                 Assert.assertEquals(errMessage, expectedType, temp.getChildType());
             }
         }
-        Assert.fail();
     }
 }

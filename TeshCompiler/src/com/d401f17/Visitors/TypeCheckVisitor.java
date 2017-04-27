@@ -1026,17 +1026,15 @@ public Void visit(AdditionNode node) {
 
         if (leftType instanceof FloatType && rightType instanceof FloatType) {
             return new BoolType(); //Int == Int, Int == Float, Float == Int, Float == Float
+        } else if (leftType instanceof CharType && rightType instanceof CharType) {
+            return new BoolType(); //Char == Char
+        } else if (leftType instanceof StringType && rightType instanceof StringType) {
+            return new BoolType(); //String == String
         } else if (leftType instanceof BoolType && rightType instanceof BoolType) {
             return new BoolType(); //Bool == Bool
         } else {
-            if (leftType instanceof CharType || rightType instanceof CharType) {
-                if (leftType instanceof IntType || rightType instanceof IntType) {
-                    return new BoolType();
-                }
-            }
+            return new ErrorType(node.getLine(), "Expected similar types, got " + leftType + " and " + rightType);
         }
-
-        return new ErrorType(node.getLine(), "Expected similar types, got " + leftType + " and " + rightType);
     }
 
     private Type binaryComparison(InfixExpressionNode node) {
@@ -1052,12 +1050,8 @@ public Void visit(AdditionNode node) {
 
         if (leftType instanceof FloatType && rightType instanceof FloatType) {
             return new BoolType(); //Int < Int, Int < Float, Float < Int, Float < Float
-        } else {
-            if (leftType instanceof CharType || rightType instanceof CharType) {
-                if (leftType instanceof IntType || rightType instanceof IntType) {
-                    return new BoolType(); //Int < Char, Char < Int
-                }
-            }
+        } else if (leftType instanceof  CharType && rightType instanceof CharType) {
+            return new BoolType(); //Int < Char, Char < Int
         }
 
         return new ErrorType(node.getLine(), "Expected comparable types got " + leftType + " and " + rightType);
