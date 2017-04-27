@@ -32,7 +32,7 @@ public class MultiplicationNodeTest {
         return Arrays.asList(new Object[][]{
                 {new IntType(), new IntType(), new IntType()},
                 {new IntType(), new FloatType(), new FloatType()},
-                {new IntType(), new CharType(), new CharType()},
+                {new IntType(), new CharType(), new ErrorType()},
                 {new IntType(), new StringType(), new ErrorType()},
                 {new IntType(), new BoolType(), new ErrorType()},
                 {new IntType(), new ArrayType(), new ErrorType()},
@@ -48,7 +48,7 @@ public class MultiplicationNodeTest {
                 {new FloatType(), new ChannelType(), new ErrorType()},
                 {new FloatType(), new BinFileType(), new ErrorType()},
                 {new FloatType(), new TextFileType(), new ErrorType()},
-                {new CharType(), new IntType(), new CharType()},
+                {new CharType(), new IntType(), new ErrorType()},
                 {new CharType(), new FloatType(), new ErrorType()},
                 {new CharType(), new StringType(), new ErrorType()},
                 {new CharType(), new BoolType(), new ErrorType()},
@@ -60,7 +60,7 @@ public class MultiplicationNodeTest {
                 {new StringType(), new IntType(), new ErrorType()},
                 {new StringType(), new FloatType(), new ErrorType()},
                 {new StringType(), new CharType(), new ErrorType()},
-                {new StringType(), new StringType(), new StringType()},
+                {new StringType(), new StringType(), new ErrorType()},
                 {new StringType(), new BoolType(), new ErrorType()},
                 {new StringType(), new ArrayType(), new ErrorType()},
                 {new StringType(), new ChannelType(), new ErrorType()},
@@ -117,9 +117,7 @@ public class MultiplicationNodeTest {
     @Test
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void multiplicationNode_typeCheckWithParameters_expected() {
-        SymTab symbolTable = new SymbolTable();
-        SymTab recordTable = new SymbolTable();
-        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
+        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
         MultiplicationNode node = new MultiplicationNode(new LiteralNode(1, leftType), new LiteralNode(1, rightType),0);
         node.accept(typeCheckVisitor);
 

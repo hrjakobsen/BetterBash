@@ -118,9 +118,7 @@ public class SubtractionNodeTest {
     @Test
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void subtractionNode_typeCheckWithParameters_expected() {
-        SymTab symbolTable = new SymbolTable();
-        SymTab recordTable = new SymbolTable();
-        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
+        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
         SubtractionNode node = new SubtractionNode(new LiteralNode(1, leftType), new LiteralNode(1, rightType),0);
         node.accept(typeCheckVisitor);
 
