@@ -357,8 +357,9 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         node.getChild().accept(this);
         st.closeScope();
 
-        Type statementType = node.getChild().getType();
-        if (invalidChildren(statementType)) {
+        Type childType = node.getChild().getType();
+
+        if (invalidChildren(childType)) {
             node.setType(new IgnoreType());
             return null;
         }
