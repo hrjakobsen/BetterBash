@@ -50,7 +50,7 @@ public class TypeNode extends AST {
         } else if (str.equals("void")) {
             return new VoidType();
         } else if (str.substring(0, Math.min(str.length(), 6)).equals("record")) {
-            return new RecordType(str.substring(6, str.length()), null, null);
+            return new RecordType(str.substring(6, str.length()));
         } else {
             throw new UnknownTypeException(str.toUpperCase());
         }
