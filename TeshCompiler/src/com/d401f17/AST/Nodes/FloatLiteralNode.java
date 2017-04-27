@@ -1,5 +1,6 @@
 package com.d401f17.AST.Nodes;
 
+import com.d401f17.Visitors.ASTVisitor;
 import com.d401f17.TypeSystem.FloatType;
 
 /**
@@ -21,5 +22,10 @@ public class FloatLiteralNode extends LiteralNode {
 
     public void setValue(Float value) {
         super.setValue(value);
+    }
+
+    @Override
+    public void accept(ASTVisitor visitor) {
+        visitor.visit(this);
     }
 }
