@@ -102,11 +102,6 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(ArithmeticExpressionNode node) {
-        return null;
-    }
-
-    @Override
     public Void visit(ArrayAccessNode node) {
         node.getArray().accept(this);
         List<ArithmeticExpressionNode> indexNodes = node.getIndices();
