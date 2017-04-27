@@ -84,7 +84,6 @@ public class RecordAllNodesTest {
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {new RecordType(), new ChannelType(), new ErrorType()},
                 {new RecordType(), new RecordType(), new OkType()},
                 {new IntType(), new RecordType(), new ErrorType()},
                 {new FloatType(), new RecordType(), new ErrorType()},
@@ -260,5 +259,80 @@ public class RecordAllNodesTest {
         node = new ForNode(new SimpleIdentifierNode(""), array, new StatementsNode());
         node.accept(typeCheckVisitor);
         Assert.assertEquals(new OkType(), node.getType());
+    }
+
+    @Test
+    public void GreaterThanNode() {
+        GreaterThanNode node;
+        if (leftType instanceof RecordType && rightType instanceof RecordType) {
+            node = new GreaterThanNode(myPage, myPage);
+        } else if (leftType instanceof RecordType) {
+            node = new GreaterThanNode(myPage, new LiteralNode(0, rightType));
+        } else {
+            node = new GreaterThanNode(new LiteralNode(0, leftType), myPage);
+        }
+        node.accept(typeCheckVisitor);
+
+        Assert.assertEquals(new ErrorType(), node.getType());
+    }
+
+    @Test
+    public void GreaterThanOrEqualNode() {
+        GreaterThanOrEqualNode node;
+        if (leftType instanceof RecordType && rightType instanceof RecordType) {
+            node = new GreaterThanOrEqualNode(myPage, myPage);
+        } else if (leftType instanceof RecordType) {
+            node = new GreaterThanOrEqualNode(myPage, new LiteralNode(0, rightType));
+        } else {
+            node = new GreaterThanOrEqualNode(new LiteralNode(0, leftType), myPage);
+        }
+        node.accept(typeCheckVisitor);
+
+        Assert.assertEquals(new ErrorType(), node.getType());
+    }
+
+    @Test
+    public void LessThanOrEqualNode() {
+        LessThanOrEqualNode node;
+        if (leftType instanceof RecordType && rightType instanceof RecordType) {
+            node = new LessThanOrEqualNode(myPage, myPage);
+        } else if (leftType instanceof RecordType) {
+            node = new LessThanOrEqualNode(myPage, new LiteralNode(0, rightType));
+        } else {
+            node = new LessThanOrEqualNode(new LiteralNode(0, leftType), myPage);
+        }
+        node.accept(typeCheckVisitor);
+
+        Assert.assertEquals(new ErrorType(), node.getType());
+    }
+
+    @Test
+    public void LessThanNode() {
+        LessThanNode node;
+        if (leftType instanceof RecordType && rightType instanceof RecordType) {
+            node = new LessThanNode(myPage, myPage);
+        } else if (leftType instanceof RecordType) {
+            node = new LessThanNode(myPage, new LiteralNode(0, rightType));
+        } else {
+            node = new LessThanNode(new LiteralNode(0, leftType), myPage);
+        }
+        node.accept(typeCheckVisitor);
+
+        Assert.assertEquals(new ErrorType(), node.getType());
+    }
+
+    @Test
+    public void ModuloNode() {
+        ModuloNode node;
+        if (leftType instanceof RecordType && rightType instanceof RecordType) {
+            node = new ModuloNode(myPage, myPage);
+        } else if (leftType instanceof RecordType) {
+            node = new ModuloNode(myPage, new LiteralNode(0, rightType));
+        } else {
+            node = new ModuloNode(new LiteralNode(0, leftType), myPage);
+        }
+        node.accept(typeCheckVisitor);
+
+        Assert.assertEquals(new ErrorType(), node.getType());
     }
 }
