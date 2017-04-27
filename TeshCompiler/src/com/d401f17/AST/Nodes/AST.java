@@ -1,6 +1,6 @@
 package com.d401f17.AST.Nodes;
 
-import com.d401f17.AST.TypeSystem.Type;
+import com.d401f17.TypeSystem.Type;
 import com.d401f17.Visitors.ASTVisitor;
 
 /**
@@ -14,6 +14,7 @@ public abstract class AST {
     public Type getType() {
         return type;
     }
+
     public void setType(Type t) {
         this.type = t;
     }

@@ -3,7 +3,9 @@ package com.d401f17.Visitors;
 import com.d401f17.AST.Nodes.*;
 import com.d401f17.TeshBaseVisitor;
 import com.d401f17.TeshParser;
-import com.d401f17.AST.TypeSystem.Types;
+import com.d401f17.TypeSystem.CharType;
+import com.d401f17.TypeSystem.IntType;
+import com.d401f17.TypeSystem.VoidType;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.ArrayList;
@@ -125,7 +127,7 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
     public AST visitReturnStatement(TeshParser.ReturnStatementContext ctx) {
         ArithmeticExpressionNode expNode;
         if (ctx.expression() == null) {
-            expNode = new LiteralNode(0, Types.VOID);
+            expNode = new LiteralNode(0, new VoidType());
         } else {
             expNode = (ArithmeticExpressionNode) visit(ctx.expression());
         }
@@ -369,7 +371,7 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
                     (ArithmeticExpressionNode) visit(ctx.value()),
                     new LiteralNode(
                             -1,
-                            Types.INT
+                            new IntType()
                     ),
                     ctx.start.getLine()
             );
@@ -456,11 +458,11 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
                     new VariableDeclarationNode(
                         new SimpleIdentifierNode(
                             ctx.SIMPLE_IDENTIFIER(i).getText(),
-                            ctx.start.getLine()
+                            lineNum
                         ),
                         //The return type of the function is the last element of the type list
                         //so we need to subtract one access this array as 0-indexed
-                        new TypeNode(ctx.type(i - 1).getText()),
+                        new TypeNode(ctx.type(i - 1).getText(), lineNum),
                         lineNum
                     )
             );
@@ -471,7 +473,10 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
                         ctx.name.getText(),
                         lineNum
                 ),
-                new TypeNode(ctx.returntype.getText()),
+                new TypeNode(
+                        ctx.returntype.getText(),
+                        lineNum
+                ),
                 formalArgs,
                 (StatementsNode)visit(ctx.block()),
                 lineNum
@@ -498,7 +503,7 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
         if (ctx.BOOL_LITERAL() != null) {
             return new BoolLiteralNode(Objects.equals(ctx.BOOL_LITERAL().getText(), "true"));
         } else if (ctx.CHAR_LITERAL() != null) {
-            return new LiteralNode(ctx.CHAR_LITERAL().getText().charAt(1), Types.CHAR);
+            return new LiteralNode(ctx.CHAR_LITERAL().getText().charAt(1), new CharType());
         } else if (ctx.FLOAT_LITERAL() != null) {
             return new FloatLiteralNode(Float.parseFloat(ctx.FLOAT_LITERAL().getText()));
         } else if (ctx.INT_LITERAL() != null) {
@@ -510,7 +515,7 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
 
     @Override
     public AST visitType(TeshParser.TypeContext ctx) {
-        return new TypeNode(ctx.getText());
+        return new TypeNode(ctx.getText(), ctx.start.getLine());
     }
 
     @Override

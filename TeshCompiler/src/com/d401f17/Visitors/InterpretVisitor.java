@@ -1,7 +1,7 @@
 package com.d401f17.Visitors;
 
 import com.d401f17.AST.Nodes.*;
-import com.d401f17.AST.TypeSystem.Types;
+import com.d401f17.TypeSystem.*;
 
 /**
  * Created by mathias on 4/27/17.
@@ -11,13 +11,13 @@ public class InterpretVisitor extends BaseVisitor<Void> {
     public Void visit(AdditionNode node) {
         node.getLeft().accept(this);
         node.getRight().accept(this);
-        if (node.getType().getPrimitiveType() == Types.INT) {
+        if (node.getType() instanceof IntType) {
             node.setNodeValue(
                     new IntLiteralNode(
                             ((IntLiteralNode)node.getLeft().getNodeValue()).getValue() + ((IntLiteralNode)node.getRight().getNodeValue()).getValue()
                     )
             );
-        } else if (node.getType().getPrimitiveType() == Types.FLOAT) {
+        } else if (node.getType() instanceof FloatType) {
             node.setNodeValue(
                     new FloatLiteralNode(
                             ToFloat(node.getLeft().getNodeValue().getValue()) + ToFloat(node.getRight().getNodeValue().getValue())
@@ -119,7 +119,7 @@ public class InterpretVisitor extends BaseVisitor<Void> {
     public Void visit(DivisionNode node) {
         node.getLeft().accept(this);
         node.getRight().accept(this);
-        if (node.getType().getPrimitiveType() == Types.INT) {
+        if (node.getType() instanceof IntType) {
             node.setNodeValue(
                     new IntLiteralNode(
                             (int)node.getLeft().getNodeValue().getValue() / (int)node.getRight().getNodeValue().getValue()
@@ -204,7 +204,7 @@ public class InterpretVisitor extends BaseVisitor<Void> {
     public Void visit(MultiplicationNode node) {
         node.getLeft().accept(this);
         node.getRight().accept(this);
-        if (node.getType().getPrimitiveType() == Types.INT) {
+        if (node.getType() instanceof IntType) {
             node.setNodeValue(
                     new IntLiteralNode(
                             (int)node.getLeft().getNodeValue().getValue() * (int)node.getRight().getNodeValue().getValue()
@@ -277,7 +277,7 @@ public class InterpretVisitor extends BaseVisitor<Void> {
     public Void visit(SubtractionNode node) {
         node.getLeft().accept(this);
         node.getRight().accept(this);
-        if (node.getType().getPrimitiveType() == Types.INT) {
+        if (node.getType() instanceof IntType) {
             node.setNodeValue(
                     new IntLiteralNode(
                             (int)node.getLeft().getNodeValue().getValue() - (int)node.getRight().getNodeValue().getValue()

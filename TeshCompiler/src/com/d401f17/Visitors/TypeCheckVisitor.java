@@ -1,10 +1,11 @@
 package com.d401f17.Visitors;
 
 import com.d401f17.AST.Nodes.*;
-import com.d401f17.AST.TypeSystem.*;
+import com.d401f17.Helper;
+import com.d401f17.TypeSystem.*;
+import jdk.nashorn.internal.codegen.types.BooleanType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -50,7 +51,6 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         return sb.toString();
     }
 
-/*
     @Override
     public Void visit(AdditionNode node) {
         node.getLeft().accept(this);
@@ -60,121 +60,44 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         Type rightType = node.getRight().getType();
 
         if (invalidChildren(leftType, rightType)) {
-            node.setType(new Type(Types.IGNORE));
+            node.setType(new IgnoreType());
             return null;
         }
 
         if (leftType.equals(rightType)) {
-            if (leftType.getPrimitiveType() == Types.INT || leftType.getPrimitiveType() == Types.FLOAT || leftType.getPrimitiveType() == Types.STRING) {
+            if (leftType instanceof FloatType || leftType instanceof StringType) {
                 node.setType(leftType); //Int + Int = Int, Float + Float = Float, String + String = String
             } else {
-                node.setType(new Type(Types.ERROR, node.getLine(), "Expected int, float or string, got " + leftType));
+                node.setType(new ErrorType(node.getLine(), "Expected int, float or string, got " + leftType));
             }
-
             return null;
         }
 
-        if (leftType.getPrimitiveType() == Types.INT) {
-            if (rightType.getPrimitiveType() == Types.STRING || rightType.getPrimitiveType() == Types.CHAR) {
-                node.setType(rightType); //Int + String = String, Int + Char = String
-            } else if (rightType.getPrimitiveType() == Types.FLOAT) {
-                node.setType(rightType); //Int + Float = Float
+        if (leftType instanceof FloatType && rightType instanceof FloatType) {
+            if (leftType instanceof IntType && rightType instanceof IntType) {
+                node.setType(leftType); //Int + Int = Int
             } else {
-                node.setType(new Type(Types.ERROR,node.getLine(), "Expected int, float, string or char, got " + rightType));
+                node.setType(new FloatType()); //Int + Float = Float, Float + Int = Float, Float + Float = Float
             }
-        } else if (leftType.getPrimitiveType() == Types.FLOAT) {
-            if (rightType.getPrimitiveType() == Types.STRING) {
-                node.setType(rightType); //Float + String = String, Float + Char = String
-            } else if (rightType.getPrimitiveType() == Types.INT) {
-                node.setType(leftType); //Float + Int = Float
-            } else {
-                node.setType(new Type(Types.ERROR,node.getLine(), "Expected int, float, string or char, got " + rightType));
-            }
-        } else if (leftType.getPrimitiveType() == Types.STRING) {
-            if (rightType.getPrimitiveType() == Types.INT || rightType.getPrimitiveType() == Types.FLOAT || rightType.getPrimitiveType() == Types.CHAR || rightType.getPrimitiveType() == Types.BOOL) {
-                node.setType(leftType); //String + Int = String, String + Float = String, String + Char = String, String + Bool = String
-            } else {
-                node.setType(new Type(Types.ERROR,node.getLine(), "Expected int, float, string, char or bool, got " + rightType));
-            }
-        } else if (leftType.getPrimitiveType() == Types.CHAR) {
-            if (rightType.getPrimitiveType() == Types.STRING) {
-                node.setType(rightType); //Char + String = String
-            } else if (rightType.getPrimitiveType() == Types.INT) {
-                node.setType(leftType); //Char + Int = Char
-            } else {
-                node.setType(new Type(Types.ERROR, node.getLine(), "Expected string, or int, got " + rightType));
-            }
-        } else if (leftType.getPrimitiveType() == Types.BOOL) {
-            if (rightType.getPrimitiveType() == Types.STRING) {
-                node.setType(rightType); //Bool + String = String
-            } else {
-                node.setType(new Type(Types.ERROR,node.getLine(), "Expected string, got " + rightType));
-            }
+            return null;
         } else {
-            node.setType(new Type(Types.ERROR,node.getLine(), "Expected int, float, string, char or bool got " + leftType));
+            if (leftType instanceof CharType || rightType instanceof CharType) {
+                if (leftType instanceof IntType || rightType instanceof IntType) {
+                    node.setType(new CharType()); //Int + Char = Char, Char + Int = Char
+                } else {
+                    node.setType(new ErrorType(node.getLine(), "Expected char and int or int and char, got " + leftType + " and " + rightType));
+                }
+                return null;
+            }
         }
 
+        node.setType(new ErrorType(node.getLine(), "Expected addable types, got " + leftType + " and " + rightType));
         return null;
     }
- */
-@Override
-public Void visit(AdditionNode node) {
-    node.getLeft().accept(this);
-    node.getRight().accept(this);
-
-    Type leftType = node.getLeft().getType();
-    Type rightType = node.getRight().getType();
-
-    if (invalidChildren(leftType, rightType)) {
-        node.setType(new Type(Types.IGNORE));
-        return null;
-    }
-
-
-    if (leftType.equals(rightType)) {
-        if (leftType.getPrimitiveType() == Types.INT || leftType.getPrimitiveType() == Types.FLOAT || leftType.getPrimitiveType() == Types.STRING) {
-            node.setType(leftType); //Int + Int = Int, Float + Float = Float, String + String = String
-        } else {
-            node.setType(new Type(Types.ERROR, node.getLine(), "Expected int, float or string, got " + leftType));
-        }
-        return null;
-    }
-
-    if (leftType.getPrimitiveType() == Types.INT) {
-        if (rightType.getPrimitiveType() == Types.CHAR) {
-            node.setType(rightType); //Int + Char = Char
-        } else if (rightType.getPrimitiveType() == Types.FLOAT) {
-            node.setType(rightType); //Int + Float = Float
-        } else {
-            node.setType(new Type(Types.ERROR,node.getLine(), "Expected int, float or char, got " + rightType));
-        }
-    } else if (leftType.getPrimitiveType() == Types.FLOAT) {
-        if (rightType.getPrimitiveType() == Types.INT) {
-            node.setType(leftType); //Float + Int = Float
-        } else {
-            node.setType(new Type(Types.ERROR,node.getLine(), "Expected int or float, got " + rightType));
-        }
-    } else if (leftType.getPrimitiveType() == Types.CHAR) {
-        if (rightType.getPrimitiveType() == Types.INT) {
-            node.setType(leftType); //Char + Int = Char
-        } else {
-            node.setType(new Type(Types.ERROR, node.getLine(), "Expected int, got " + rightType));
-        }
-    } else {
-        node.setType(new Type(Types.ERROR,node.getLine(), "Expected int, float, string, or got " + leftType));
-    }
-
-    return null;
-}
 
     @Override
     public Void visit(AndNode node) {
         node.setType(booleanComparison(node));
-        return null;
-    }
-
-    @Override
-    public Void visit(ArrayAppendNode node) {
         return null;
     }
 
@@ -192,26 +115,28 @@ public Void visit(AdditionNode node) {
         Type[] indexTypes = new Type[indexNodes.size()];
 
         if (invalidChildren(arrayType)) {
-            node.setType(new Type(Types.IGNORE));
+            node.setType(new IgnoreType());
             return null;
         }
 
-        for (int i = 0; i < indexNodes.size(); i++) {
-            indexNodes.get(i).accept(this);
-            indexTypes[i] = indexNodes.get(i).getType();
+        if (arrayType instanceof ArrayType) {
+            arrayType = ((ArrayType)arrayType).getChildType();
 
-            if (indexTypes[i].getPrimitiveType() != Types.INT) {
-                node.setType(new Type(Types.ERROR, node.getLine(), "Index " + (i + 1) + " on line " + node.getLine() +  " expected to as int, was " + indexTypes[i]));
-                return null;
-            }
+            for (int i = 0; i < indexNodes.size(); i++) {
+                indexNodes.get(i).accept(this);
+                indexTypes[i] = indexNodes.get(i).getType();
 
-            if (arrayType instanceof ArrayType) {
-                arrayType = ((ArrayType)arrayType).getChildType();
+                if (!(indexTypes[i] instanceof IntType)) {
+                    node.setType(new ErrorType(node.getLine(), Helper.ordinal(i + 1) + " index expected int, got " + indexTypes[i]));
+                    return null;
+                }
             }
+        } else {
+            node.setType(new ErrorType(node.getLine(), "Expected array, got " + arrayType));
         }
 
         if (invalidChildren(indexTypes)) {
-            node.setType(new Type(Types.IGNORE));
+            node.setType(new IgnoreType());
             return null;
         }
 
@@ -220,8 +145,78 @@ public Void visit(AdditionNode node) {
     }
 
     @Override
+    public Void visit(ArrayAppendNode node) {
+        node.getVariable().accept(this);
+        node.getExpression().accept(this);
+
+        Type varType = node.getVariable().getType();
+        Type expType = node.getExpression().getType();
+
+        if (varType instanceof ArrayType) {
+            ArrayType arrType = (ArrayType)varType;
+            if (arrType.getChildType().getClass().isInstance(expType)) {
+                node.setType(new OkType());
+            } else {
+                node.setType(new ErrorType(node.getLine(), "Expected " + arrType.getChildType() + ", got " + expType));
+            }
+        } else {
+            node.setType(new ErrorType(node.getLine(), "Expected array, got " + varType));
+        }
+
+        return null;
+    }
+
+    @Override
     public Void visit(ArrayBuilderNode node) {
-        //node.get
+        //Visit array identifier
+        node.getArray().accept(this);
+
+        //Get type of array
+        Type arrayType = node.getArray().getType();
+
+        if (invalidChildren(arrayType)) {
+            node.setType(new IgnoreType());
+            return null;
+        }
+
+        if (arrayType instanceof ArrayType) {
+            //Open af new scope for the loop's body and variable
+            st.openScope();
+
+            //Get the type of the array
+            Type varType = ((ArrayType) arrayType).getChildType();
+
+            //Get name of variable
+            String varName = node.getVariable().getName();
+
+            //Insert the variable in the symbol table
+            //Since we're in a brand new empty scope an exception can't possibly be thrown
+            try {
+                st.insert(varName, new Symbol(varType, node));
+                node.setType(varType);
+            } catch (VariableAlreadyDeclaredException e) {}
+
+            //Now that the variable has been declared, we can visit the statements
+            node.getExpression().accept(this);
+            Type expressionType = node.getExpression().getType();
+
+            //Close the scope again, before there is any chance of returning from this method
+            st.closeScope();
+
+            if (invalidChildren(arrayType, expressionType)) {
+                node.setType(new IgnoreType());
+                return null;
+            }
+
+            if (expressionType instanceof BoolType) {
+                node.setType(arrayType);
+            } else {
+                node.setType(new ErrorType(node.getLine(), "Expected a boolean expression, got " + expressionType));
+            }
+        } else {
+            node.setType(new ErrorType(node.getLine(), "Expected an array, got " + arrayType));
+        }
+
         return null;
     }
 
@@ -245,14 +240,14 @@ public Void visit(AdditionNode node) {
         }
 
         if (allSameType) {
-            node.setType(new ArrayType(Types.ARRAY, expressionTypes[0]));
+            node.setType(new ArrayType(expressionTypes[0]));
         } else {
-            node.setType(new Type(Types.ERROR, node.getLine(), "Type of element " + (errorIndex + 1) + " was " + expressionTypes[errorIndex] + " expected " + expressionTypes[errorIndex - 1]));
+            node.setType(new ErrorType(node.getLine(), Helper.ordinal(errorIndex + 1) + " element expected " + expressionTypes[errorIndex - 1] + ", got " + expressionTypes[errorIndex]));
         }
 
         //Check if expressions were ok
         if (invalidChildren(expressionTypes)) {
-            node.setType(new Type(Types.IGNORE));
+            node.setType(new IgnoreType());
             return null;
         }
 
@@ -284,7 +279,6 @@ public Void visit(AdditionNode node) {
 
         return null;
     }
-
 
     @Override
     public Void visit(AST node) {
@@ -333,33 +327,18 @@ public Void visit(AdditionNode node) {
         Type rightType = node.getRight().getType();
 
         if (invalidChildren(leftType, rightType)) {
-            node.setType(new Type(Types.IGNORE));
+            node.setType(new IgnoreType());
             return null;
         }
 
-        if (leftType.equals(rightType)) {
-            if (leftType.getPrimitiveType() == Types.INT || leftType.getPrimitiveType() == Types.FLOAT) {
-                node.setType(leftType);
+        if (leftType instanceof FloatType && rightType instanceof FloatType) {
+            if (leftType instanceof IntType && rightType instanceof IntType) {
+                node.setType(leftType); //Int / Int = Int
             } else {
-                node.setType(new Type(Types.ERROR, node.getLine(), "Expected int or float, got " + leftType));
-            }
-            return null;
-        }
-
-        if (leftType.getPrimitiveType() == Types.INT) {
-            if (rightType.getPrimitiveType() == Types.FLOAT) {
-                node.setType(new Type(Types.FLOAT));
-            } else {
-                node.setType(new Type(Types.ERROR, node.getLine(), "Expected int or float, got " + rightType));
-            }
-        } else if (leftType.getPrimitiveType() == Types.FLOAT) {
-            if (rightType.getPrimitiveType() == Types.INT) {
-                node.setType(new Type(Types.FLOAT));
-            } else {
-                node.setType(new Type(Types.ERROR, node.getLine(), "Expected int or float, got " + rightType));
+                node.setType(new FloatType()); //Int / Float = Float, Float / Int = Float, Float / Float = Float
             }
         } else {
-            node.setType(new Type(Types.ERROR, node.getLine(), "Expected int or float, got " + leftType));
+            node.setType(new ErrorType(node.getLine(), "Expected int or float, got " + leftType));
         }
 
         return null;
@@ -377,58 +356,65 @@ public Void visit(AdditionNode node) {
         node.getChild().accept(this);
         st.closeScope();
 
-        Type statementType = node.getChild().getType();
-        if (invalidChildren(statementType)) {
-            node.setType(new Type(Types.IGNORE));
+        Type childType = node.getChild().getType();
+
+        if (invalidChildren(childType)) {
+            node.setType(new IgnoreType());
             return null;
         }
 
-        node.setType(new Type(Types.OK));
+        node.setType(new OkType());
 
         return null;
     }
 
     @Override
     public Void visit(ForNode node) {
-        st.openScope();
-
         //Visit array identifier
         node.getArray().accept(this);
 
         //Get type of array
         Type arrayType = node.getArray().getType();
 
-        //Get name of variable
-        String varName = node.getVariable().getName();
-
-        //Get the type of the array
-        Type varType = ((ArrayType)arrayType).getChildType();
-
-        //Insert the variable in the symbol table
-        //Since we're in a new scope an exception can't possibly be thrown
-        try {
-            st.insert(varName, new Symbol(varType, node));
-            node.setType(varType);
-        } catch (VariableAlreadyDeclaredException e) {}
-
-        //Now that the variable has been declared, we can visit the statements
-        node.getStatements().accept(this);
-        Type statementsType = node.getStatements().getType();
-
-        //And close the scope again, before there is any chance of returning from this method
-        st.closeScope();
-
-        if (invalidChildren(arrayType, statementsType)) {
-            node.setType(new Type(Types.IGNORE));
+        if (invalidChildren(arrayType)) {
+            node.setType(new IgnoreType());
             return null;
         }
 
-        if (arrayType.getPrimitiveType() != Types.ARRAY) {
-            node.setType(new Type(Types.ERROR, node.getLine(), "Expected an array, got " + arrayType.getPrimitiveType()));
-            return null;
+        if (arrayType instanceof ArrayType) {
+            //Open af new scope for the loop's body and variable
+            st.openScope();
+
+            //Get the type of the array
+            Type varType = ((ArrayType) arrayType).getChildType();
+
+            //Get name of variable
+            String varName = node.getVariable().getName();
+
+            //Insert the variable in the symbol table
+            //Since we're in a brand new empty scope an exception can't possibly be thrown
+            try {
+                st.insert(varName, new Symbol(varType, node));
+                node.setType(varType);
+            } catch (VariableAlreadyDeclaredException e) {}
+
+            //Now that the variable has been declared, we can visit the statements
+            node.getStatements().accept(this);
+            Type statementsType = node.getStatements().getType();
+
+            //Close the scope again, before there is any chance of returning from this method
+            st.closeScope();
+
+            if (invalidChildren(arrayType, statementsType)) {
+                node.setType(new IgnoreType());
+                return null;
+            }
+
+            node.setType(statementsType);
+        } else {
+            node.setType(new ErrorType(node.getLine(), "Expected an array, got " + arrayType));
         }
 
-        node.setType(statementsType);
         return null;
     }
 
@@ -445,17 +431,17 @@ public Void visit(AdditionNode node) {
 
         //Check if arguments were ok
         if (invalidChildren(argumentTypes)) {
-            node.setType(new Type(Types.IGNORE));
+            node.setType(new IgnoreType());
             return null;
         }
 
-        FunctionType func = new FunctionType(node.getName().getName(), argumentTypes, Types.VOID);
+        FunctionType func = new FunctionType(node.getName().getName(), argumentTypes, new VoidType());
 
         try {
             Type functionType = st.lookup(func.getSignature()).getType();
-            node.setType(functionType);
+            node.setType(((FunctionType)functionType).getReturnType());
         } catch (VariableNotDeclaredException e) {
-            node.setType(new Type(Types.ERROR, node.getLine(), "Function with signature " + e.getMessage()));
+            node.setType(new ErrorType(node.getLine(), "Function with signature " + e.getMessage()));
         }
 
         return null;
@@ -487,14 +473,14 @@ public Void visit(AdditionNode node) {
 
         //Check if arguments were ok
         if (invalidChildren(argumentTypes)) {
-            node.setType(new Type(Types.IGNORE));
+            node.setType(new IgnoreType());
             return null;
         }
 
         //Check if statements were ok
         Type statementsType = node.getStatements().getType();
         if (invalidChildren(statementsType)) {
-            node.setType(new Type(Types.IGNORE));
+            node.setType(new IgnoreType());
             return null;
         }
 
@@ -502,16 +488,16 @@ public Void visit(AdditionNode node) {
         Type funcType = node.getTypeNode().getType();
 
         //If return is same type as function, create the function and save it in the symbol table
-        if (funcType.equals(statementsType) || (funcType.getPrimitiveType() == Types.VOID && statementsType.getPrimitiveType() == Types.OK)) {
-            FunctionType function = new FunctionType(funcName, argumentTypes, funcType.getPrimitiveType());
+        if (funcType.equals(statementsType) || (funcType instanceof VoidType && statementsType instanceof OkType)) {
+            FunctionType function = new FunctionType(funcName, argumentTypes, funcType);
             try {
                 st.insert(function.getSignature(), new Symbol(function, node));
                 node.setType(funcType);
             } catch (VariableAlreadyDeclaredException e) {
-                node.setType(new Type(Types.ERROR, node.getLine(), "Function with signature " + e.getMessage()));
+                node.setType(new ErrorType(node.getLine(), "Function with signature " + e.getMessage()));
             }
         } else {
-            node.setType(new Type(Types.ERROR, node.getLine(), "Return expected " + funcType + ", got " + statementsType));
+            node.setType(new ErrorType(node.getLine(), "Return expected " + funcType + ", got " + statementsType));
         }
 
         return null;
@@ -540,24 +526,24 @@ public Void visit(AdditionNode node) {
         Type falseBranchType = node.getFalseBranch().getType();
 
         if (invalidChildren(predicateType, trueBranchType, falseBranchType)) {
-            node.setType(new Type(Types.IGNORE));
+            node.setType(new IgnoreType());
             return null;
         }
 
-        if (predicateType.getPrimitiveType() != Types.BOOL) {
-            node.setType(new Type(Types.ERROR, node.getLine(), "Expected bool, got " + predicateType));
+        if (!(predicateType instanceof BoolType)) {
+            node.setType(new ErrorType(node.getLine(), "Expected bool, got " + predicateType));
             return null;
         }
 
         if (trueBranchType.equals(falseBranchType)) {
             node.setType(trueBranchType);
         } else {
-            if (trueBranchType.getPrimitiveType() == Types.OK) {
+            if (trueBranchType instanceof OkType) {
                 node.setType(falseBranchType);
-            } else if (falseBranchType.getPrimitiveType() == Types.OK) {
+            } else if (falseBranchType instanceof OkType) {
                 node.setType(trueBranchType);
             } else {
-                node.setType(new Type(Types.ERROR, node.getLine(), "Expected false branch of type " + trueBranchType + ", got " + falseBranchType));
+                node.setType(new ErrorType(node.getLine(), "Expected false branch of type " + trueBranchType + ", got " + falseBranchType));
             }
         }
         return null;
@@ -589,14 +575,14 @@ public Void visit(AdditionNode node) {
         Type rightType = node.getRight().getType();
 
         if (invalidChildren(leftType, rightType)) {
-            node.setType(new Type(Types.IGNORE));
+            node.setType(new IgnoreType());
             return null;
         }
 
-        if (leftType.getPrimitiveType() == Types.INT && rightType.getPrimitiveType() == Types.INT) {
-            node.setType(leftType);//Int
+        if (leftType instanceof IntType && rightType instanceof IntType) {
+            node.setType(leftType); //Int Mod Int = Int
         } else {
-            node.setType(new Type(Types.ERROR,node.getLine(), "Expected int and int, got " + leftType + " and " + rightType));
+            node.setType(new ErrorType(node.getLine(), "Expected int and int, got " + leftType + " and " + rightType));
         }
 
         return null;
@@ -611,21 +597,20 @@ public Void visit(AdditionNode node) {
         Type rightType = node.getRight().getType();
 
         if (invalidChildren(leftType, rightType)) {
-            node.setType(new Type(Types.IGNORE));
+            node.setType(new IgnoreType());
             return null;
         }
 
-        if (leftType.equals(rightType)) {
-            if (leftType.getPrimitiveType() == Types.INT || leftType.getPrimitiveType() == Types.FLOAT) {
-                node.setType(leftType); //Int or float
-                return null;
+        if (leftType instanceof FloatType && rightType instanceof FloatType) {
+            if (leftType instanceof IntType && rightType instanceof IntType) {
+                node.setType(leftType); //Int + Int = Int
             } else {
-                node.setType(new Type(Types.ERROR,node.getLine(), "Expected int or float, got " + leftType));
-                return null;
+                node.setType(new FloatType()); //Int + Float = Float, Float + Int = Float
             }
+        } else {
+            node.setType(new ErrorType(node.getLine(), "Expected int or float and int or float, got " + leftType + " and " + rightType));
         }
 
-        node.setType(implicitIntToFloatCheck(leftType, rightType, node.getLine()));
         return null;
     }
 
@@ -636,14 +621,14 @@ public Void visit(AdditionNode node) {
         Type expressionType = node.getExpression().getType();
 
         if (invalidChildren(expressionType)) {
-            node.setType(new Type(Types.IGNORE));
+            node.setType(new IgnoreType());
             return null;
         }
 
-        if (expressionType.getPrimitiveType() != Types.BOOL) {
-            node.setType(new Type(Types.ERROR, node.getLine(), "Expected bool, got " + expressionType));
-        } else {
+        if (expressionType instanceof BoolType) {
             node.setType(expressionType);
+        } else {
+            node.setType(new ErrorType(node.getLine(), "Expected bool, got " + expressionType));
         }
 
         return null;
@@ -676,7 +661,7 @@ public Void visit(AdditionNode node) {
         st.closeScope();
 
         if (invalidChildren(varTypes)) {
-            node.setType(new Type(Types.IGNORE));
+            node.setType(new IgnoreType());
             return null;
         }
 
@@ -684,9 +669,9 @@ public Void visit(AdditionNode node) {
         Type record = new RecordType(recordName, varNames, varTypes);
         try {
             rt.insert(recordName, new Symbol(record, node));
-            node.setType(new Type(Types.OK));
+            node.setType(new OkType());
         } catch (VariableAlreadyDeclaredException e) {
-            node.setType(new Type(Types.ERROR, node.getLine(), "Record " + e.getMessage()));
+            node.setType(new ErrorType(node.getLine(), "Record " + e.getMessage()));
         }
 
         return null;
@@ -700,7 +685,7 @@ public Void visit(AdditionNode node) {
             recordType = (RecordType) st.lookup(node.getName()).getType();
             node.setType(recordType);
         } catch (VariableNotDeclaredException e) {
-            node.setType(new Type(Types.ERROR, node.getLine(), "Variable " + e.getMessage()));
+            node.setType(new ErrorType(node.getLine(), "Variable " + e.getMessage()));
             return null;
         }
 
@@ -713,7 +698,7 @@ public Void visit(AdditionNode node) {
                     Type terminalType = ((RecordType)previous.getType()).getMemberType(traveller.getName());
                     node.setType(terminalType);
                 } catch (MemberNotFoundException e) {
-                    node.setType(new Type(Types.ERROR,node.getLine(),": " + e.getMessage()));
+                    node.setType(new ErrorType(node.getLine(), e.getMessage()));
                 }
                 return null;
             } else {
@@ -725,7 +710,7 @@ public Void visit(AdditionNode node) {
                     //node.setType(new Type(Types.ERROR, node.getLine(), "Record " + e.getMessage()));
                     //return null;
                 } catch (MemberNotFoundException e) {
-                    node.setType(new Type(Types.ERROR,node.getLine(), ": " + e.getMessage()));
+                    node.setType(new ErrorType(node.getLine(), e.getMessage()));
                     return null;
                 }
 
@@ -742,8 +727,9 @@ public Void visit(AdditionNode node) {
         node.getExpresssion().accept(this);
 
         Type expType = node.getExpresssion().getType();
+
         if (invalidChildren(expType)) {
-            node.setType(new Type(Types.IGNORE));
+            node.setType(new IgnoreType());
             return null;
         }
 
@@ -759,14 +745,14 @@ public Void visit(AdditionNode node) {
         Type commandType = node.getCommand().getType();
 
         if (invalidChildren(commandType)) {
-            node.setType(new Type(Types.IGNORE));
+            node.setType(new IgnoreType());
             return null;
         }
 
-        if (commandType.getPrimitiveType() == Types.STRING) {
+        if (commandType instanceof StringType) {
             node.setType(commandType); //String
         } else {
-            node.setType(new Type(Types.ERROR, node.getLine(), "Expected string, got " + commandType));
+            node.setType(new ErrorType(node.getLine(), "Expected string, got " + commandType));
         }
 
         return null;
@@ -781,14 +767,14 @@ public Void visit(AdditionNode node) {
         Type commandType = node.getCommand().getType();
 
         if (invalidChildren(channelType, commandType)) {
-            node.setType(new Type(Types.IGNORE));
+            node.setType(new IgnoreType());
             return null;
         }
 
-        if (channelType.getPrimitiveType() == Types.CHANNEL && commandType.getPrimitiveType() == Types.STRING) {
-            node.setType(new Type(Types.OK));
+        if (channelType instanceof ChannelType && commandType instanceof StringType) {
+            node.setType(new OkType());
         } else {
-            node.setType(new Type(Types.ERROR, node.getLine(), "Expected channel and string, got " + channelType + " and " + commandType));
+            node.setType(new ErrorType(node.getLine(), "Expected channel and string, got " + channelType + " and " + commandType));
         }
 
         return null;
@@ -800,7 +786,7 @@ public Void visit(AdditionNode node) {
             Type identifierType = st.lookup(node.getName()).getType();
             node.setType(identifierType);
         } catch (VariableNotDeclaredException e) {
-            node.setType(new Type(Types.ERROR, node.getLine(), "Variable " + e.getMessage()));
+            node.setType(new ErrorType(node.getLine(), "Variable " + e.getMessage()));
         }
 
         return null;
@@ -817,26 +803,26 @@ public Void visit(AdditionNode node) {
         }
 
         if (invalidChildren(childTypes)) {
-            node.setType(new Type(Types.IGNORE));
+            node.setType(new IgnoreType());
             return null;
         }
 
         ArrayList<StatementNode> typedStatementNodes = new ArrayList<>();
         for (StatementNode statementNode : childNodes) {
-            if (statementNode.getType().getPrimitiveType() != Types.OK && !(statementNode instanceof VariableDeclarationNode)) {
+            if (!(statementNode.getType() instanceof OkType) && !(statementNode instanceof VariableDeclarationNode)) {
                 typedStatementNodes.add(statementNode);
             }
         }
 
         //If we found any typed children, make sure they are all of same type
-        if (typedStatementNodes.size() == 0) {
-            node.setType(new Type(Types.OK));
+        if (typedStatementNodes.isEmpty()) {
+            node.setType(new OkType());
             return null;
         } else {
             if (typedStatementNodes.size() > 1) {
                 for (int i = 1; i < typedStatementNodes.size(); i++) {
                     if (!typedStatementNodes.get(i).getType().equals(typedStatementNodes.get(i - 1).getType())) {
-                        node.setType(new Type(Types.ERROR,node.getLine(), "Return types do not match"));
+                        node.setType(new ErrorType(node.getLine(), "Return types do not match"));
                         return null;
                     }
                 }
@@ -856,26 +842,25 @@ public Void visit(AdditionNode node) {
         Type rightType = node.getRight().getType();
 
         if (invalidChildren(leftType, rightType)) {
-            node.setType(new Type(Types.IGNORE));
+            node.setType(new IgnoreType());
             return null;
         }
 
-        if (leftType.equals(rightType)) {
-            if (leftType.getPrimitiveType() == Types.INT || leftType.getPrimitiveType() == Types.FLOAT) {
-                node.setType(leftType); //Int or float
-                return null;
+        if (leftType instanceof FloatType && rightType instanceof FloatType) {
+            if (leftType instanceof IntType && rightType instanceof IntType) {
+                node.setType(leftType); //Int - Int = Int
             } else {
-                node.setType(new Type(Types.ERROR,node.getLine(), "Expected int or float, got " + leftType));
+                node.setType(new FloatType()); //Int - Float = Float, Float - Int = Float
+            }
+            return null;
+        } else {
+            if (leftType instanceof CharType && rightType instanceof IntType) {
+                node.setType(leftType); //Char - Int = Char
                 return null;
             }
         }
 
-        if (leftType.getPrimitiveType() == Types.CHAR && rightType.getPrimitiveType() == Types.INT) {
-            node.setType(leftType); //Char
-            return null;
-        }
-
-        node.setType(implicitIntToFloatCheck(leftType, rightType, node.getLine()));
+        node.setType(new ErrorType(node.getLine(), "Expected int or float and int, float or char, got " + leftType + " and " + rightType));
         return null;
     }
 
@@ -889,11 +874,11 @@ public Void visit(AdditionNode node) {
         String varName = node.getName().getName();
         Type varType = node.getTypeNode().getType();
 
-        if (varType.getPrimitiveType() == Types.RECORD) {
+        if (varType instanceof RecordType) {
             try {
                 varType = rt.lookup(((RecordType)varType).getName()).getType();
             } catch (VariableNotDeclaredException e) {
-                node.setType(new Type(Types.ERROR,node.getLine(), "Record " + e.getMessage()));
+                node.setType(new ErrorType(node.getLine(), "Record " + e.getMessage()));
                 return null;
             }
         }
@@ -902,7 +887,7 @@ public Void visit(AdditionNode node) {
             st.insert(varName, new Symbol(varType, node));
             node.setType(varType);
         } catch (VariableAlreadyDeclaredException e) {
-            node.setType(new Type(Types.ERROR,node.getLine(), "Variable " + e.getMessage()));
+            node.setType(new ErrorType(node.getLine(), "Variable " + e.getMessage()));
         }
 
         return null;
@@ -921,14 +906,14 @@ public Void visit(AdditionNode node) {
         st.closeScope();
 
         if (invalidChildren(predicateType, statementsType)) {
-            node.setType(new Type(Types.IGNORE));
+            node.setType(new IgnoreType());
             return null;
         }
 
-        if (predicateType.getPrimitiveType() != Types.BOOL) {
-            node.setType(new Type(Types.ERROR,node.getLine(), "Expected bool, got " + predicateType));
-        } else {
+        if (predicateType instanceof BoolType) {
             node.setType(statementsType);
+        } else {
+            node.setType(new ErrorType(node.getLine(), "Expected bool, got " + predicateType));
         }
 
         return null;
@@ -947,17 +932,17 @@ public Void visit(AdditionNode node) {
 
         //Check if arguments were ok
         if (invalidChildren(argumentTypes)) {
-            node.setType(new Type(Types.IGNORE));
+            node.setType(new IgnoreType());
             return null;
         }
 
-        FunctionType func = new FunctionType(node.getName().getName(), argumentTypes, Types.VOID);
+        FunctionType func = new FunctionType(node.getName().getName(), argumentTypes, new VoidType());
 
         try {
             st.lookup(func.getSignature());
-            node.setType(new Type(Types.OK));
+            node.setType(new OkType());
         } catch (VariableNotDeclaredException e) {
-            node.setType(new Type(Types.ERROR,node.getLine(), "Function with signature " + e.getMessage()));
+            node.setType(new ErrorType(node.getLine(), "Function with signature " + e.getMessage()));
         }
 
         return null;
@@ -972,23 +957,24 @@ public Void visit(AdditionNode node) {
         Type rightType = node.getExpression().getType();
 
         if (invalidChildren(leftType, rightType)) {
-            node.setType(new Type(Types.IGNORE));
+            node.setType(new IgnoreType());
             return null;
         }
 
-
-        if (leftType.getPrimitiveType() == Types.CHANNEL) { //Write to channel
-            if (rightType.isSubtypeOf(Types.STRING)) {
-                node.setType(new Type(Types.OK));
+        if (leftType instanceof ChannelType) { //Write to channel
+            if (rightType instanceof StringType) {
+                node.setType(new OkType());
             } else {
-                node.setType(new Type(Types.ERROR,node.getLine(), "Expected channel and string, got " + leftType + " and " + rightType));
+                node.setType(new ErrorType(node.getLine(), "Expected channel and string, got " + leftType + " and " + rightType));
             }
-        } else if (rightType.getPrimitiveType() == Types.CHANNEL) { //Read from channel
-            if (leftType.getPrimitiveType() == Types.STRING) {
-                node.setType(new Type(Types.OK));
+        } else if (rightType instanceof ChannelType) { //Read from channel
+            if (leftType instanceof StringType) {
+                node.setType(new OkType());
             } else {
-                node.setType(new Type(Types.ERROR,node.getLine(), "Expected string and channel, got " + leftType + " and " + rightType));
+                node.setType(new ErrorType(node.getLine(), "Expected string and channel, got " + leftType + " and " + rightType));
             }
+        } else {
+            node.setType(new ErrorType(node.getLine(), "Expected channel and string or string and channel, got " + leftType + " and " + rightType));
         }
 
         return null;
@@ -1002,10 +988,15 @@ public Void visit(AdditionNode node) {
         Type leftType = node.getLeft().getType();
         Type rightType = node.getRight().getType();
 
-        if (leftType.getPrimitiveType() == Types.STRING && rightType.getPrimitiveType() == Types.STRING) {
-            node.setType(new Type(Types.BOOL));
+        if (invalidChildren(leftType, rightType)) {
+            node.setType(new IgnoreType());
+            return null;
+        }
+
+        if (leftType instanceof StringType && rightType instanceof StringType) {
+            node.setType(new BoolType());
         } else {
-            node.setType(new Type(Types.ERROR,node.getLine(), "Expected string and string, got " + leftType + " and " + rightType));
+            node.setType(new ErrorType(node.getLine(), "Expected string and string, got " + leftType + " and " + rightType));
         }
 
         return null;
@@ -1015,11 +1006,10 @@ public Void visit(AdditionNode node) {
         boolean invalid = false;
 
         for(Type childType : childTypes) {
-            Types primitiveType = childType.getPrimitiveType();
-            if (primitiveType == Types.ERROR) {
+            if (childType instanceof ErrorType) {
                 errorNodes.add(childType);
                 invalid = true;
-            } else if (primitiveType == Types.IGNORE) {
+            } else if (childType instanceof IgnoreType) {
                 invalid = true;
             }
         }
@@ -1029,20 +1019,20 @@ public Void visit(AdditionNode node) {
 
     private Type assignment(Type var, Type exp, int lineNum) {
         if (invalidChildren(var, exp)) {
-            return new Type(Types.IGNORE);
+            return new IgnoreType();
         }
 
         boolean success;
-        if (var instanceof ArrayType && exp instanceof ArrayType) {
+        if ((var instanceof ArrayType && exp instanceof ArrayType) || (var instanceof RecordType && exp instanceof RecordType)) {
             success = exp.equals(var);
         } else {
-            success = exp.isSubtypeOf(var.getPrimitiveType());
+            success = var.getClass().isInstance(exp);
         }
 
-        if (var.getPrimitiveType() == Types.CHAR && exp.getPrimitiveType() == Types.INT || success) {
-            return new Type(Types.OK);
+        if (var instanceof CharType && exp instanceof IntType || success) {
+            return new OkType();
         } else {
-            return new Type(Types.ERROR, lineNum, "Expected " + var + ", got " + exp);
+            return new ErrorType(lineNum, "Expected " + var + ", got " + exp);
         }
     }
 
@@ -1054,24 +1044,19 @@ public Void visit(AdditionNode node) {
         Type rightType = node.getRight().getType();
 
         if (invalidChildren(leftType, rightType)) {
-            return new Type(Types.IGNORE);
+            return new IgnoreType();
         }
 
-        if (leftType.equals(rightType)) {
-            return new Type(Types.BOOL);
+        if (leftType instanceof FloatType && rightType instanceof FloatType) {
+            return new BoolType(); //Int == Int, Int == Float, Float == Int, Float == Float
+        } else if (leftType instanceof CharType && rightType instanceof CharType) {
+            return new BoolType(); //Char == Char
+        } else if (leftType instanceof StringType && rightType instanceof StringType) {
+            return new BoolType(); //String == String
+        } else if (leftType instanceof BoolType && rightType instanceof BoolType) {
+            return new BoolType(); //Bool == Bool
         } else {
-            if (leftType.getPrimitiveType() == Types.CHAR || rightType.getPrimitiveType() == Types.CHAR) {
-                if (leftType.getPrimitiveType() == Types.INT || rightType.getPrimitiveType() == Types.INT) {
-                    return new Type(Types.BOOL); //Char == Int, Int == Char
-                }
-            }
-        }
-
-        Type intToFloatResult = implicitIntToFloatCheck(leftType, rightType, node.getLine());
-        if (intToFloatResult.getPrimitiveType() == Types.INT || intToFloatResult.getPrimitiveType() == Types.FLOAT) {
-            return new Type(Types.BOOL); //Int == Int, Int == Float
-        } else {
-            return new Type(Types.ERROR, node.getLine(), "Expected similar types, got " + leftType + " and " + rightType);
+            return new ErrorType(node.getLine(), "Expected equalable types, got " + leftType + " and " + rightType);
         }
     }
 
@@ -1083,55 +1068,16 @@ public Void visit(AdditionNode node) {
         Type rightType = node.getRight().getType();
 
         if (invalidChildren(leftType, rightType)) {
-            return new Type(Types.IGNORE);
+            return new IgnoreType();
         }
 
-        if (leftType.equals(rightType)) {
-            if (leftType.getPrimitiveType() == Types.STRING || leftType.getPrimitiveType() == Types.BOOL || leftType.getPrimitiveType() == Types.ARRAY || leftType.getPrimitiveType() == Types.RECORD || leftType.getPrimitiveType() == Types.FILE || leftType.getPrimitiveType() == Types.CHANNEL) {
-                return new Type(Types.ERROR,node.getLine(), "Expected comparable types, got " + leftType + " and " + rightType);
-            } else {
-                return new Type(Types.BOOL);
-            }
-        } else {
-            if (leftType.getPrimitiveType() == Types.CHAR || rightType.getPrimitiveType() == Types.CHAR) {
-                if (leftType.getPrimitiveType() == Types.INT || rightType.getPrimitiveType() == Types.INT) {
-                    return new Type(Types.BOOL); //Char == Int, Int == Char
-                }
-            }
+        if (leftType instanceof FloatType && rightType instanceof FloatType) {
+            return new BoolType(); //Int < Int, Int < Float, Float < Int, Float < Float
+        } else if (leftType instanceof  CharType && rightType instanceof CharType) {
+            return new BoolType(); //Int < Char, Char < Int
         }
 
-        Type intToFloatResult = implicitIntToFloatCheck(leftType, rightType, node.getLine());
-        if (intToFloatResult.getPrimitiveType() == Types.INT || intToFloatResult.getPrimitiveType() == Types.FLOAT) {
-            return new Type(Types.BOOL); //Int == Int, Int == Float
-        } else {
-            return new Type(Types.ERROR, node.getLine(), "Expected similar types, got " + leftType + " and " + rightType);
-        }
-    }
-
-    private Type implicitIntToFloatCheck(Type left, Type right, int lineNum) {
-        if (left.getPrimitiveType() == Types.INT) {
-            if (right.getPrimitiveType() == Types.INT || right.getPrimitiveType() == Types.FLOAT) {
-                return right;//Int + Int = Int, Int + Float = Float
-            } else {
-                return new Type(Types.ERROR, lineNum, "Expected int or float, got " + right);
-            }
-        } else if (left.getPrimitiveType() == Types.FLOAT) {
-            if (right.getPrimitiveType() == Types.INT || right.getPrimitiveType() == Types.FLOAT) {
-                return left;//Float + Int = Float, Float + Float = Float
-            } else {
-                return new Type(Types.ERROR, lineNum, "Expected int or float, got " + right);
-            }
-        } else {
-            return new Type(Types.ERROR, lineNum, "Expected int or float, got " + left);
-        }
-    }
-
-    private Type implicitIntFloatStringToString(Type t, int lineNum) {
-        if (t.getPrimitiveType() == Types.INT || t.getPrimitiveType() == Types.FLOAT || t.getPrimitiveType() == Types.STRING) {
-            return new Type(Types.STRING);
-        } else {
-            return new Type(Types.ERROR, lineNum, "Expected int, float or string, got " + t);
-        }
+        return new ErrorType(node.getLine(), "Expected comparable types got " + leftType + " and " + rightType);
     }
 
     private Type booleanComparison(InfixExpressionNode node) {
@@ -1142,17 +1088,17 @@ public Void visit(AdditionNode node) {
         Type rightType = node.getRight().getType();
 
         if (invalidChildren(leftType, rightType)) {
-            return new Type(Types.IGNORE);
+            return new IgnoreType();
         }
 
-        if (leftType.getPrimitiveType() != Types.BOOL) {
-            return new Type(Types.ERROR, node.getLine(), "Expected bool, got " + leftType);
+        if (!(leftType instanceof BoolType)) {
+            return new ErrorType(node.getLine(), "Expected bool, got " + leftType);
         }
 
-        if (rightType.getPrimitiveType() != Types.BOOL) {
-            return new Type(Types.ERROR, node.getLine(), "Expected bool, got " + rightType);
+        if (!(rightType instanceof BoolType)) {
+            return new ErrorType(node.getLine(), "Expected bool, got " + rightType);
         }
 
-        return new Type(Types.BOOL);
+        return new BoolType();
     }
 }

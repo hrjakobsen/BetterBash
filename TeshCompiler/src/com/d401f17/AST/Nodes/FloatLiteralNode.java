@@ -1,7 +1,7 @@
 package com.d401f17.AST.Nodes;
 
-import com.d401f17.AST.TypeSystem.Types;
 import com.d401f17.Visitors.ASTVisitor;
+import com.d401f17.TypeSystem.FloatType;
 
 /**
  * Created by mathias on 4/19/17.
@@ -9,11 +9,11 @@ import com.d401f17.Visitors.ASTVisitor;
 public class FloatLiteralNode extends LiteralNode {
 
     public FloatLiteralNode(float value) {
-        super(value, Types.FLOAT);
+        super(value, new FloatType());
     }
 
     public FloatLiteralNode(float value, int lineNumber) {
-        super(value, Types.FLOAT, lineNumber);
+        super(value, new FloatType(), lineNumber);
     }
 
     public Float getValue() {

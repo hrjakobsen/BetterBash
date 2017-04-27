@@ -1,6 +1,6 @@
 package com.d401f17.AST.Nodes;
 
-import com.d401f17.AST.TypeSystem.Types;
+import com.d401f17.TypeSystem.BoolType;
 import com.d401f17.Visitors.ASTVisitor;
 
 /**
@@ -8,11 +8,11 @@ import com.d401f17.Visitors.ASTVisitor;
  */
 public class BoolLiteralNode extends LiteralNode {
     public BoolLiteralNode(boolean value) {
-        super(value, Types.BOOL);
+        super(value, new BoolType());
     }
 
     public BoolLiteralNode(boolean value, int lineNumber) {
-        super(value, Types.BOOL, lineNumber);
+        super(value, new BoolType(), lineNumber);
     }
 
     public Boolean getValue() {

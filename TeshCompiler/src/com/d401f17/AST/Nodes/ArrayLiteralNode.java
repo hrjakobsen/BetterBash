@@ -1,6 +1,6 @@
 package com.d401f17.AST.Nodes;
 
-import com.d401f17.AST.TypeSystem.Types;
+import com.d401f17.TypeSystem.ArrayType;
 import com.d401f17.Visitors.ASTVisitor;
 
 import java.util.List;
@@ -10,11 +10,11 @@ import java.util.List;
  */
 public class ArrayLiteralNode extends LiteralNode {
     public ArrayLiteralNode(List<ArithmeticExpressionNode> value, int lineNum) {
-        super(value, Types.ARRAY, lineNum);
+        super(value, new ArrayType(), lineNum);
     }
 
     public ArrayLiteralNode(List<ArithmeticExpressionNode> value) {
-        super(value, Types.ARRAY);
+        super(value, new ArrayType());
     }
 
     public void setValue(List<ArithmeticExpressionNode> value) {

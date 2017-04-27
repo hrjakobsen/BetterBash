@@ -1,0 +1,14 @@
+record page {
+	int number
+}
+
+record book {
+	int year
+	record page pageInBook
+}
+
+record book myBook
+record book notAPage
+
+myBook.pageInBook = notAPage
+myBook.pageInBook = 10

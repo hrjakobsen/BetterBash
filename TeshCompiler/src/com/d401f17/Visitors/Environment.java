@@ -1,6 +1,7 @@
 package com.d401f17.Visitors;
 
-import com.d401f17.AST.TypeSystem.SymbolTable;
+
+import com.d401f17.TypeSystem.SymbolTable;
 
 import java.util.Stack;
 

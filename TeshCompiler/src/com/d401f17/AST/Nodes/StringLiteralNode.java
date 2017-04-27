@@ -1,6 +1,6 @@
 package com.d401f17.AST.Nodes;
 
-import com.d401f17.AST.TypeSystem.Types;
+import com.d401f17.TypeSystem.StringType;
 import com.d401f17.Visitors.ASTVisitor;
 
 /**
@@ -8,10 +8,10 @@ import com.d401f17.Visitors.ASTVisitor;
  */
 public class StringLiteralNode extends LiteralNode {
     public StringLiteralNode(String value) {
-        super(value, Types.STRING);
+        super(value, new StringType());
     }
     public StringLiteralNode(String value, int lineNumber) {
-        super(value, Types.STRING, lineNumber);
+        super(value, new StringType(), lineNumber);
     }
 
     public String getValue() {
