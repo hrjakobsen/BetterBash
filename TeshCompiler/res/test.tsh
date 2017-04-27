@@ -8,5 +8,7 @@ record book {
 }
 
 record book myBook
+record book notAPage
 
-myBook.pageInBook.year = 1994
+myBook.pageInBook = notAPage
+myBook.pageInBook = 10

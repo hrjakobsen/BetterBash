@@ -57,7 +57,6 @@ fragment ESC :   '\\' (["\\/bfnrt] | UNICODE) ;
 fragment UNICODE : 'u' HEX HEX HEX HEX ;
 fragment HEX : [0-9a-fA-F] ;
 
-
 FLOAT_LITERAL
     :    INT_LITERAL '.' INT_LITERAL EXP?   // 1.35, 1.35E-9, 0.3, -4.5
     |    INT_LITERAL EXP            // 1e10 -3e4
@@ -65,9 +64,6 @@ FLOAT_LITERAL
 
 INT_LITERAL :   '0' | [1-9] [0-9]* ; // no leading zeros
 fragment EXP :   [Ee] [+\-]? INT_LITERAL ;
-
-
-
 
 IDENTIFIER: SIMPLE_IDENTIFIER('.'SIMPLE_IDENTIFIER)+;
 
