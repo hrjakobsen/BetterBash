@@ -4,6 +4,7 @@ import com.d401f17.AST.Nodes.*;
 import com.d401f17.TypeSystem.SymTab;
 import com.d401f17.TypeSystem.SymbolTable;
 import com.d401f17.Visitors.BuildAstVisitor;
+import com.d401f17.Visitors.PrettyPrintASTVisitor;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -34,7 +35,8 @@ public class Main {
             System.out.println(err);
         }
 
-        /*
+
+/*
         PrettyPrintASTVisitor p = new PrettyPrintASTVisitor();
         ast.accept(p);
         PrintWriter writer =
@@ -43,6 +45,7 @@ public class Main {
         writer.print("graph {\n" + p.toString() + "\n}\n");
         writer.flush();
         writer.close();
-        */
+*/
+
     }
 }

@@ -146,6 +146,28 @@ public Void visit(AdditionNode node) {
     }
 
     @Override
+    public Void visit(ArrayAppendNode node) {
+        node.getVariable().accept(this);
+        node.getExpression().accept(this);
+
+        Type varType = node.getVariable().getType();
+        Type expType = node.getExpression().getType();
+
+        if (varType instanceof ArrayType) {
+            ArrayType arrType = (ArrayType)varType;
+            if (arrType.getChildType().getClass().isInstance(expType)) {
+                node.setType(new OkType());
+            } else {
+                node.setType(new ErrorType(node.getLine(), "Expected " + arrType.getChildType() + ", got " + expType));
+            }
+        } else {
+            node.setType(new ErrorType(node.getLine(), "Expected array, got " + varType));
+        }
+
+        return null;
+    }
+
+    @Override
     public Void visit(ArrayBuilderNode node) {
         //Visit array identifier
         node.getArray().accept(this);
