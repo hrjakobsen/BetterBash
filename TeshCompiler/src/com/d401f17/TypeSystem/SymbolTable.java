@@ -15,15 +15,13 @@ public class SymbolTable implements SymTab {
     }
 
     public void openScope() {
+        tables.add(new HashMap<>());
         scopeLevel++;
-        while (tables.size() <= scopeLevel) {
-            tables.add(null);
-        }
-        tables.set(scopeLevel, new HashMap<>());
     }
 
     public void closeScope() {
-        tables.set(scopeLevel--, null);
+        tables.remove(scopeLevel);
+        scopeLevel--;
     }
 
     public void insert(String id, Symbol s) throws VariableAlreadyDeclaredException {
