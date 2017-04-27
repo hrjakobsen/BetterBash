@@ -12,6 +12,7 @@ public class TypeNode extends AST {
     }
 
     public TypeNode(String primitiveType, int lineNum) {
+        primitiveType = primitiveType.toLowerCase();
         this.lineNum = lineNum;
         if (primitiveType.endsWith("[]")) {
             String[] parts = primitiveType.split("\\[");
@@ -21,7 +22,7 @@ public class TypeNode extends AST {
                 this.setType(new ErrorType(lineNum, "Unknown inner type: " + e.getMessage()));
             }
         } else if (primitiveType.substring(0, Math.min(primitiveType.length(), 6)).equals("record")) {
-            this.setType(new RecordType(primitiveType.substring(7, primitiveType.length()), null, null));
+            this.setType(new RecordType(primitiveType.substring(6, primitiveType.length()), null, null));
         } else {
             try {
                 this.setType(typeFromString(primitiveType));

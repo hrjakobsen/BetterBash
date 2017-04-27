@@ -1,0 +1,12 @@
+record page {
+	int number
+}
+
+record book {
+	int year
+	record page pageInBook
+}
+
+record book myBook
+
+myBook.pageInBook.year = 1994
