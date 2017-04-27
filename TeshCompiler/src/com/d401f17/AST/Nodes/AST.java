@@ -13,6 +13,7 @@ public abstract class AST {
     public Type getType() {
         return type;
     }
+
     public void setType(Type t) {
         this.type = t;
     }
