@@ -64,7 +64,7 @@ public class RecordDeclarationTest {
         node.accept(typeCheckVisitor);
         String errMessage = predicateType + ", " + expectedType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
         try {
-            Assert.assertEquals(errMessage, "RECORD PAGE", recordTable.lookup("page").getType().toString());
+            Assert.assertTrue(errMessage, recordTable.lookup("page").getType() instanceof RecordType );
             try {
                 Assert.assertEquals(errMessage, symbolTable.lookup("a").getType(), ((RecordType) recordTable.lookup("page").getType()).getMemberType("a"));
             } catch (MemberNotFoundException m) {
@@ -127,7 +127,7 @@ public class RecordDeclarationTest {
 
         try {
             RecordType bookType = ((RecordType)recordTable.lookup("book").getType());
-            Assert.assertEquals("RECORD BOOK", bookType.toString());
+            Assert.assertTrue(bookType instanceof RecordType );
             try {
                 RecordType pageType = ((RecordType)bookType.getMemberType("page"));
                 Assert.assertEquals(symbolTable.lookup("a").getType(), pageType.getMemberType("a"));

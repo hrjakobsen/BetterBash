@@ -56,7 +56,7 @@ public class ArrayElementAssignmentNodeTest {
                 {new CharType(), new FloatType(), new ErrorType()},
                 {new CharType(), new StringType(), new ErrorType()},
                 {new CharType(), new BoolType(), new ErrorType()},
-                {new CharType(), new CharType(), new ErrorType()},
+                {new CharType(), new CharType(), new OkType()},
                 {new CharType(), new ArrayType(), new ErrorType()},
                 {new CharType(), new ChannelType(), new ErrorType()},
                 {new CharType(), new RecordType(), new ErrorType()},
@@ -143,8 +143,9 @@ public class ArrayElementAssignmentNodeTest {
         TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
 
         SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
-        idNode.setType(leftType);
-        TypeNode typeNode = new TypeNode(leftType.toString().toLowerCase());
+        ArrayType arrayType = new ArrayType(leftType);
+        idNode.setType(arrayType);
+        TypeNode typeNode = new TypeNode(arrayType.toString().toLowerCase());
 
         VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
         varNode.accept(typeCheckVisitor);
@@ -154,10 +155,11 @@ public class ArrayElementAssignmentNodeTest {
         }};
 
         ArrayAccessNode node = new ArrayAccessNode(idNode,c);
+        node.accept(typeCheckVisitor);
         ArrayElementAssignmentNode a = new ArrayElementAssignmentNode(node, new LiteralNode(0, rightType));
         a.accept(typeCheckVisitor);
 
-        String errMessage = leftType + ", " + rightType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
+        String errMessage = arrayType + ", " + rightType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
         Assert.assertEquals(errMessage, expectedType, a.getType());
     }
 }
