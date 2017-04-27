@@ -84,6 +84,7 @@ public class RecordAllNodesTest {
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
+                {new RecordType(), new ChannelType(), new ErrorType()},
                 {new RecordType(), new RecordType(), new OkType()},
                 {new IntType(), new RecordType(), new ErrorType()},
                 {new FloatType(), new RecordType(), new ErrorType()},
@@ -144,20 +145,20 @@ public class RecordAllNodesTest {
         SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
         ArrayType arrayType = new ArrayType(recordType);
         idNode.setType(arrayType);
-        TypeNode typeNode = new TypeNode(arrayType.toString().toLowerCase());
+        TypeNode typeNode = new TypeNode("recordpage");
 
         VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
         varNode.accept(typeCheckVisitor);
 
         ArrayAccessNode node = new ArrayAccessNode(
                 idNode,
-                new ArrayList<ArithmeticExpressionNode>(){{add(new LiteralNode(0, recordType));}}
+                new ArrayList<ArithmeticExpressionNode>(){{add(new LiteralNode(0, new IntType()));}}
         );
 
         node.accept(typeCheckVisitor);
 
         String errMessage = arrayType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
-        Assert.assertEquals(errMessage, new ArrayType(recordType), node.getType());
+        Assert.assertEquals(errMessage, recordType, node.getType());
     }
 
     /*
@@ -198,7 +199,7 @@ public class RecordAllNodesTest {
         a.accept(typeCheckVisitor);
 
         String errMessage = arrayType + ", " + recordType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
-        if (arrayType.getChildType() instanceof RecordType) {
+        if (arrayType.getChildType() instanceof RecordType && rightType instanceof RecordType) {
             Assert.assertEquals(errMessage, new OkType(), a.getType());
         } else {
             Assert.assertEquals(errMessage, expectedType, a.getType());
@@ -256,7 +257,7 @@ public class RecordAllNodesTest {
                 add(new LiteralNode(0, recordType));
             }});
         array.accept(typeCheckVisitor);
-        node = new ForNode(myPage, array,new LiteralNode(0, recordType));
+        node = new ForNode(new SimpleIdentifierNode(""), array, new StatementsNode());
         node.accept(typeCheckVisitor);
         Assert.assertEquals(new OkType(), node.getType());
     }
