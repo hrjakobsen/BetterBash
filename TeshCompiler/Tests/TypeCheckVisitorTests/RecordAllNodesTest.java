@@ -21,12 +21,13 @@ import java.util.Collection;
 @RunWith(value = Parameterized.class)
 public class RecordAllNodesTest {
 
-    private RecordDeclarationNode record;
+    private RecordDeclarationNode recorddcl;
     private SymTab symbolTable;
     private SymTab recordTable;
     private TypeCheckVisitor typeCheckVisitor;
+    private Type recType;
     private Type recordType;
-    private ArithmeticExpressionNode recordInstance;
+    private ArithmeticExpressionNode record;
 
     @Before
     public void SetUp() {
@@ -48,9 +49,9 @@ public class RecordAllNodesTest {
             }
         };
 
-        record = new RecordDeclarationNode("page", variables);
-        record.accept(typeCheckVisitor);
-        recordType = record.getType();
+        recorddcl = new RecordDeclarationNode("page", variables);
+        recorddcl.accept(typeCheckVisitor);
+        recordType = recorddcl.getType();
 
         variables.remove(0);
         SimpleIdentifierNode page = new SimpleIdentifierNode("page");
@@ -62,6 +63,7 @@ public class RecordAllNodesTest {
         VariableDeclarationNode recordInstance = new VariableDeclarationNode(page, new TypeNode(recordType.toString().toLowerCase()));
         recordInstance.setType(recordType);
         recordInstance.accept(typeCheckVisitor);
+        record = recordInstance.getName();
     }
 
     @Rule
@@ -103,12 +105,54 @@ public class RecordAllNodesTest {
 
     @Test
     public void AdditionNode() {
+        AdditionNode node;
+        String errMessage = recordType + ", " + expectedType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
         if (leftType instanceof RecordType) {
-            new AdditionNode(recordInstance, new LiteralNode(0, rightType));
-            AdditionNode node = new AdditionNode(new LiteralNode(1, leftType), new LiteralNode(1, rightType));
-            node.accept(typeCheckVisitor);
-            String errMessage = recordType + ", " + expectedType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
-            Assert.assertEquals(errMessage, expectedType, node.getType());
+            node = new AdditionNode(record, new LiteralNode(0, rightType));
+        } else if (rightType instanceof RecordType) {
+            node = new AdditionNode(new LiteralNode(0, leftType), record);
+        } else {
+            node = null;
+            Assert.fail(errMessage);
         }
+        node.accept(typeCheckVisitor);
+        Assert.assertEquals(errMessage, expectedType, node.getType());
+    }
+
+    @Test
+    public void AndNode() {
+        AndNode node;
+        String errMessage = recordType + ", " + expectedType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
+        if (leftType instanceof RecordType) {
+            node = new AndNode(record, new LiteralNode(0, rightType));
+        } else if (rightType instanceof RecordType) {
+            node = new AndNode(new LiteralNode(0, leftType), record);
+        } else {
+            node = null;
+            Assert.fail(errMessage);
+        }
+        node.accept(typeCheckVisitor);
+        Assert.assertEquals(errMessage, expectedType, node.getType());
+    }
+
+    @Test
+    public void ArrayAccessNode() {
+        SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
+        ArrayType arrayType = new ArrayType(recordType);
+        idNode.setType(arrayType);
+        TypeNode typeNode = new TypeNode(arrayType.toString().toLowerCase());
+
+        VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
+        varNode.accept(typeCheckVisitor);
+
+        ArrayAccessNode node = new ArrayAccessNode(
+                idNode,
+                new ArrayList<ArithmeticExpressionNode>(){{add(new LiteralNode(0, recordType));}}
+        );
+
+        node.accept(typeCheckVisitor);
+
+        String errMessage = arrayType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
+        Assert.assertEquals(errMessage, new ArrayType(recordType), node.getType());
     }
 }
