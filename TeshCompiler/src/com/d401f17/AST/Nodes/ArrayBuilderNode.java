@@ -5,19 +5,19 @@ import com.d401f17.Visitors.ASTVisitor;
 /**
  * Created by mathias on 4/4/17.
  */
-public class ArrayBuilderNode extends StatementNode {
+public class ArrayBuilderNode extends ArithmeticExpressionNode {
     public SimpleIdentifierNode variable;
     public ArithmeticExpressionNode expression;
-    public IdentifierNode array;
+    public ArithmeticExpressionNode array;
 
-    public ArrayBuilderNode(SimpleIdentifierNode variable, IdentifierNode array, ArithmeticExpressionNode expression, int lineNum) {
+    public ArrayBuilderNode(SimpleIdentifierNode variable, ArithmeticExpressionNode array, ArithmeticExpressionNode expression, int lineNum) {
         this.variable = variable;
         this.expression = expression;
         this.array = array;
         this.lineNum = lineNum;
     }
 
-    public ArrayBuilderNode(SimpleIdentifierNode variable, IdentifierNode array, ArithmeticExpressionNode expression) {
+    public ArrayBuilderNode(SimpleIdentifierNode variable, ArithmeticExpressionNode array, ArithmeticExpressionNode expression) {
         this.variable = variable;
         this.expression = expression;
         this.array = array;
@@ -39,11 +39,11 @@ public class ArrayBuilderNode extends StatementNode {
         this.expression = expression;
     }
 
-    public IdentifierNode getArray() {
+    public ArithmeticExpressionNode getArray() {
         return array;
     }
 
-    public void setArray(IdentifierNode array) {
+    public void setArray(ArithmeticExpressionNode array) {
         this.array = array;
     }
 

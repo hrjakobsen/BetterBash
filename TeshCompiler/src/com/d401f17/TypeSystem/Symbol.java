@@ -30,4 +30,6 @@ public class Symbol {
     public void setAddress(int address) {
         this.address = address;
     }
+
+
 }

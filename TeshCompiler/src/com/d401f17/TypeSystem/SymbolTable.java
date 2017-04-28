@@ -2,6 +2,7 @@ package com.d401f17.TypeSystem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Henrik on 05-04-2017.
@@ -12,6 +13,11 @@ public class SymbolTable implements SymTab {
 
     public SymbolTable() {
         tables.add(new HashMap<>());
+    }
+
+    public SymbolTable(SymbolTable old) {
+        tables = (ArrayList<HashMap<String, Symbol>>)old.tables.clone();
+        scopeLevel = old.scopeLevel;
     }
 
     public void openScope() {

@@ -1,0 +1,27 @@
+channel stdio
+string c = "hej"
+
+func str(int a) string {
+    return ""
+}
+func something() string {
+    return c
+}
+func somethingElse() string {
+    return something()
+}
+func Number() int {
+    return 4
+}
+
+func concat(string a, string b) string {
+    return a + b
+}
+
+if true {
+    string c = "nope"
+    stdio << something() + " " + str(Number()) + " " + somethingElse()
+    stdio << concat("a", "b")
+} else {
+
+}

@@ -14,14 +14,11 @@ simpleStatement
     : FORK simpleStatement                                                                                              #forkSimpleStatement
     | identifier ASSIGN expression                                                                                      #assignmentStatement
     | arrayAccess ASSIGN expression                                                                                     #arrayElementAssignmentStatement
-    | newArrayName=identifier ASSIGN SQUARE_BRACKET_START
-          variableName=identifier IN arrayName=identifier PIPE expression SQUARE_BRACKET_END                            #arrayBuilderStatement
     //| identifier CHANNEL_OP SIMPLE_IDENTIFIER                                                                           #readFromChannelStatementToVariable
     | arrayAccess CHANNEL_OP expression                                                                                 #readFromChannelStatementToArray
     | SIMPLE_IDENTIFIER CHANNEL_OP expression                                                                           #channelStatement
     | VAR identifier ASSIGN expression                                                                                  #varStatement
     | functionCall                                                                                                      #functionCallStatement
-    | DOLLAR expression                                                                                                 #backgroundExecuteShellCommandStatement
     | SIMPLE_IDENTIFIER CHANNEL_OP DOLLAR expression                                                                    #executeShellCommandIntoChannelStatement
     | DOLLAR expression                                                                                                 #executeShellCommandStatement
     | variableDeclaration (ASSIGN expression)?                                                                          #variableDeclarationStatement
@@ -93,6 +90,7 @@ finalValue
     | arrayAccess                                                                                                       #arrayAccessExpr
     | PARENTHESIS_START expression PARENTHESIS_END                                                            #parenthesisExpr
     | (SQUARE_BRACKET_START (arithmeticExpression (COMMA arithmeticExpression)*)? SQUARE_BRACKET_END | ARRAY_IDENTIFIER)#arrayConstant
+    | SQUARE_BRACKET_START variableName=identifier IN array=expression PIPE predicate=expression SQUARE_BRACKET_END           #arrayBuilder
     ;
 
 identifier

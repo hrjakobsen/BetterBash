@@ -10,18 +10,31 @@ func str(int f) string {
 func intval(float f) int {
     return 0
 }
-#stdlib end
 
+
+
+#stdlib end
+char c = 'c'
 bool a = "hej" ?= ".*"
 float i = 100 / 9
 float b = 12 + 2.0 + i + 0.5
 int[] arr = [1, 2, 3]
 
+arr::=2
+#stdio << str(arr[3])
 int integer = arr[2] + 3
 
 int[][] arrv2 = [arr, [1, 2, 3]]
+arrv2::=[4, 3, 2]
 
-stdio << str(arrv2[0][2])
+
+int j = 0
+while j < 10 {
+    j += 1
+    #stdio << str(j)
+}
+
+
 
 if 123 == 123 {
     float c = 14 * 0.99
@@ -29,4 +42,26 @@ if 123 == 123 {
     float d = 15 * 2.0
 }
 
-stdio << "The value of b is " + str(b) + " in other words (int words) this is " + str(intval(b))
+#stdio << "The value of b is " + str(b) + " in other words (int words) this is " + str(intval(b))
+
+
+for x in arrv2 {
+    #stdio << str(x[0])
+}
+
+int[] arrChange = [1, 2, 3]
+arrChange[1] = 4
+#stdio << str(arrChange[1])
+
+
+int[] arrBldr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+int[] filtered = [x in arrBldr | x mod 2 == 0]
+
+int[] filtered2 = [x in [x in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] | x > 3] | x mod 2 == 0]
+
+for x in filtered2 {
+    stdio << str(x)
+}
+
+$"echo " + str(1)

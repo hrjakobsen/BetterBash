@@ -151,17 +151,6 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
     }
 
     @Override
-    public AST visitBackgroundExecuteShellCommandStatement(TeshParser.BackgroundExecuteShellCommandStatementContext ctx) {
-        return new ForkNode(
-                new ShellNode(
-                        (ArithmeticExpressionNode) visit(ctx.expression()),
-                        ctx.start.getLine()
-                ),
-                ctx.start.getLine()
-        );
-    }
-
-    @Override
     public AST visitCompoundArrayStatement(TeshParser.CompoundArrayStatementContext ctx) {
         ArrayAccessNode element = (ArrayAccessNode) visit(ctx.arrayAccess());
         ArithmeticExpressionNode expression = (ArithmeticExpressionNode) visit(ctx.expression());
@@ -242,8 +231,10 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
         return node;
     }
 
+
+
     @Override
-    public AST visitArrayBuilderStatement(TeshParser.ArrayBuilderStatementContext ctx) {
+    public AST visitArrayBuilder(TeshParser.ArrayBuilderContext ctx) {
         int lineNum = ctx.start.getLine();
 
         return new ArrayBuilderNode(
@@ -251,8 +242,8 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
                         ctx.variableName.getText(),
                         lineNum
                 ),
-                (IdentifierNode) visit(ctx.arrayName),
-                (ArithmeticExpressionNode) visit(ctx.expression()),
+                (ArithmeticExpressionNode) visit(ctx.array),
+                (ArithmeticExpressionNode) visit(ctx.predicate),
                 lineNum
         );
     }
