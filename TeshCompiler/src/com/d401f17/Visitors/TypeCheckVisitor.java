@@ -651,7 +651,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         for (int i = 0; i < varNodes.size(); i++) {
             varNodes.get(i).accept(this);
             varNames[i] = varNodes.get(i).getName().getName();
-            varTypes[i] = varNodes.get(i).getType();
+            varTypes[i] = varNodes.get(i).getTypeNode().getType();
         }
         st.closeScope();
 
@@ -702,8 +702,6 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
                     traveller.setType(recordType.getMemberType(traveller.getName()));
                 } catch (VariableNotDeclaredException e) {
                     // Pretty sure this can never happen????
-                    //node.setType(new Type(Types.ERROR, node.getLine(), "Record " + e.getMessage()));
-                    //return null;
                 } catch (MemberNotFoundException e) {
                     node.setType(new ErrorType(node.getLine(), e.getMessage()));
                     return null;
@@ -872,6 +870,9 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         if (varType instanceof RecordType) {
             try {
                 varType = rt.lookup(((RecordType)varType).getName()).getType();
+
+                //The typenode of a record doesn't know anything about the members of the record
+                node.getTypeNode().setType(varType);
             } catch (VariableNotDeclaredException e) {
                 node.setType(new ErrorType(node.getLine(), "Record " + e.getMessage()));
                 return null;
@@ -880,7 +881,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         try {
             st.insert(varName, new Symbol(varType, node));
-            node.setType(varType);
+            node.setType(new OkType());
         } catch (VariableAlreadyDeclaredException e) {
             node.setType(new ErrorType(node.getLine(), "Variable " + e.getMessage()));
         }

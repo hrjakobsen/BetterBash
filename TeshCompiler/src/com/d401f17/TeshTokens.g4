@@ -1,6 +1,8 @@
 lexer grammar TeshTokens;
 
-LINE_COMMENT: '#' ~[\r\n]* -> skip ;
+
+LINE_COMMENT: '#' ~[\r\n]* -> skip;
+BLOCK_COMMENT: '#*' .*? '*#' -> skip;
 
 IN: 'in';
 IF: 'if';
@@ -51,26 +53,23 @@ SIMPLE_TYPE: ('int'|'float'|'string'|'char'|'bool'|'binfile'|'textfile'|'channel
 CHAR_LITERAL: '\''.?'\'';
 BOOL_LITERAL: 'true' | 'false';
 
-STRING_LITERAL :  '"' (ESC | ~["\\])* '"' ;
+STRING_LITERAL : '"' (ESC | ~["\\])* '"' ;
 
-fragment ESC :   '\\' (["\\/bfnrt] | UNICODE) ;
-fragment UNICODE : 'u' HEX HEX HEX HEX ;
-fragment HEX : [0-9a-fA-F] ;
+fragment ESC: '\\' (["\\/bfnrt] | UNICODE);
+fragment UNICODE: 'u' HEX HEX HEX HEX;
+fragment HEX: [0-9a-fA-F];
 
 FLOAT_LITERAL
-    :    INT_LITERAL '.' INT_LITERAL EXP?   // 1.35, 1.35E-9, 0.3, -4.5
-    |    INT_LITERAL EXP            // 1e10 -3e4
+    : INT_LITERAL '.' INT_LITERAL EXP? // 1.35, 1.35E-9, 0.3, -4.5
+    | INT_LITERAL EXP // 1e10 -3e4
     ;
 
-INT_LITERAL :   '0' | [1-9] [0-9]* ; // no leading zeros
-fragment EXP :   [Ee] [+\-]? INT_LITERAL ;
+INT_LITERAL: '0' | [1-9] [0-9]*; // no leading zeros
+fragment EXP: [Ee] [+\-]? INT_LITERAL;
 
 IDENTIFIER: SIMPLE_IDENTIFIER('.'SIMPLE_IDENTIFIER)+;
 
-SIMPLE_IDENTIFIER
-    : [a-zA-Z_][a-zA-Z0-9_]*;
+SIMPLE_IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]*;
 
-
-WS :  [ \r\t]+ -> skip ; // skip spaces, tabs, newlines
-
+WS: [ \r\t]+ -> skip; // skip spaces, tabs, newlines
 NEWLINE: [\n];
