@@ -9,7 +9,6 @@ import com.d401f17.Visitors.ASTVisitor;
 public abstract class AST {
     private Type type;
     protected int lineNum;
-    private LiteralNode nodeValue;
 
     public Type getType() {
         return type;
@@ -26,12 +25,6 @@ public abstract class AST {
         this.lineNum = lineNum;
     }
 
-    public LiteralNode getNodeValue() {
-        return nodeValue;
-    }
-    public void setNodeValue(LiteralNode value) {
-        this.nodeValue = value;
-    }
 
-    public abstract void accept(ASTVisitor visitor);
+    public abstract Object accept(ASTVisitor visitor);
 }
