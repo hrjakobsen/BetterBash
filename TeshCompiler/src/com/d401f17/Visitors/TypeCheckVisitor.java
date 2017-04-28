@@ -115,8 +115,6 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         if (arrayType instanceof ArrayType) {
-            arrayType = ((ArrayType)arrayType).getChildType();
-
             for (int i = 0; i < indexNodes.size(); i++) {
                 indexNodes.get(i).accept(this);
                 indexTypes[i] = indexNodes.get(i).getType();
@@ -126,6 +124,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
                     return null;
                 }
             }
+            arrayType = ((ArrayType)arrayType).getInnermostChildType();
         } else {
             node.setType(new ErrorType(node.getLine(), "Expected array, got " + arrayType));
         }
@@ -439,11 +438,6 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             node.setType(new ErrorType(node.getLine(), "Function with signature " + e.getMessage()));
         }
 
-        return null;
-    }
-
-    @Override
-    public Void visit(FunctionIdentifierNode node) {
         return null;
     }
 
