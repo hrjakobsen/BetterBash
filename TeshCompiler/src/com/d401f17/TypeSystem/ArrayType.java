@@ -10,14 +10,6 @@ public class ArrayType extends Type {
         return childType;
     }
 
-    public Type getInnermostChildType() {
-        Type inner = childType;
-        while (inner instanceof ArrayType) {
-            inner = ((ArrayType) inner).getChildType();
-        }
-        return inner;
-    }
-
     public ArrayType() {
         this(new IntType());
     }
@@ -47,6 +39,6 @@ public class ArrayType extends Type {
 
         ArrayType arrayType = (ArrayType) o;
 
-        return childType != null ? childType.equals(arrayType.childType) : arrayType.childType == null;
+        return childType != null ? (childType.equals(arrayType.childType) || childType instanceof OkType || arrayType.childType instanceof OkType) : arrayType.childType == null;
     }
 }

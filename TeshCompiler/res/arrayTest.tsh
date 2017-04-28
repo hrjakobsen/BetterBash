@@ -66,3 +66,10 @@ for i in [1, 2, 3] {
     #Fail line 66
 	string a = i + 10
 }
+
+int[] emptyArray = []
+int[][] emptyDoubleArray = [[1, 2, 3], [], [4, 5]]
+
+emptyArray ::= []
+emptyDoubleArray ::= []
+emptyDoubleArray[0][1][3][2] ::= []

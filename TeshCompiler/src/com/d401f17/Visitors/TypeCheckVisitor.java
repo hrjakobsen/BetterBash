@@ -222,6 +222,12 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     @Override
     public Void visit(ArrayLiteralNode node) {
         List<ArithmeticExpressionNode> expressionNodes = node.getValue();
+
+        if (expressionNodes.isEmpty()) {
+            node.setType(new ArrayType(new OkType()));
+            return null;
+        }
+
         Type[] expressionTypes = new Type[expressionNodes.size()];
         int errorIndex = 0;
         boolean allSameType = true;
