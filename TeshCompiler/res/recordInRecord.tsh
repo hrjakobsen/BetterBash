@@ -1,0 +1,13 @@
+record page {
+	int number
+}
+
+record book {
+    record page Page
+}
+
+record book myBook
+record page myPage
+
+myPage.number = 10
+myBook.Page = myPage
