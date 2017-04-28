@@ -116,6 +116,10 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         if (arrayType instanceof ArrayType) {
             for (int i = 0; i < indexNodes.size(); i++) {
+                if (!(arrayType instanceof ArrayType)) {
+                    node.setType(new ErrorType(node.getLine()," Too many indices. Array has " + i + " but got " + indexNodes.size()));
+                    return null;
+                }
                 indexNodes.get(i).accept(this);
                 indexTypes[i] = indexNodes.get(i).getType();
 
@@ -123,8 +127,9 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
                     node.setType(new ErrorType(node.getLine(), Helper.ordinal(i + 1) + " index expected int, got " + indexTypes[i]));
                     return null;
                 }
+                arrayType = ((ArrayType)arrayType).getChildType();
             }
-            arrayType = ((ArrayType)arrayType).getInnermostChildType();
+
         } else {
             node.setType(new ErrorType(node.getLine(), "Expected array, got " + arrayType));
         }
