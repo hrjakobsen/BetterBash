@@ -214,11 +214,6 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
     }
 
     @Override
-    public LiteralNode visit(FunctionIdentifierNode node) {
-        return null;
-    }
-
-    @Override
     public LiteralNode visit(FunctionNode node) {
         return null;
     }
