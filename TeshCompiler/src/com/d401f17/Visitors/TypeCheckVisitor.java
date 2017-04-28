@@ -116,6 +116,10 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         if (arrayType instanceof ArrayType) {
             for (int i = 0; i < indexNodes.size(); i++) {
+                if (!(arrayType instanceof ArrayType)) {
+                    node.setType(new ErrorType(node.getLine()," Too many indices. Array has " + i + " but got " + indexNodes.size()));
+                    return null;
+                }
                 indexNodes.get(i).accept(this);
                 indexTypes[i] = indexNodes.get(i).getType();
 
@@ -123,8 +127,9 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
                     node.setType(new ErrorType(node.getLine(), Helper.ordinal(i + 1) + " index expected int, got " + indexTypes[i]));
                     return null;
                 }
+                arrayType = ((ArrayType)arrayType).getChildType();
             }
-            arrayType = ((ArrayType)arrayType).getInnermostChildType();
+
         } else {
             node.setType(new ErrorType(node.getLine(), "Expected array, got " + arrayType));
         }
@@ -451,7 +456,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         for (int i = 0; i < arguments.size(); i++) {
             arguments.get(i).accept(this);
-            argumentTypes[i] = arguments.get(i).getTypeNode().getType();
+            argumentTypes[i] = arguments.get(i).getType();
         }
 
         //Visit statements
@@ -646,7 +651,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         for (int i = 0; i < varNodes.size(); i++) {
             varNodes.get(i).accept(this);
             varNames[i] = varNodes.get(i).getName().getName();
-            varTypes[i] = varNodes.get(i).getTypeNode().getType();
+            varTypes[i] = varNodes.get(i).getType();
         }
         st.closeScope();
 
@@ -799,7 +804,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         ArrayList<StatementNode> typedStatementNodes = new ArrayList<>();
         for (StatementNode statementNode : childNodes) {
-            if (!(statementNode.getType() instanceof OkType)) {
+            if (!(statementNode.getType() instanceof OkType) && !(statementNode instanceof VariableDeclarationNode)) {
                 typedStatementNodes.add(statementNode);
             }
         }
@@ -875,7 +880,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         try {
             st.insert(varName, new Symbol(varType, node));
-            node.setType(new OkType());
+            node.setType(varType);
         } catch (VariableAlreadyDeclaredException e) {
             node.setType(new ErrorType(node.getLine(), "Variable " + e.getMessage()));
         }
