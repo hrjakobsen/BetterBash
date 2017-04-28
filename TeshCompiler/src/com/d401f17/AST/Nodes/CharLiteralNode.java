@@ -23,7 +23,7 @@ public class CharLiteralNode extends LiteralNode {
     }
 
     @Override
-    public void accept(ASTVisitor visitor) {
-        visitor.visit(this);
+    public Object accept(ASTVisitor visitor) {
+        return visitor.visit(this);
     }
 }

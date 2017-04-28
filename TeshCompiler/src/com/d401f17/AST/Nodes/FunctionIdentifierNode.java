@@ -31,7 +31,7 @@ public class FunctionIdentifierNode extends IdentifierNode {
     }
 
     @Override
-    public void accept(ASTVisitor visitor) {
-
+    public Object accept(ASTVisitor visitor) {
+        return visitor.visit(this);
     }
 }
