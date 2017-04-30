@@ -462,7 +462,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         for (int i = 0; i < arguments.size(); i++) {
             arguments.get(i).accept(this);
-            argumentTypes[i] = arguments.get(i).getType();
+            argumentTypes[i] = arguments.get(i).getTypeNode().getType();
         }
 
         //Visit statements
