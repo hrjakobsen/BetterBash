@@ -51,7 +51,7 @@ public class RecordType extends Type {
         if (members.containsKey(id)) {
             return members.get(id);
         } else {
-            throw new MemberNotFoundException("Record " + name + " does not contain member " + id);
+            throw new MemberNotFoundException(toString() + " does not contain member " + id);
         }
     }
 }

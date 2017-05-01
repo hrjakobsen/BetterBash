@@ -469,17 +469,18 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             argumentTypes[i] = arguments.get(i).getTypeNode().getType();
         }
 
-        //Visit statements
-        node.getStatements().accept(this);
-
-        //Close scope before there is a chance of returning from method
-        st.closeScope();
-
         //Check if arguments were ok
         if (invalidChildren(argumentTypes)) {
+            //Close scope before leaving
+            st.closeScope();
             node.setType(new IgnoreType());
             return null;
         }
+
+        //Visit statements
+        node.getStatements().accept(this);
+
+        st.closeScope();
 
         String funcName = node.getName().getName();
         Type funcType = node.getTypeNode().getType();
@@ -685,35 +686,49 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     @Override
     public Void visit(RecordIdentifierNode node) {
         RecordType recordType;
+        Type tempType = null;
 
         try {
-            recordType = (RecordType) st.lookup(node.getName()).getType();
+            tempType = st.lookup(node.getName()).getType();
+            recordType = (RecordType)tempType;
             node.setType(recordType);
         } catch (VariableNotDeclaredException e) {
             node.setType(new ErrorType(node.getLine(), "Variable " + e.getMessage()));
             return null;
+        } catch (ClassCastException e) {
+            node.setType(new ErrorType(node.getLine(), "Expected first identifier to be a RECORD, got " + tempType));
+            return null;
         }
 
+        int elementNum = 1;
         IdentifierNode traveller = node.getChild();
         IdentifierNode previous = node;
 
         while (traveller != null) {
+            elementNum++;
             if (traveller instanceof SimpleIdentifierNode) {
                 try {
                     Type terminalType = ((RecordType)previous.getType()).getMemberType(traveller.getName());
                     node.setType(terminalType);
                 } catch (MemberNotFoundException e) {
                     node.setType(new ErrorType(node.getLine(), e.getMessage()));
+                } catch (ClassCastException e) {
+                    node.setType(new ErrorType(node.getLine(), "Expected second to last (" + Helper.ordinal(elementNum - 1) + ") element to be RECORD, was " + previous.getType()));
                 }
                 return null;
             } else {
                 try {
-                    recordType = (RecordType) st.lookup(previous.getName()).getType();
+                    tempType = st.lookup(previous.getName()).getType();
+                    recordType = (RecordType) tempType;
                     traveller.setType(recordType.getMemberType(traveller.getName()));
                 } catch (VariableNotDeclaredException e) {
-                    // Pretty sure this can never happen????
+                    node.setType(new ErrorType(node.getLine(), Helper.ordinal(elementNum - 1) + " element expected to be RECORD, was " + tempType));
+                    return null;
                 } catch (MemberNotFoundException e) {
                     node.setType(new ErrorType(node.getLine(), e.getMessage()));
+                    return null;
+                } catch (ClassCastException e) {
+                    node.setType(new ErrorType(node.getLine(), "Expected " + elementNum + " to be RECORD, was " + tempType));
                     return null;
                 }
 
@@ -884,7 +899,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
                 //The typenode of a record doesn't know anything about the members of the record
                 node.getTypeNode().setType(varType);
             } catch (VariableNotDeclaredException e) {
-                node.setType(new ErrorType(node.getLine(), "Record " + e.getMessage()));
+                node.getTypeNode().setType(new ErrorType(node.getLine(), "Record " + e.getMessage()));
                 return null;
             }
         }
