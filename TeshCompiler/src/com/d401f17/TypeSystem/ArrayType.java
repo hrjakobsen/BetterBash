@@ -39,6 +39,6 @@ public class ArrayType extends Type {
 
         ArrayType arrayType = (ArrayType) o;
 
-        return childType != null ? (childType.equals(arrayType.childType) || childType instanceof OkType || arrayType.childType instanceof OkType) : arrayType.childType == null;
+        return childType != null ? (childType.equals(arrayType.childType) || childType instanceof VoidType || arrayType.childType instanceof VoidType) : arrayType.childType == null;
     }
 }
