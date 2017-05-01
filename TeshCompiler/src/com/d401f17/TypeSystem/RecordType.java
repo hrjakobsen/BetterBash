@@ -21,6 +21,10 @@ public class RecordType extends Type {
         this(name, null, null);
     }
 
+    public HashMap<String, Type> getMembers() {
+        return members;
+    }
+
     public RecordType(String name, String[] memberNames, Type[] memberTypes) {
         this.name = name;
 

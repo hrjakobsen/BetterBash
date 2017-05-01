@@ -17,7 +17,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         //InputStream is = new ByteArrayInputStream( "bool a = (10 * 0.1 == 1 && \"hej\" == (\"hej2\"))".getBytes() );
-        InputStream is = Main.class.getResourceAsStream("/functionTests.tsh");
+        InputStream is = Main.class.getResourceAsStream("/intrecordtesh.tsh");
 
         CharStream input = CharStreams.fromStream(is);
         TeshLexer lexer = new TeshLexer(input);
@@ -28,7 +28,7 @@ public class Main {
 
         AST ast = new BuildAstVisitor().visitCompileUnit(unit);
 
-        SymTab symbolTable = new SymbolTable();
+        SymTab symbolTable = SymbolTable.StandardTable();
         SymTab recordTable = new SymbolTable();
         TypeCheckVisitor typeCheck = new TypeCheckVisitor(symbolTable, recordTable);
         ast.accept(typeCheck);
@@ -39,7 +39,7 @@ public class Main {
 
         if (typeCheck.getErrors().size() > 0) return;
 
-        InterpretVisitor run = new InterpretVisitor();
+        InterpretVisitor run = new InterpretVisitor(recordTable);
 
         ast.accept(run);
 
