@@ -1,0 +1,21 @@
+record page {
+    int pageNr
+    string text
+}
+
+record book {
+    record page frontpage
+    int pages
+}
+
+func printPage(record page a, int b) void {
+    stdio << "page: " + str(a.pageNr) + "\ntext: " + a.text + "     " + str(b)
+}
+
+int a
+
+stdio << str(a)
+
+record book b
+
+printPage(b.frontpage, 3)

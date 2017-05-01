@@ -25,3 +25,29 @@ if true {
 } else {
 
 }
+func range(int from, int to) int[] {
+    int[] values = [from]
+    from += 1
+    while from < to {
+        values::=from
+        from += 1
+    }
+    return values
+}
+
+
+func printIntArr(int[] arr) void {
+    string res ="["
+    for x in arr {
+        res = res + ", " + str(x)
+    }
+    res = res + "]"
+    stdio << res
+}
+
+
+for x in range(0, 100) {
+    stdio << str(x)
+}
+
+printIntArr(range(0,1000))

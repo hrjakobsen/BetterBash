@@ -1,6 +1,7 @@
 package com.d401f17.AST.Nodes;
 
 import com.d401f17.Visitors.ASTVisitor;
+import jdk.nashorn.internal.ir.FunctionCall;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,5 +44,9 @@ public class ProcedureCallNode extends StatementNode {
     @Override
     public Object accept(ASTVisitor visitor) {
         return visitor.visit(this);
+    }
+
+    public FunctionCallNode ToFunction() {
+        return new FunctionCallNode(name, lineNum, getArguments().toArray(new ArithmeticExpressionNode[0]));
     }
 }

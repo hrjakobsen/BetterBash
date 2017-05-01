@@ -11,9 +11,16 @@ func intval(float f) int {
     return 0
 }
 
-
-
 #stdlib end
+func printIntArr(int[] arr) {
+    string res ="["
+    for x in arr {
+        res = res + ", " + str(x)
+    }
+    res = res + "]"
+    stdio << res
+}
+
 char c = 'c'
 bool a = "hej" ?= ".*"
 float i = 100 / 9
