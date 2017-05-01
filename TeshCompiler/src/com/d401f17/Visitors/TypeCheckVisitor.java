@@ -117,7 +117,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         if (arrayType instanceof ArrayType) {
             for (int i = 0; i < indexNodes.size(); i++) {
                 if (!(arrayType instanceof ArrayType)) {
-                    node.setType(new ErrorType(node.getLine()," Too many indices. Array has " + i + " but got " + indexNodes.size()));
+                    node.setType(new ErrorType(node.getLine(),"Array has " + i + " levels, tried to access a " + Helper.ordinal(indexNodes.size()) + " level"));
                     return null;
                 }
                 indexNodes.get(i).accept(this);
@@ -129,7 +129,6 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
                 }
                 arrayType = ((ArrayType)arrayType).getChildType();
             }
-
         } else {
             node.setType(new ErrorType(node.getLine(), "Expected array, got " + arrayType));
         }
@@ -150,6 +149,11 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         Type varType = node.getVariable().getType();
         Type expType = node.getExpression().getType();
+
+        if (invalidChildren(varType, expType)) {
+            node.setType(new IgnoreType());
+            return null;
+        }
 
         if (varType instanceof ArrayType) {
             ArrayType arrType = (ArrayType)varType;
@@ -224,7 +228,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         List<ArithmeticExpressionNode> expressionNodes = node.getValue();
 
         if (expressionNodes.isEmpty()) {
-            node.setType(new ArrayType(new OkType()));
+            node.setType(new ArrayType(new VoidType()));
             return null;
         }
 
