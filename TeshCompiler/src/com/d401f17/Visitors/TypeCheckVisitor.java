@@ -185,6 +185,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         if (arrayType instanceof ArrayType) {
             //Open af new scope for the loop's body and variable
             st.openScope();
+            rt.openScope();
 
             //Get the type of the array
             Type varType = ((ArrayType) arrayType).getChildType();
@@ -205,6 +206,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
             //Close the scope again, before there is any chance of returning from this method
             st.closeScope();
+            rt.closeScope();
 
             if (invalidChildren(arrayType, expressionType)) {
                 node.setType(new IgnoreType());
@@ -362,8 +364,10 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     @Override
     public Void visit(ForkNode node) {
         st.openScope();
+        rt.openScope();
         node.getChild().accept(this);
         st.closeScope();
+        rt.closeScope();
 
         Type childType = node.getChild().getType();
 
@@ -393,6 +397,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         if (arrayType instanceof ArrayType) {
             //Open af new scope for the loop's body and variable
             st.openScope();
+            rt.openScope();
 
             //Get the type of the array
             Type varType = ((ArrayType) arrayType).getChildType();
@@ -413,6 +418,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
             //Close the scope again, before there is any chance of returning from this method
             st.closeScope();
+            rt.closeScope();
 
             if (invalidChildren(arrayType, statementsType)) {
                 node.setType(new IgnoreType());
@@ -459,6 +465,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     @Override
     public Void visit(FunctionNode node) {
         st.openScope();
+        rt.openScope();
 
         //Visit argument nodes
         List<VariableDeclarationNode> arguments = node.getFormalArguments();
@@ -473,7 +480,22 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         if (invalidChildren(argumentTypes)) {
             //Close scope before leaving
             st.closeScope();
+            rt.closeScope();
             node.setType(new IgnoreType());
+            return null;
+        }
+
+        //We need to insert the function into the symbol table before visiting statements to allow for recursion.
+        //If
+        String funcName = node.getName().getName();
+        Type funcType = node.getTypeNode().getType();
+
+        FunctionType function = new FunctionType(funcName, argumentTypes, funcType);
+        try {
+            st.insert(function.getSignature(), new Symbol(function, node));
+            node.setType(funcType);
+        } catch (VariableAlreadyDeclaredException e) {
+            node.setType(new ErrorType(node.getLine(), "Function with signature " + e.getMessage()));
             return null;
         }
 
@@ -481,9 +503,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         node.getStatements().accept(this);
 
         st.closeScope();
-
-        String funcName = node.getName().getName();
-        Type funcType = node.getTypeNode().getType();
+        rt.closeScope();
 
         //Check if statements were ok
         Type statementsType = node.getStatements().getType();
@@ -492,15 +512,9 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             return null;
         }
 
-        //If return is same type as function, create the function and save it in the symbol table
+        //If return is same type as function, set type of the node to the return type of the function
         if (funcType.equals(statementsType) || (funcType instanceof VoidType && statementsType instanceof OkType)) {
-            FunctionType function = new FunctionType(funcName, argumentTypes, funcType);
-            try {
-                st.insert(function.getSignature(), new Symbol(function, node));
-                node.setType(funcType);
-            } catch (VariableAlreadyDeclaredException e) {
-                node.setType(new ErrorType(node.getLine(), "Function with signature " + e.getMessage()));
-            }
+            node.setType(funcType);
         } else {
             node.setType(new ErrorType(node.getLine(), "Return expected " + funcType + ", got " + statementsType));
         }
@@ -525,12 +539,16 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         node.getPredicate().accept(this);
 
         st.openScope();
+        rt.openScope();
         node.getTrueBranch().accept(this);
         st.closeScope();
+        rt.closeScope();
 
         st.openScope();
+        rt.openScope();
         node.getFalseBranch().accept(this);
         st.closeScope();
+        rt.closeScope();
 
         Type predicateType = node.getPredicate().getType();
         Type trueBranchType = node.getTrueBranch().getType();
@@ -659,12 +677,14 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         Type[] varTypes = new Type[varNodes.size()];
 
         st.openScope();
+        rt.openScope();
         for (int i = 0; i < varNodes.size(); i++) {
             varNodes.get(i).accept(this);
             varNames[i] = varNodes.get(i).getName().getName();
             varTypes[i] = varNodes.get(i).getTypeNode().getType();
         }
         st.closeScope();
+        rt.closeScope();
 
         if (invalidChildren(varTypes)) {
             node.setType(new IgnoreType());
@@ -705,7 +725,6 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         IdentifierNode previous = node;
 
         while (traveller != null) {
-            elementNum++;
             if (traveller instanceof SimpleIdentifierNode) {
                 try {
                     Type terminalType = ((RecordType)previous.getType()).getMemberType(traveller.getName());
@@ -713,7 +732,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
                 } catch (MemberNotFoundException e) {
                     node.setType(new ErrorType(node.getLine(), e.getMessage()));
                 } catch (ClassCastException e) {
-                    node.setType(new ErrorType(node.getLine(), "Expected second to last (" + Helper.ordinal(elementNum - 1) + ") element to be RECORD, was " + previous.getType()));
+                    node.setType(new ErrorType(node.getLine(), "Expected " + Helper.ordinal(elementNum) + " element to be RECORD, was " + previous.getType()));
                 }
                 return null;
             } else {
@@ -722,7 +741,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
                     recordType = (RecordType) tempType;
                     traveller.setType(recordType.getMemberType(traveller.getName()));
                 } catch (VariableNotDeclaredException e) {
-                    node.setType(new ErrorType(node.getLine(), Helper.ordinal(elementNum - 1) + " element expected to be RECORD, was " + tempType));
+                    node.setType(new ErrorType(node.getLine(), "Expected " + Helper.ordinal(elementNum) + " element to be RECORD, was " + previous.getType()));
                     return null;
                 } catch (MemberNotFoundException e) {
                     node.setType(new ErrorType(node.getLine(), e.getMessage()));
@@ -734,6 +753,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
                 previous = traveller;
                 traveller = ((RecordIdentifierNode)traveller).getChild();
+                elementNum++;
             }
         }
 
@@ -917,6 +937,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     @Override
     public Void visit(WhileNode node) {
         st.openScope();
+        rt.openScope();
 
         node.getPredicate().accept(this);
         node.getStatements().accept(this);
@@ -925,6 +946,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         Type statementsType = node.getStatements().getType();
 
         st.closeScope();
+        rt.closeScope();
 
         if (invalidChildren(predicateType, statementsType)) {
             node.setType(new IgnoreType());

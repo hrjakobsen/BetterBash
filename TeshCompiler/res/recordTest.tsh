@@ -73,6 +73,7 @@ myBook.year.year = 10
 
 #Fail line 75
 myBook.year.year.year = 10
+myBook.year.year.year.year.year = 10
 
 #Fail line 78
 myBook.myBook.myBook = 10
