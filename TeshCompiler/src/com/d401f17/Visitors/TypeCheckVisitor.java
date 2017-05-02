@@ -464,10 +464,11 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(FunctionNode node) {
-        st.openScope();
-        rt.openScope();
+        //This code is run in a a dummy scope that is discarded immediately. It's sole purpose is to
+        //check what types the arguments have before visiting the body, but we also need their
+        //names to be inserted in the scope used by the body of the function.
+        openScope();
 
-        //Visit argument nodes
         List<VariableDeclarationNode> arguments = node.getFormalArguments();
         Type[] argumentTypes = new Type[arguments.size()];
 
@@ -476,17 +477,10 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             argumentTypes[i] = arguments.get(i).getTypeNode().getType();
         }
 
-        //Check if arguments were ok
-        if (invalidChildren(argumentTypes)) {
-            //Close scope before leaving
-            st.closeScope();
-            rt.closeScope();
-            node.setType(new IgnoreType());
-            return null;
-        }
+        closeScope();
 
-        //We need to insert the function into the symbol table before visiting statements to allow for recursion.
-        //If
+        //We need to insert the function into the scope in which the function is declared, before visiting
+        //the body of the function anything to allow for recursion.
         String funcName = node.getName().getName();
         Type funcType = node.getTypeNode().getType();
 
@@ -499,11 +493,27 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             return null;
         }
 
+        //Open the actual scope
+        openScope();
+
+        //Visit the arguments again
+        for (VariableDeclarationNode argumentNode : arguments) {
+            argumentNode.accept(this);
+        }
+
+        //Check if arguments were ok
+        if (invalidChildren(argumentTypes)) {
+            //Close scope before leaving
+            st.closeScope();
+            rt.closeScope();
+            node.setType(new IgnoreType());
+            return null;
+        }
+
         //Visit statements
         node.getStatements().accept(this);
 
-        st.closeScope();
-        rt.closeScope();
+        closeScope();
 
         //Check if statements were ok
         Type statementsType = node.getStatements().getType();
@@ -1143,5 +1153,15 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         return new BoolType();
+    }
+
+    private void openScope() {
+        st.openScope();
+        rt.openScope();
+    }
+
+    private void closeScope() {
+        st.closeScope();
+        rt.closeScope();
     }
 }
