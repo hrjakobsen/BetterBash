@@ -496,7 +496,7 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
         if (ctx.BOOL_LITERAL() != null) {
             return new BoolLiteralNode(Objects.equals(ctx.BOOL_LITERAL().getText(), "true"));
         } else if (ctx.CHAR_LITERAL() != null) {
-            return new LiteralNode(ctx.CHAR_LITERAL().getText().charAt(1), new CharType());
+            return new CharLiteralNode(ctx.CHAR_LITERAL().getText().charAt(1));
         } else if (ctx.FLOAT_LITERAL() != null) {
             return new FloatLiteralNode(Float.parseFloat(ctx.FLOAT_LITERAL().getText()));
         } else if (ctx.INT_LITERAL() != null) {

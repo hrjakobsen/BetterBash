@@ -3,6 +3,9 @@ package com.d401f17.AST.Nodes;
 import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.ASTVisitor;
 
+import java.util.ArrayDeque;
+import java.util.HashMap;
+
 public class LiteralNode extends ArithmeticExpressionNode {
     private Object value;
 
@@ -41,6 +44,8 @@ public class LiteralNode extends ArithmeticExpressionNode {
             return new CharLiteralNode('0');
         } else if (t instanceof BoolType) {
             return new BoolLiteralNode(false);
+        }else if (t instanceof ChannelType) {
+            return new ChannelLiteralNode(new ArrayDeque<String>());
         }
         else {
             return null;

@@ -14,7 +14,6 @@ import java.util.function.Function;
  * Created by mathias on 4/27/17.
  */
 public class InterpretVisitor extends BaseVisitor<LiteralNode> {
-
     private HashMap<String, Function<LiteralNode[], LiteralNode>> standardFunctions= new HashMap<>();
 
     public InterpretVisitor() {
@@ -32,6 +31,8 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         standardFunctions.put("str(INT)", StandardLib::LiteralToString);
         standardFunctions.put("str(BOOL)", StandardLib::LiteralToString);
         standardFunctions.put("intval(FLOAT)", StandardLib::FloatToInt);
+        standardFunctions.put("print(STRING)", StandardLib::Print);
+        standardFunctions.put("read()", StandardLib::Read);
         this.recTable = recTable;
     }
 
@@ -46,6 +47,10 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
             result = new FloatLiteralNode(ToFloat(a1.getValue()) + ToFloat(a2.getValue()));
         } else if (node.getLeft().getType() instanceof StringType) {
             result = new StringLiteralNode(a1.getValue().toString() + a2.getValue().toString());
+        } else if (node.getLeft().getType() instanceof CharType && node.getRight().getType() instanceof IntType) {
+            int asciiValue = (char)a1.getValue();
+            int value =(int)a2.getValue();
+            result = new CharLiteralNode((char)(asciiValue + value));
         }
 
         //TODO: Add rest of addition node things
@@ -158,7 +163,6 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
     public LiteralNode visit(AssignmentNode node) {
         LiteralNode value = (LiteralNode)node.getExpression().accept(this);
         IdentifierNode variable = node.getVariable();
-
 
         Symbol entry = null;
         try {
@@ -336,7 +340,9 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
 
         FunctionType function = new FunctionType(funcName, argumentTypes, funcType);
         try {
-            symtab.insert(function.getSignature(), new FunctionSymbol(function, node, new SymbolTable(functionTable)));
+            FunctionSymbol f = new FunctionSymbol(function, node, new SymbolTable(functionTable));
+            f.getSymbolTable().insert(function.getSignature(), f);
+            symtab.insert(function.getSignature(), f);
             functionTable.insert(function.getSignature(), new FunctionSymbol(function, node, new SymbolTable(functionTable)));
         } catch (VariableAlreadyDeclaredException e) {
             e.printStackTrace();
@@ -549,6 +555,10 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
 
         if (node.getType() instanceof IntType) {
             return new IntLiteralNode((int)a1.getValue() - (int)a2.getValue());
+        } else if (node.getLeft().getType() instanceof CharType && node.getRight().getType() instanceof IntType) {
+            int asciiValue = (char)a1.getValue();
+            int value =(int)a2.getValue();
+            return new CharLiteralNode((char)(asciiValue - value));
         } else {
             return new FloatLiteralNode(ToFloat(a1.getValue()) - ToFloat(a2.getValue()));
         }
@@ -599,10 +609,34 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
 
     @Override
     public LiteralNode visit(ChannelNode node) {
-        StringLiteralNode output = (StringLiteralNode) node.getExpression().accept(this);
         if (node.getIdentifier().getName().equals("stdio")) {
+            StringLiteralNode output = (StringLiteralNode) node.getExpression().accept(this);
             System.out.println(output.getValue());
+            return null;
         }
+
+        //If we are to write to a channel
+        if (node.getIdentifier().getType() instanceof ChannelType) {
+            StringLiteralNode output = (StringLiteralNode)node.getExpression().accept(this);
+            try {
+                Symbol symbol = symtab.lookup(node.getIdentifier().getName());
+                ChannelLiteralNode c = (ChannelLiteralNode) store.getElement(symbol.getAddress());
+                c.write(output.getValue());
+            } catch (VariableNotDeclaredException e) {
+                e.printStackTrace();
+            }
+        } else {
+            //We now know that the right-hand side is a channel, and the left hand side is a variable with type string
+            ChannelLiteralNode c = (ChannelLiteralNode) node.getExpression().accept(this);
+            Symbol symbol = null;
+            try {
+                symbol = symtab.lookup(node.getIdentifier().getName());
+                store.setElement(symbol.getAddress(), new StringLiteralNode(c.read()));
+            } catch (VariableNotDeclaredException e) {
+                e.printStackTrace();
+            }
+        }
+
         return null;
     }
 
@@ -649,13 +683,5 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
             e.printStackTrace();
         }
         return val;
-    }
-
-    private Symbol getSymbol(SimpleIdentifierNode node) throws VariableNotDeclaredException {
-        return symtab.lookup(node.getName());
-    }
-
-    private Symbol getSymbol(RecordIdentifierNode node) throws VariableNotDeclaredException {
-        return null;
     }
 }

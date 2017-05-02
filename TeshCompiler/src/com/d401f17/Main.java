@@ -17,7 +17,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         //InputStream is = new ByteArrayInputStream( "bool a = (10 * 0.1 == 1 && \"hej\" == (\"hej2\"))".getBytes() );
-        InputStream is = Main.class.getResourceAsStream("/recordTest.tsh");
+        InputStream is = Main.class.getResourceAsStream("/intrecordtesh.tsh");
 
         CharStream input = CharStreams.fromStream(is);
         TeshLexer lexer = new TeshLexer(input);

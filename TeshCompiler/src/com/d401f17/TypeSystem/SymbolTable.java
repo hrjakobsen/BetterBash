@@ -52,11 +52,13 @@ public class SymbolTable implements SymTab {
     public static SymbolTable StandardTable() {
         SymbolTable table = new SymbolTable();
         try {
-            table.insert("str(INT)", new FunctionSymbol(new FunctionType("str(INT)", new Type[] {new IntType()}, new StringType()), null, null));
-            table.insert("str(FLOAT)", new FunctionSymbol(new FunctionType("str(FLOAT)", new Type[] {new FloatType()}, new StringType()), null, null));
-            table.insert("str(CHAR)", new FunctionSymbol(new FunctionType("str(CHAR)", new Type[] {new CharType()}, new StringType()), null, null));
-            table.insert("str(BOOL)", new FunctionSymbol(new FunctionType("str(BOOL)", new Type[] {new BoolType()}, new StringType()), null, null));
-            table.insert("str(STRING)", new FunctionSymbol(new FunctionType("str(STRING)", new Type[] {new StringType()}, new StringType()), null, null));
+            table.insert("str(INT)", new FunctionSymbol(new FunctionType("str", new Type[] {new IntType()}, new StringType()), null, null));
+            table.insert("str(FLOAT)", new FunctionSymbol(new FunctionType("str", new Type[] {new FloatType()}, new StringType()), null, null));
+            table.insert("str(CHAR)", new FunctionSymbol(new FunctionType("str", new Type[] {new CharType()}, new StringType()), null, null));
+            table.insert("str(BOOL)", new FunctionSymbol(new FunctionType("str", new Type[] {new BoolType()}, new StringType()), null, null));
+            table.insert("str(STRING)", new FunctionSymbol(new FunctionType("str", new Type[] {new StringType()}, new StringType()), null, null));
+            table.insert("print(STRING)", new FunctionSymbol(new FunctionType("print", new Type[] {new StringType()}, new VoidType()), null, null));
+            table.insert("read()", new FunctionSymbol(new FunctionType("read", new Type[] {}, new StringType()), null, null));
             table.insert("stdio", new Symbol(new ChannelType(), null));
         } catch (VariableAlreadyDeclaredException e) {
             e.printStackTrace();
