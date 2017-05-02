@@ -420,7 +420,7 @@ public class RecordAllNodesTest {
     }
 
     @Test
-    public void FunctioncallNode() {
+    public void FunctionDeclarationNode() {
         FunctionCallNode node;
         ArrayList<VariableDeclarationNode> array = new ArrayList<VariableDeclarationNode>();
         StatementsNode returnStatement;
@@ -437,14 +437,11 @@ public class RecordAllNodesTest {
             functionNode = new FunctionNode(new SimpleIdentifierNode("funcname"), new TypeNode(rightType.toString()), array, returnStatement);
         }
         functionNode.accept(typeCheckVisitor);
-        node = new FunctionCallNode(functionNode.getName());
-
-        node.accept(typeCheckVisitor);
 
         if (leftType instanceof RecordType && rightType instanceof RecordType) {
-            Assert.assertEquals(recordType, node.getType());
+            Assert.assertEquals(recordType, functionNode.getType());
         } else {
-            Assert.assertEquals(expectedType, node.getType());
+            Assert.assertEquals(expectedType, functionNode.getType());
         }
     }
 
