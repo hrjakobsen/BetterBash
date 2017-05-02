@@ -143,4 +143,41 @@ public class FunctionCallNodeTest {
         String errMessage = formalParameterType + "," + actualParameterType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
         Assert.assertEquals(errMessage, expectedType, node.getType());
     }
+
+    @Test
+    //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
+    public void FunctionCallNode_RecursionTest() {
+        SymTab symbolTable = new SymbolTable();
+        SymTab recordTable = new SymbolTable();
+        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
+
+        SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
+        idNode.setType(formalParameterType);
+        TypeNode typeNode = new TypeNode(formalParameterType.toString().toLowerCase());
+
+        VariableDeclarationNode varNode = new VariableDeclarationNode(idNode, typeNode);
+        varNode.accept(typeCheckVisitor);
+
+        ArrayList<VariableDeclarationNode> array = new ArrayList<VariableDeclarationNode>() {
+            {
+                add(varNode);
+            }
+        };
+
+        /*
+            func funcname(formalParameterType a) formalParameterType {
+                return funcname(actualParameterType)
+            }
+            funcname(actualParameterType)
+         */
+        StatementsNode returnStatement = new StatementsNode(new ReturnNode(new FunctionCallNode(new SimpleIdentifierNode("funcname"), new LiteralNode(0, actualParameterType))));
+        FunctionNode functionNode = new FunctionNode(new SimpleIdentifierNode("funcname"), new TypeNode(formalParameterType.toString().toLowerCase()), array, returnStatement);
+        functionNode.accept(typeCheckVisitor);
+
+        FunctionCallNode node = new FunctionCallNode(functionNode.getName(), new LiteralNode(0, actualParameterType));
+        node.accept(typeCheckVisitor);
+
+        String errMessage = formalParameterType + "," + actualParameterType + " => " + expectedType + "\n" + typeCheckVisitor.getAllErrors();
+        Assert.assertEquals(errMessage, expectedType, node.getType());
+    }
 }
