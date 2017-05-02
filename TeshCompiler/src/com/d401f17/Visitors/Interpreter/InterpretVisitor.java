@@ -343,7 +343,6 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
             FunctionSymbol f = new FunctionSymbol(function, node, new SymbolTable(functionTable));
             f.getSymbolTable().insert(function.getSignature(), f);
             symtab.insert(function.getSignature(), f);
-            functionTable.insert(function.getSignature(), new FunctionSymbol(function, node, new SymbolTable(functionTable)));
         } catch (VariableAlreadyDeclaredException e) {
             e.printStackTrace();
         }
