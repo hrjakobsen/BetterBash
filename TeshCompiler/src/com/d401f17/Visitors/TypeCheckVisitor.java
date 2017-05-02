@@ -184,8 +184,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         if (arrayType instanceof ArrayType) {
             //Open af new scope for the loop's body and variable
-            st.openScope();
-            rt.openScope();
+            openScope();
 
             //Get the type of the array
             Type varType = ((ArrayType) arrayType).getChildType();
@@ -205,8 +204,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             Type expressionType = node.getExpression().getType();
 
             //Close the scope again, before there is any chance of returning from this method
-            st.closeScope();
-            rt.closeScope();
+            closeScope();
 
             if (invalidChildren(arrayType, expressionType)) {
                 node.setType(new IgnoreType());
@@ -363,11 +361,9 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ForkNode node) {
-        st.openScope();
-        rt.openScope();
+        openScope();
         node.getChild().accept(this);
-        st.closeScope();
-        rt.closeScope();
+        closeScope();
 
         Type childType = node.getChild().getType();
 
@@ -396,8 +392,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         if (arrayType instanceof ArrayType) {
             //Open af new scope for the loop's body and variable
-            st.openScope();
-            rt.openScope();
+            openScope();
 
             //Get the type of the array
             Type varType = ((ArrayType) arrayType).getChildType();
@@ -417,8 +412,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             Type statementsType = node.getStatements().getType();
 
             //Close the scope again, before there is any chance of returning from this method
-            st.closeScope();
-            rt.closeScope();
+            closeScope();
 
             if (invalidChildren(arrayType, statementsType)) {
                 node.setType(new IgnoreType());
@@ -548,17 +542,13 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     public Void visit(IfNode node) {
         node.getPredicate().accept(this);
 
-        st.openScope();
-        rt.openScope();
+        openScope();
         node.getTrueBranch().accept(this);
-        st.closeScope();
-        rt.closeScope();
+        closeScope();
 
-        st.openScope();
-        rt.openScope();
+        openScope();
         node.getFalseBranch().accept(this);
-        st.closeScope();
-        rt.closeScope();
+        closeScope();
 
         Type predicateType = node.getPredicate().getType();
         Type trueBranchType = node.getTrueBranch().getType();
@@ -686,15 +676,13 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         String[] varNames = new String[varNodes.size()];
         Type[] varTypes = new Type[varNodes.size()];
 
-        st.openScope();
-        rt.openScope();
+        openScope();
         for (int i = 0; i < varNodes.size(); i++) {
             varNodes.get(i).accept(this);
             varNames[i] = varNodes.get(i).getName().getName();
             varTypes[i] = varNodes.get(i).getTypeNode().getType();
         }
-        st.closeScope();
-        rt.closeScope();
+        closeScope();
 
         if (invalidChildren(varTypes)) {
             node.setType(new IgnoreType());
@@ -946,8 +934,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(WhileNode node) {
-        st.openScope();
-        rt.openScope();
+        openScope();
 
         node.getPredicate().accept(this);
         node.getStatements().accept(this);
@@ -955,8 +942,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         Type predicateType = node.getPredicate().getType();
         Type statementsType = node.getStatements().getType();
 
-        st.closeScope();
-        rt.closeScope();
+        closeScope();
 
         if (invalidChildren(predicateType, statementsType)) {
             node.setType(new IgnoreType());
