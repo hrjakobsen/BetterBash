@@ -4,6 +4,7 @@ import com.d401f17.AST.Nodes.*;
 import com.d401f17.TeshBaseVisitor;
 import com.d401f17.TeshParser;
 import com.d401f17.TypeSystem.CharType;
+import com.d401f17.TypeSystem.ErrorType;
 import com.d401f17.TypeSystem.IntType;
 import com.d401f17.TypeSystem.VoidType;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -11,6 +12,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * Created by mathias on 3/15/17.
@@ -493,16 +495,26 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
 
     @Override
     public AST visitConstant(TeshParser.ConstantContext ctx) {
+        int lineNum = ctx.start.getLine();
+
         if (ctx.BOOL_LITERAL() != null) {
-            return new BoolLiteralNode(Objects.equals(ctx.BOOL_LITERAL().getText(), "true"));
+            return new BoolLiteralNode(Objects.equals(ctx.BOOL_LITERAL().getText(), "true"), lineNum);
         } else if (ctx.CHAR_LITERAL() != null) {
-            return new CharLiteralNode(ctx.CHAR_LITERAL().getText().charAt(1));
+            return new CharLiteralNode(ctx.CHAR_LITERAL().getText().charAt(1), lineNum);
         } else if (ctx.FLOAT_LITERAL() != null) {
-            return new FloatLiteralNode(Float.parseFloat(ctx.FLOAT_LITERAL().getText()));
+            try {
+                return new FloatLiteralNode(Double.parseDouble(ctx.FLOAT_LITERAL().getText()), lineNum);
+            } catch (NumberFormatException e) {
+                return new LiteralNode(null, new ErrorType(lineNum, "Value " + ctx.FLOAT_LITERAL().getText() + " could not be parsed as a float"), lineNum);
+            }
         } else if (ctx.INT_LITERAL() != null) {
-            return new IntLiteralNode(Integer.parseInt(ctx.INT_LITERAL().getText()));
+            try {
+                return new IntLiteralNode(Long.parseLong(ctx.INT_LITERAL().getText()), lineNum);
+            } catch (NumberFormatException e) {
+                return new LiteralNode(null, new ErrorType(lineNum, "Value " + ctx.INT_LITERAL().getText() + " too large to fit in an int"), lineNum);
+            }
         } else {
-            return new StringLiteralNode(ctx.STRING_LITERAL().getText().substring(1, ctx.STRING_LITERAL().getText().length() - 1));
+            return new StringLiteralNode(ctx.STRING_LITERAL().getText().substring(1, ctx.STRING_LITERAL().getText().length() - 1), lineNum);
         }
     }
 

@@ -8,19 +8,19 @@ import com.d401f17.Visitors.ASTVisitor;
  */
 public class IntLiteralNode extends LiteralNode {
 
-    public IntLiteralNode(int value) {
+    public IntLiteralNode(long value) {
         super(value, new IntType());
     }
 
-    public IntLiteralNode(int value, int lineNumber) {
+    public IntLiteralNode(long value, int lineNumber) {
         super(value, new IntType(), lineNumber);
     }
 
-    public Integer getValue() {
-        return (Integer)super.getValue();
+    public Long getValue() {
+        return (Long)super.getValue();
     }
 
-    public void setValue(Integer value) {
+    public void setValue(Long value) {
         super.setValue(value);
     }
 

@@ -42,14 +42,14 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         LiteralNode a2 = (LiteralNode) node.getRight().accept(this);
         LiteralNode result = null;
         if (node.getType() instanceof IntType) {
-            result = new IntLiteralNode((int)a1.getValue() + (int)a2.getValue());
+            result = new IntLiteralNode(Math.addExact((long)a1.getValue(), (long)a2.getValue()));
         } else if (node.getType() instanceof FloatType) {
             result = new FloatLiteralNode(ToFloat(a1.getValue()) + ToFloat(a2.getValue()));
         } else if (node.getLeft().getType() instanceof StringType) {
             result = new StringLiteralNode(a1.getValue().toString() + a2.getValue().toString());
         } else if (node.getLeft().getType() instanceof CharType && node.getRight().getType() instanceof IntType) {
             int asciiValue = (char)a1.getValue();
-            int value =(int)a2.getValue();
+            long value = (long)a2.getValue();
             result = new CharLiteralNode((char)(asciiValue + value));
         }
 
@@ -94,11 +94,11 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
             for (int i = 0, indicesSize = indices.size(); i < indicesSize - 1; i++) {
                 ArithmeticExpressionNode child = indices.get(i);
                 IntLiteralNode index = (IntLiteralNode)child.accept(this);
-                values = (ValueArrayLiteralNode)values.getValue().get(index.getValue());
+                values = (ValueArrayLiteralNode)values.getValue().get(index.getValue().intValue());
             }
             ArithmeticExpressionNode last = node.getIndices().get(node.getIndices().size() - 1);
             IntLiteralNode index = (IntLiteralNode)last.accept(this);
-            return values.getValue().get(index.getValue());
+            return values.getValue().get(index.getValue().intValue());
         } catch (VariableNotDeclaredException e) {
             e.printStackTrace();
         }
@@ -148,11 +148,11 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
             for (int i = 0, indicesSize = indices.size(); i < indicesSize - 1; i++) {
                 ArithmeticExpressionNode child = indices.get(i);
                 IntLiteralNode index = (IntLiteralNode)child.accept(this);
-                values = (ValueArrayLiteralNode)values.getValue().get(index.getValue());
+                values = (ValueArrayLiteralNode)values.getValue().get(index.getValue().intValue());
             }
             ArithmeticExpressionNode last = elementNode.getIndices().get(elementNode.getIndices().size() - 1);
             IntLiteralNode index = (IntLiteralNode)last.accept(this);
-            values.getValue().set(index.getValue(), (LiteralNode) node.expression.accept(this));
+            values.getValue().set(index.getValue().intValue(), (LiteralNode) node.expression.accept(this));
         } catch (VariableNotDeclaredException e) {
             e.printStackTrace();
         }
@@ -164,7 +164,7 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         LiteralNode value = (LiteralNode)node.getExpression().accept(this);
         IdentifierNode variable = node.getVariable();
 
-        Symbol entry = null;
+        Symbol entry;
         try {
             if (variable instanceof SimpleIdentifierNode) {
                 entry = symtab.lookup(variable.getName());
@@ -234,7 +234,7 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         LiteralNode a1 = (LiteralNode)node.getLeft().accept(this);
         LiteralNode a2 = (LiteralNode)node.getRight().accept(this);
         if (node.getType() instanceof IntType) {
-            return new IntLiteralNode((int)a1.getValue() / (int)a2.getValue());
+            return new IntLiteralNode((long)a1.getValue() / (long)a2.getValue());
         } else {
             return new FloatLiteralNode(ToFloat(a2.getValue()) / ToFloat(a2.getValue()));
         }
@@ -424,7 +424,7 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         LiteralNode a1 = (LiteralNode) node.getLeft().accept(this);
         LiteralNode a2 = (LiteralNode) node.getRight().accept(this);
 
-        return new IntLiteralNode((int)a1.getValue() % (int)a2.getValue());
+        return new IntLiteralNode((long)a1.getValue() % (long)a2.getValue());
     }
 
     @Override
@@ -432,7 +432,7 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         LiteralNode a1 = (LiteralNode) node.getLeft().accept(this);
         LiteralNode a2 = (LiteralNode) node.getRight().accept(this);
         if (node.getType() instanceof IntType) {
-            return new IntLiteralNode((int)a1.getValue() * (int)a2.getValue());
+            return new IntLiteralNode(Math.multiplyExact((long)a1.getValue(), (long)a2.getValue()));
         } else {
             return new FloatLiteralNode(ToFloat(a1.getValue()) * ToFloat(a2.getValue()));
         }
@@ -504,7 +504,7 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
             StringLiteralNode command = (StringLiteralNode)node.getCommand().accept(this);
             BufferedReader b = runCommand(command.getValue());
 
-            String line = "";
+            String line;
 
             while ((line = b.readLine()) != null) {
                 System.out.println(line);
@@ -553,10 +553,10 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         LiteralNode a2 = (LiteralNode) node.getRight().accept(this);
 
         if (node.getType() instanceof IntType) {
-            return new IntLiteralNode((int)a1.getValue() - (int)a2.getValue());
+            return new IntLiteralNode(Math.subtractExact((long)a1.getValue(), (long)a2.getValue()));
         } else if (node.getLeft().getType() instanceof CharType && node.getRight().getType() instanceof IntType) {
             int asciiValue = (char)a1.getValue();
-            int value =(int)a2.getValue();
+            long value = (long)a2.getValue();
             return new CharLiteralNode((char)(asciiValue - value));
         } else {
             return new FloatLiteralNode(ToFloat(a1.getValue()) - ToFloat(a2.getValue()));
@@ -584,8 +584,6 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         }
         return null;
     }
-
-
 
     @Override
     public LiteralNode visit(WhileNode node) {
@@ -647,10 +645,10 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         return new BoolLiteralNode(text.matches(pattern));
     }
 
-    private static Float ToFloat(Object o) {
-        if (o instanceof Float) return (Float) o;
-        if (o instanceof Integer) {
-            return ((Integer) o).floatValue();
+    private static Double ToFloat(Object o) {
+        if (o instanceof Float || o instanceof Double) return (Double) o;
+        if (o instanceof Integer || o instanceof Long) {
+            return ((Long) o).doubleValue();
         }
         return null;
     }

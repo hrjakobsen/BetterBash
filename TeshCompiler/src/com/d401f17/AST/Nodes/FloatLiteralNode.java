@@ -8,19 +8,19 @@ import com.d401f17.TypeSystem.FloatType;
  */
 public class FloatLiteralNode extends LiteralNode {
 
-    public FloatLiteralNode(float value) {
+    public FloatLiteralNode(double value) {
         super(value, new FloatType());
     }
 
-    public FloatLiteralNode(float value, int lineNumber) {
+    public FloatLiteralNode(double value, int lineNumber) {
         super(value, new FloatType(), lineNumber);
     }
 
-    public Float getValue() {
-        return (Float)super.getValue();
+    public Double getValue() {
+        return (Double)super.getValue();
     }
 
-    public void setValue(Float value) {
+    public void setValue(Double value) {
         super.setValue(value);
     }
 
