@@ -447,7 +447,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         FunctionType func = new FunctionType(node.getName().getName(), argumentTypes, new VoidType());
 
         try {
-            Type functionType = st.lookup(func.getSignature()).getType();
+            Type functionType = st.lookup(func.toString()).getType();
             node.setType(((FunctionType)functionType).getReturnType());
         } catch (VariableNotDeclaredException e) {
             node.setType(new ErrorType(node.getLine(), "Function with signature " + e.getMessage()));
@@ -458,48 +458,21 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(FunctionNode node) {
-        //This code is run in a a dummy scope that is discarded immediately. It's sole purpose is to
-        //check what types the arguments have before visiting the body, but we also need their
-        //names to be inserted in the scope used by the body of the function.
-        openScope();
-
         List<VariableDeclarationNode> arguments = node.getFormalArguments();
         Type[] argumentTypes = new Type[arguments.size()];
 
-        for (int i = 0; i < arguments.size(); i++) {
-            arguments.get(i).accept(this);
-            argumentTypes[i] = arguments.get(i).getTypeNode().getType();
-        }
-
-        closeScope();
-
-        //We need to insert the function into the scope in which the function is declared, before visiting
-        //the body of the function anything to allow for recursion.
-        String funcName = node.getName().getName();
-        Type funcType = node.getTypeNode().getType();
-
-        FunctionType function = new FunctionType(funcName, argumentTypes, funcType);
-        try {
-            st.insert(function.getSignature(), new Symbol(function, node));
-            node.setType(funcType);
-        } catch (VariableAlreadyDeclaredException e) {
-            node.setType(new ErrorType(node.getLine(), "Function with signature " + e.getMessage()));
-            return null;
-        }
-
-        //Open the actual scope
         openScope();
 
-        //Visit the arguments again
-        for (VariableDeclarationNode argumentNode : arguments) {
-            argumentNode.accept(this);
+        //Visit the arguments
+        for (int i = 0; i < arguments.size(); i++) {
+            arguments.get(i).accept(this);
+            argumentTypes[i] = arguments.get(i).getType();
         }
 
         //Check if arguments were ok
         if (invalidChildren(argumentTypes)) {
             //Close scope before leaving
-            st.closeScope();
-            rt.closeScope();
+            closeScope();
             node.setType(new IgnoreType());
             return null;
         }
@@ -512,9 +485,12 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         //Check if statements were ok
         Type statementsType = node.getStatements().getType();
         if (invalidChildren(statementsType)) {
-            node.setType(new ErrorType(node.getLine(), "Failed to declare function " + funcName));
+            node.setType(new IgnoreType());
+            //node.setType(new ErrorType(node.getLine(), "Failed to declare function " + funcName));
             return null;
         }
+
+        Type funcType = node.getTypeNode().getType();
 
         //If return is same type as function, set type of the node to the return type of the function
         if (funcType.equals(statementsType) || (funcType instanceof VoidType && statementsType instanceof OkType)) {
@@ -690,11 +666,10 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         String recordName = node.getName();
-        Type record = new RecordType(recordName, varNames, varTypes);
         try {
-            rt.insert(recordName, new Symbol(record, node));
+            ((RecordType)rt.lookup(recordName).getType()).setMembers(varNames, varTypes);
             node.setType(new OkType());
-        } catch (VariableAlreadyDeclaredException e) {
+        } catch (VariableNotDeclaredException e) {
             node.setType(new ErrorType(node.getLine(), "Record " + e.getMessage()));
         }
 
@@ -917,6 +892,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
                 //The typenode of a record doesn't know anything about the members of the record
                 node.getTypeNode().setType(varType);
             } catch (VariableNotDeclaredException e) {
+                node.setType(new ErrorType(node.getLine(), "Record " + e.getMessage()));
                 node.getTypeNode().setType(new ErrorType(node.getLine(), "Record " + e.getMessage()));
                 return null;
             }
@@ -978,11 +954,18 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         FunctionType func = new FunctionType(node.getName().getName(), argumentTypes, new VoidType());
 
         try {
-            st.lookup(func.getSignature());
+            st.lookup(func.toString());
             node.setType(new OkType());
         } catch (VariableNotDeclaredException e) {
             node.setType(new ErrorType(node.getLine(), "Function with signature " + e.getMessage()));
         }
+
+        return null;
+    }
+
+    @Override
+    public Void visit(ProgramNode node) {
+        node.getChild().accept(this);
 
         return null;
     }

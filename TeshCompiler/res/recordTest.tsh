@@ -1,14 +1,20 @@
+record book {
+    int year
+    string author
+    record page pageInBook
+    record pagetwo secondPageInBook
+}
+
 record page {
 	int number
 	string numberAsString
 }
 
-record book {
-    int year
-    string author
-    record page pageInBook
+record pagetwo {
+    int n
+    record page pageInPageInBook
 }
-
+#*
 record book myBook
 record book myBook2
 record book myBook3
@@ -73,9 +79,11 @@ myBook.year.year = 10
 
 #Fail line 75
 myBook.year.year.year = 10
-myBook.year.year.year.year.year = 10
 
 #Fail line 78
+myBook.year.year.year.year.year = 10
+
+#Fail line 81
 myBook.myBook.myBook = 10
 
 #Ok
@@ -83,13 +91,14 @@ func myRecFunc(record BoOk internalBook) int {
 	return 10 * internalBook.year
 }
 
-#Fail line 86
 func myRecFunc2(record book internalBook) int {
-	#Fail line 88
+	#Fail line 90
 	return 10 * internalBook.number
 }
-
-#Fail line 92
+*#
+#Fail line 94
 func myRecFunc3(record notARecord noBook) int {
 	return 10 * noBook.year
 }
+
+record noRecord notWorking

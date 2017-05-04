@@ -50,6 +50,7 @@ public interface ASTVisitor<T> {
     T visit(VariableDeclarationNode node);
     T visit(WhileNode node);
     T visit(ProcedureCallNode node);
+    T visit(ProgramNode node);
     T visit(ChannelNode node);
     T visit(PatternMatchNode node);
 }

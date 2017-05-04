@@ -31,12 +31,12 @@ public class FunctionType extends Type {
 
     @Override
     public String toString() {
-        return returnType.toString();
-    }
-
-    public String getSignature() {
         return signature;
     }
+
+    /*public String getSignature() {
+        return signature;
+    } */
 
     private void createSignature(String name, Type[] formalArguments) {
         int numArgs = formalArguments.length;

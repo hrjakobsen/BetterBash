@@ -4,6 +4,7 @@ import com.d401f17.AST.Nodes.*;
 import com.d401f17.TypeSystem.SymTab;
 import com.d401f17.TypeSystem.SymbolTable;
 import com.d401f17.Visitors.BuildAstVisitor;
+import com.d401f17.Visitors.DeclarationCheckVisitor;
 import com.d401f17.Visitors.Interpreter.InterpretVisitor;
 import com.d401f17.Visitors.PrettyPrintASTVisitor;
 import com.d401f17.Visitors.TypeCheckVisitor;
@@ -16,6 +17,7 @@ import java.io.*;
 public class Main {
 
     public static void main(String[] args) throws Exception {
+/*
         if (args.length == 0) {
             System.err.println("You must specify an input file");
             return;
@@ -76,6 +78,11 @@ public class Main {
                         System.err.println("Please specify an output file for the dot-file");
                         return;
                     }
+                    if (!args[3].endsWith(".dot")) {
+                        System.err.println("Please output file must be a dot-file");
+                        return;
+                    }
+
                     PrettyPrintASTVisitor p = new PrettyPrintASTVisitor();
                     ast.accept(p);
 
@@ -91,10 +98,10 @@ public class Main {
 
             }
         }
+*/
 
-/*
         //InputStream is = new ByteArrayInputStream( "bool a = (10 * 0.1 == 1 && \"hej\" == (\"hej2\"))".getBytes() );
-        InputStream is = Main.class.getResourceAsStream("/intrecordtesh.tsh");
+        InputStream is = Main.class.getResourceAsStream("/recordTest.tsh");
 
         CharStream input = CharStreams.fromStream(is);
         TeshLexer lexer = new TeshLexer(input);
@@ -107,6 +114,10 @@ public class Main {
 
         SymTab symbolTable = SymbolTable.StandardTable();
         SymTab recordTable = new SymbolTable();
+
+        DeclarationCheckVisitor declarationCheck = new DeclarationCheckVisitor(symbolTable, recordTable);
+        ast.accept(declarationCheck);
+
         TypeCheckVisitor typeCheck = new TypeCheckVisitor(symbolTable, recordTable);
         ast.accept(typeCheck);
 
@@ -114,21 +125,11 @@ public class Main {
             System.err.println(err);
         }
 
+        /*
         if (typeCheck.getErrors().size() > 0) return;
 
         InterpretVisitor run = new InterpretVisitor(recordTable);
-
         ast.accept(run);
-
-        PrettyPrintASTVisitor p = new PrettyPrintASTVisitor();
-        ast.accept(p);
-        PrintWriter writer =
-                new PrintWriter(
-                        new File("/home/mathias/Desktop/output.dot"));
-        writer.print("graph {\n" + p.toString() + "\n}\n");
-        writer.flush();
-        writer.close();
-*/
-
+        */
     }
 }

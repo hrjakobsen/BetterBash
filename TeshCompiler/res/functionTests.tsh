@@ -1,15 +1,32 @@
-channel stdio
 string c = "hej"
 
-func str(int a) string {
-    return ""
+func functionA() string {
+    string a = functionB(10)
+    return a
 }
+
+func functionB(int fromA) int {
+    return fromA * 15
+}
+
+func containerA() string {
+    int a = 10
+
+    return internalFunc(str(a)) + "Hej!"
+
+    func internalFunc(string d) string {
+        return d + c + something() + a
+    }
+}
+
 func something() string {
     return c
 }
+
 func somethingElse() string {
     return something()
 }
+
 func Number() int {
     return 4
 }
@@ -20,8 +37,8 @@ func concat(string a, string b) string {
 
 if true {
     string c = "nope"
-    stdio << something() + " " + str(Number()) + " " + somethingElse()
-    stdio << concat("a", "b")
+    print(something() + " " + str(Number()) + " " + somethingElse())
+    print(concat("a", "b"))
 } else {
 
 }
@@ -42,12 +59,12 @@ func printIntArr(int[] arr) void {
         res = res + ", " + str(x)
     }
     res = res + "]"
-    stdio << res
+    print(res)
 }
 
 
 for x in range(0, 100) {
-    stdio << str(x)
+    print(str(x))
 }
 
 printIntArr(range(0,1000))

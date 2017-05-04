@@ -293,9 +293,9 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         }
 
         FunctionType func = new FunctionType(node.getName().getName(), argumentTypes, new VoidType());
-        String signature = func.getSignature();
+        String signature = func.toString();
         if (standardFunctions.containsKey(signature)) {
-            Function stdFunc = standardFunctions.get(func.getSignature());
+            Function stdFunc = standardFunctions.get(func.toString());
             return ((LiteralNode) stdFunc.apply(argResults));
         }
 
@@ -341,8 +341,8 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         FunctionType function = new FunctionType(funcName, argumentTypes, funcType);
         try {
             FunctionSymbol f = new FunctionSymbol(function, node, new SymbolTable(functionTable));
-            f.getSymbolTable().insert(function.getSignature(), f);
-            symtab.insert(function.getSignature(), f);
+            f.getSymbolTable().insert(function.toString(), f);
+            symtab.insert(function.toString(), f);
         } catch (VariableAlreadyDeclaredException e) {
             e.printStackTrace();
         }
@@ -602,6 +602,12 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
     @Override
     public LiteralNode visit(ProcedureCallNode node) {
         return (LiteralNode)node.ToFunction().accept(this);
+    }
+
+    @Override
+    public LiteralNode visit(ProgramNode node) {
+        node.getChild().accept(this);
+        return null;
     }
 
     @Override

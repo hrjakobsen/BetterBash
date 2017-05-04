@@ -59,7 +59,6 @@ public class SymbolTable implements SymTab {
             table.insert("str(STRING)", new FunctionSymbol(new FunctionType("str", new Type[] {new StringType()}, new StringType()), null, null));
             table.insert("print(STRING)", new FunctionSymbol(new FunctionType("print", new Type[] {new StringType()}, new VoidType()), null, null));
             table.insert("read()", new FunctionSymbol(new FunctionType("read", new Type[] {}, new StringType()), null, null));
-            table.insert("stdio", new Symbol(new ChannelType(), null));
         } catch (VariableAlreadyDeclaredException e) {
             e.printStackTrace();
         }
