@@ -14,7 +14,7 @@ record pagetwo {
     int n
     record page pageInPageInBook
 }
-#*
+
 record book myBook
 record book myBook2
 record book myBook3
@@ -95,10 +95,11 @@ func myRecFunc2(record book internalBook) int {
 	#Fail line 90
 	return 10 * internalBook.number
 }
-*#
-#Fail line 94
+
+#Fail line 100
 func myRecFunc3(record notARecord noBook) int {
 	return 10 * noBook.year
 }
 
+#Fail line 105
 record noRecord notWorking

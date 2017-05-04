@@ -45,6 +45,10 @@ public class Main {
         TeshParser parser = new TeshParser(tokenStream);
         TeshParser.CompileUnitContext unit = parser.compileUnit();
 
+        if (parser.getNumberOfSyntaxErrors() > 0) {
+            return;
+        }
+
         //Build Abstract Syntax Tree (AST)
         TeshBaseVisitor<AST> ASTBuilder = new BuildAstVisitor();
         AST ast = ASTBuilder.visitCompileUnit(unit);
@@ -52,6 +56,10 @@ public class Main {
         //Create a symbol table containing standard library of functions
         SymTab symbolTable = SymbolTable.StandardTable();
         SymTab recordTable = new SymbolTable();
+
+        //Check record and function declarations
+        DeclarationCheckVisitor declarationCheck = new DeclarationCheckVisitor(symbolTable, recordTable);
+        ast.accept(declarationCheck);
 
         //Type check the AST
         TypeCheckVisitor typeCheck = new TypeCheckVisitor(symbolTable, recordTable);
@@ -109,6 +117,10 @@ public class Main {
         TeshParser parser = new TeshParser(tokenStream);
 
         TeshParser.CompileUnitContext unit = parser.compileUnit();
+
+        if (parser.getNumberOfSyntaxErrors() > 0) {
+            return;
+        }
 
         AST ast = new BuildAstVisitor().visitCompileUnit(unit);
 
