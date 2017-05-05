@@ -4,9 +4,6 @@ import com.d401f17.AST.Nodes.*;
 import com.d401f17.TypeSystem.SymTab;
 import com.d401f17.TypeSystem.SymbolTable;
 import com.d401f17.Visitors.BuildAstVisitor;
-import com.d401f17.Visitors.DeclarationCheckVisitor;
-import com.d401f17.Visitors.Interpreter.InterpretVisitor;
-import com.d401f17.Visitors.PrettyPrintASTVisitor;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -57,10 +54,6 @@ public class Main {
         SymTab symbolTable = SymbolTable.StandardTable();
         SymTab recordTable = new SymbolTable();
 
-        //Check record and function declarations
-        DeclarationCheckVisitor declarationCheck = new DeclarationCheckVisitor(symbolTable, recordTable);
-        ast.accept(declarationCheck);
-
         //Type check the AST
         TypeCheckVisitor typeCheck = new TypeCheckVisitor(symbolTable, recordTable);
         ast.accept(typeCheck);
@@ -109,7 +102,7 @@ public class Main {
 */
 
         //InputStream is = new ByteArrayInputStream( "bool a = (10 * 0.1 == 1 && \"hej\" == (\"hej2\"))".getBytes() );
-        InputStream is = Main.class.getResourceAsStream("/recordTest.tsh");
+        InputStream is = Main.class.getResourceAsStream("/functionTests.tsh");
 
         CharStream input = CharStreams.fromStream(is);
         TeshLexer lexer = new TeshLexer(input);
@@ -126,9 +119,6 @@ public class Main {
 
         SymTab symbolTable = SymbolTable.StandardTable();
         SymTab recordTable = new SymbolTable();
-
-        DeclarationCheckVisitor declarationCheck = new DeclarationCheckVisitor(symbolTable, recordTable);
-        ast.accept(declarationCheck);
 
         TypeCheckVisitor typeCheck = new TypeCheckVisitor(symbolTable, recordTable);
         ast.accept(typeCheck);

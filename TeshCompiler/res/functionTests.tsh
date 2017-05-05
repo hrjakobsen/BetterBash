@@ -20,7 +20,7 @@ func containerA() string {
 }
 
 func something() string {
-    return c
+    return c + internalFunc("a")
 }
 
 func somethingElse() string {
