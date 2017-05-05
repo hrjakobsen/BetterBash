@@ -1,18 +1,13 @@
-record book {
-    int year
-    string author
-    record page pageInBook
-    record pagetwo secondPageInBook
-}
-
 record page {
 	int number
 	string numberAsString
 }
 
-record pagetwo {
-    int n
-    record page pageInPageInBook
+record book {
+    int year
+    string author
+    record page pageInBook
+    record pageTwo secondPageInBook
 }
 
 record book myBook

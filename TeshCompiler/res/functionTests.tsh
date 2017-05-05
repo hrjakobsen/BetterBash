@@ -1,26 +1,7 @@
 string c = "hej"
 
-func functionA() string {
-    string a = functionB(10)
-    return a
-}
-
-func functionB(int fromA) int {
-    return fromA * 15
-}
-
-func containerA() string {
-    int a = 10
-
-    return internalFunc(str(a)) + "Hej!"
-
-    func internalFunc(string d) string {
-        return d + c + something() + a
-    }
-}
-
 func something() string {
-    return c + internalFunc("a")
+    return c
 }
 
 func somethingElse() string {
