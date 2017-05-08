@@ -3,8 +3,9 @@ package com.d401f17.Visitors.CodeGenerator;
 import com.d401f17.AST.Nodes.*;
 import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.BaseVisitor;
-import jdk.internal.org.objectweb.asm.ClassWriter;
-import jdk.internal.org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -15,6 +16,7 @@ import static org.objectweb.asm.Opcodes.*;
 /**
  * Created by mathias on 5/5/17.
  */
+@SuppressWarnings("Duplicates")
 public class ByteCodeVisitor extends BaseVisitor<Void> {
     private ClassWriter cw = new ClassWriter(0);
 
@@ -55,6 +57,9 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(AndNode node) {
+        node.getLeft().accept(this);
+        node.getRight().accept(this);
+        mv.visitInsn(IMUL);
         return null;
     }
 
@@ -159,7 +164,11 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(EqualNode node) {
-
+        if (node.getLeft().getType() instanceof FloatType) {
+            compareNumerals(IF_ICMPEQ, node);
+        } else {
+            //TODO: COMPARE STRINGS OR CHARS
+        }
         return null;
     }
 
@@ -185,42 +194,66 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(GreaterThanNode node) {
+        compareNumerals(IF_ICMPGT, node);
+        return null;
+    }
+
+    private void compareNumerals(int cmp, InfixExpressionNode node) {
         node.getLeft().accept(this);
         node.getRight().accept(this);
+        Label True = new Label();
+        Label False = new Label();
+        Label done = new Label();
         if (node.getLeft().getType() instanceof IntType && node.getRight().getType() instanceof IntType) {
             mv.visitInsn(LCMP);
         } else {
-            mv.visitInsn(DCMPL);
+            mv.visitInsn(DCMPG);
         }
-        return null;
+        mv.visitInsn(ICONST_0);
+        mv.visitJumpInsn(cmp, True);
+        mv.visitLabel(False);
+        mv.visitInsn(ICONST_0);
+        mv.visitJumpInsn(GOTO, done);
+        mv.visitLabel(True);
+        mv.visitInsn(ICONST_1);
+        mv.visitLabel(done);
+
     }
 
     @Override
     public Void visit(GreaterThanOrEqualNode node) {
+        compareNumerals(IF_ICMPGE, node);
         return null;
     }
 
     @Override
     public Void visit(IfNode node) {
+        node.getPredicate().accept(this);
+        Label falseBranch = new Label();
+        Label exit = new Label();
+        mv.visitInsn(ICONST_1);
+        mv.visitJumpInsn(IF_ICMPNE, falseBranch);
+        symtab.openScope();
+        node.getTrueBranch().accept(this);
+        symtab.closeScope();
+        mv.visitJumpInsn(GOTO, exit);
+        mv.visitLabel(falseBranch);
+        symtab.openScope();
+        node.getFalseBranch().accept(this);
+        symtab.closeScope();
+        mv.visitLabel(exit);
         return null;
     }
 
     @Override
     public Void visit(LessThanNode node) {
-        node.getLeft().accept(this);
-        node.getRight().accept(this);
-        if (node.getLeft().getType() instanceof IntType && node.getRight().getType() instanceof IntType) {
-            mv.visitInsn(LCMP);
-        } else {
-            mv.visitInsn(DCMPL);
-        }
-        mv.visitInsn(ICONST_0);
-        mv.visitInsn(IMUL);
+        compareNumerals(IF_ICMPLT, node);
         return null;
     }
 
     @Override
     public Void visit(LessThanOrEqualNode node) {
+        compareNumerals(IF_ICMPLE, node);
         return null;
     }
 
@@ -258,6 +291,21 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(OrNode node) {
+        node.getLeft().accept(this);
+        node.getRight().accept(this);
+
+        mv.visitInsn(IADD);
+        mv.visitInsn(ICONST_0);
+        Label l = new Label();
+        Label l2 = new Label();
+        mv.visitJumpInsn(IF_ICMPEQ, l);
+        mv.visitInsn(ICONST_1);
+        mv.visitJumpInsn(GOTO, l2);
+        mv.visitLabel(l);
+        mv.visitInsn(POP);
+        mv.visitInsn(ICONST_0);
+        mv.visitLabel(l2);
+
         return null;
     }
 
@@ -273,6 +321,20 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ReturnNode node) {
+        if (node.getExpresssion() != null) {
+            node.getExpresssion().accept(this);
+        }
+
+        if (node.getType() instanceof VoidType) {
+            mv.visitInsn(RETURN);
+        } else if (node.getType() instanceof IntType) {
+            mv.visitInsn(LRETURN);
+        } else if (node.getType() instanceof FloatType) {
+            mv.visitInsn(DRETURN);
+        } else {
+            mv.visitInsn(ARETURN);
+        }
+
         return null;
     }
 
@@ -336,6 +398,17 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(WhileNode node) {
+        Label head = new Label();
+        Label body = new Label();
+        mv.visitJumpInsn(GOTO, head);
+        mv.visitLabel(body);
+        symtab.openScope();
+        node.getStatements().accept(this);
+        symtab.closeScope();
+        mv.visitLabel(head);
+        node.getPredicate().accept(this);
+        mv.visitInsn(ICONST_1);
+        mv.visitJumpInsn(IF_ICMPEQ, body);
         return null;
     }
 
@@ -385,7 +458,10 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
             mv.visitVarInsn(ASTORE, address);
         } else if (type instanceof CharType) {
             mv.visitVarInsn(ASTORE, address);
-        } else {
+        } else if (type instanceof BoolType) {
+            mv.visitVarInsn(ISTORE, address);
+        }
+        else {
             System.out.println("something was not right");
         }
         return address;
@@ -400,6 +476,8 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
             mv.visitVarInsn(ALOAD, address);
         } else if (type instanceof CharType) {
             mv.visitVarInsn(ALOAD, address);
+        } else if (type instanceof BoolType) {
+            mv.visitVarInsn(ILOAD, address);
         } else {
             System.out.println("something was not right");
         }
