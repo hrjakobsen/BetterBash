@@ -27,7 +27,7 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
                 programStatements.getChildren().add((StatementNode) child);
             }
         }
-        return new ProgramNode(programStatements);
+        return programStatements;
     }
 
     @Override

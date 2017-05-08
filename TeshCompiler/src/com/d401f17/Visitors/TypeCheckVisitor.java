@@ -989,13 +989,6 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(ProgramNode node) {
-        node.getChild().accept(this);
-
-        return null;
-    }
-
-    @Override
     public Void visit(ChannelNode node) {
         node.getIdentifier().accept(this);
         node.getExpression().accept(this);

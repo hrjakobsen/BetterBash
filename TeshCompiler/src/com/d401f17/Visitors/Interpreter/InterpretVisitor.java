@@ -605,12 +605,6 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
     }
 
     @Override
-    public LiteralNode visit(ProgramNode node) {
-        node.getChild().accept(this);
-        return null;
-    }
-
-    @Override
     public LiteralNode visit(ChannelNode node) {
         if (node.getIdentifier().getName().equals("stdio")) {
             StringLiteralNode output = (StringLiteralNode) node.getExpression().accept(this);
