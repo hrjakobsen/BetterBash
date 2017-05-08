@@ -29,5 +29,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="org.ow2.asm:asm-commons:5.2" level="project" />
   </component>
 </module>

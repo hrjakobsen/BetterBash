@@ -4,8 +4,7 @@ import com.d401f17.AST.Nodes.*;
 import com.d401f17.TypeSystem.SymTab;
 import com.d401f17.TypeSystem.SymbolTable;
 import com.d401f17.Visitors.BuildAstVisitor;
-import com.d401f17.Visitors.Interpreter.InterpretVisitor;
-import com.d401f17.Visitors.PrettyPrintASTVisitor;
+import com.d401f17.Visitors.CodeGenerator.ByteCodeVisitor;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -17,7 +16,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         //InputStream is = new ByteArrayInputStream( "bool a = (10 * 0.1 == 1 && \"hej\" == (\"hej2\"))".getBytes() );
-        InputStream is = Main.class.getResourceAsStream("/intrecordtesh.tsh");
+        InputStream is = Main.class.getResourceAsStream("/bytecodetest.tsh");
 
         CharStream input = CharStreams.fromStream(is);
         TeshLexer lexer = new TeshLexer(input);
@@ -39,9 +38,20 @@ public class Main {
 
         if (typeCheck.getErrors().size() > 0) return;
 
-        InterpretVisitor run = new InterpretVisitor(recordTable);
+        //InterpretVisitor run = new InterpretVisitor(recordTable);
+        ByteCodeVisitor run = new ByteCodeVisitor();
 
         ast.accept(run);
+
+        try {
+            FileOutputStream fos = new FileOutputStream("/home/mathias/Desktop/classThing.class");
+            fos.write(run.getBytes());
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 /*
         PrettyPrintASTVisitor p = new PrettyPrintASTVisitor();
