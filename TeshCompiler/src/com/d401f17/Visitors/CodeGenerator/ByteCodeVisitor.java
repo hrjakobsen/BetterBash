@@ -286,6 +286,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(NotEqualNode node) {
+        compareNumerals(IF_ICMPNE, node);
         return null;
     }
 
