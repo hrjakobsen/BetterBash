@@ -74,11 +74,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         if (leftType instanceof FloatType && rightType instanceof FloatType) {
-            if (leftType instanceof IntType && rightType instanceof IntType) {
-                node.setType(leftType); //Int + Int = Int
-            } else {
-                node.setType(new FloatType()); //Int + Float = Float, Float + Int = Float, Float + Float = Float
-            }
+            node.setType(new FloatType()); //Int + Float = Float, Float + Int = Float, Float + Float = Float
             return null;
         } else {
             if (leftType instanceof CharType || rightType instanceof CharType) {
