@@ -8,23 +8,29 @@ import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.function.*;
 
 import static org.objectweb.asm.Opcodes.*;
 
 /**
  * Created by mathias on 5/5/17.
  */
-@SuppressWarnings("Duplicates")
+
 public class ByteCodeVisitor extends BaseVisitor<Void> {
-    private ClassWriter cw = new ClassWriter(0);
+    private HashMap<String, Consumer<MethodVisitor>> standardFunctions= new HashMap<>();
+    private ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES + ClassWriter.COMPUTE_MAXS);
     MethodVisitor mv = null;
     private SymbolTable symtab = new SymbolTable();
     private int nextAddress = 0;
     public ByteCodeVisitor() throws IOException {
+        standardFunctions.put("print(STRING)", BytecodeStandardLib::Print);
+        standardFunctions.put("str(FLOAT)", BytecodeStandardLib::FloatToString);
+        standardFunctions.put("str(INT)", BytecodeStandardLib::IntToString);
+        standardFunctions.put("str(CHAR)", BytecodeStandardLib::CharToString);
         //Set up main class
         cw.visit(52,
                 ACC_PUBLIC + ACC_STATIC,
@@ -151,7 +157,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(CharLiteralNode node) {
-        mv.visitLdcInsn(node.getValue());
+        mv.visitLdcInsn(Character.toString(node.getValue()));
         return null;
     }
 
@@ -176,7 +182,10 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
     public Void visit(EqualNode node) {
         if (node.getLeft().getType() instanceof FloatType) {
             compareNumerals(IF_ICMPEQ, node);
-        } else {
+        } else if (node.getLeft().getType() instanceof StringType){
+            node.getLeft().accept(this);
+            node.getRight().accept(this);
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "equals", "(Ljava/lang/Object;)Z", false);
             //TODO: COMPARE STRINGS OR CHARS
         }
         return null;
@@ -194,13 +203,97 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(FunctionCallNode node) {
+        List<ArithmeticExpressionNode> arguments = node.getArguments();
+        Type[] argumentTypes = new Type[arguments.size()];
+        for (int i = 0; i < arguments.size(); i++) {
+            argumentTypes[i] = arguments.get(i).getType();
+        }
+
+        String funcName = node.getName().getName();
+        Type funcType = node.getType();
+
+        FunctionType function = new FunctionType(funcName, argumentTypes, funcType);
+
+        for (ArithmeticExpressionNode argument : node.getArguments()) {
+            argument.accept(this);
+        }
+
+        if (standardFunctions.containsKey(function.getSignature())) {
+            standardFunctions.get(function.getSignature()).accept(mv);
+            return null;
+        }
+
+        mv.visitMethodInsn(INVOKESTATIC, "Main", node.getName().getName(), byteCodeSignature(function), false);
         return null;
     }
 
     @Override
     public Void visit(FunctionNode node) {
+        //Create the snapshot of the symbol table at declaration time
+        SymbolTable functionTable = new SymbolTable(symtab);
+        functionTable.openScope();
+
+        //Use the snapshot in the function to determine bindings
+        SymbolTable old = symtab;
+        symtab = functionTable;
+
+        //Find all argument types to build functiontype
+        List<VariableDeclarationNode> arguments = node.getFormalArguments();
+        Type[] argumentTypes = new Type[arguments.size()];
+        for (int i = 0; i < arguments.size(); i++) {
+            argumentTypes[i] = arguments.get(i).getTypeNode().getType();
+        }
+
+        String funcName = node.getName().getName();
+        Type funcType = node.getType();
+
+        FunctionType function = new FunctionType(funcName, argumentTypes, funcType);
+
+        try {
+            //Insert the function into the old symbol table
+            FunctionSymbol f = new FunctionSymbol(function, node, new SymbolTable(functionTable));
+            f.getSymbolTable().insert(function.getSignature(), f);
+            old.insert(function.getSignature(), f);
+        } catch (VariableAlreadyDeclaredException e) {
+            e.printStackTrace();
+        }
+
+        //Create the new static method
+        MethodVisitor oldMv = mv;
+        mv = cw.visitMethod(ACC_PRIVATE + ACC_STATIC, node.getName().getName(), byteCodeSignature(function), null, null);
+
+        //Allocate space in the heap for arguments
+        for (int i = 0; i < arguments.size(); i++) {
+            VariableDeclarationNode argument = arguments.get(i);
+            argument.accept(this);
+            try {
+                Symbol s = symtab.lookup(argument.getName().getName());
+                mv.visitVarInsn(LLOAD, i);
+                emitStore(argument.getTypeNode().getType(), s.getAddress());
+            } catch (VariableNotDeclaredException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        //Generate the method itself
+        node.getStatements().accept(this);
+
+        //if void it may not have a specific return statement. Now add it
+        if (node.getType() instanceof VoidType) {
+            mv.visitInsn(RETURN);
+        }
+
+        mv.visitMaxs(0,0);
+
+        mv.visitEnd();
+
+        //Restore the symbol table and method to main
+        symtab = old;
+        mv = oldMv;
         return null;
     }
+
 
     @Override
     public Void visit(GreaterThanNode node) {
@@ -430,6 +523,8 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ProcedureCallNode node) {
+        node.ToFunction().accept(this);
+        //mv.visitInsn(POP);
         return null;
     }
 
@@ -472,9 +567,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         } else if (type instanceof FloatType) {
             mv.visitMethodInsn(INVOKESTATIC, "java/lang/Double", "valueOf", "(D)Ljava/lang/Double;", false);
         } else if (type instanceof StringType) {
-            mv.visitVarInsn(ASTORE, address);
         } else if (type instanceof CharType) {
-            mv.visitVarInsn(ASTORE, address);
         } else if (type instanceof BoolType) {
             mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
         }
@@ -501,15 +594,53 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
         //Unboxing of primitive types
         if (type instanceof IntType) {
+            mv.visitTypeInsn(CHECKCAST, "java/lang/Long");
             mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Long", "longValue", "()J", false);
         } else if (type instanceof FloatType) {
             mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Double", "doubleValue", "()D", false);
         } else if (type instanceof StringType) {
+            mv.visitTypeInsn(CHECKCAST, "java/lang/String");
         } else if (type instanceof CharType) {
         } else if (type instanceof BoolType) {
             mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I", false);
         } else {
             System.out.println("something was not right");
         }
+    }
+
+    private String byteCodeSignature(FunctionType typeNode) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("(");
+
+        for (Type variable : typeNode.getArgs()) {
+            sb.append(toJavaType(variable));
+        }
+
+        sb.append(")");
+        Type t = typeNode.getReturnType();
+        sb.append(toJavaType(typeNode.getReturnType()));
+        return sb.toString();
+    }
+
+    private String toJavaType(Type variable) {
+        if (variable instanceof IntType) {
+            return "J";
+        } else if (variable instanceof FloatType) {
+            return "D";
+        } else if (variable instanceof StringType || variable instanceof CharType) {
+            return "Ljava/lang/String;";
+        } else if (variable instanceof VoidType || variable instanceof OkType) {
+            return "V";
+        } else {
+            System.out.println("Invalid type conversion");
+        }
+        return null;
+    }
+
+    public void End() {
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(0,0);
+        mv.visitEnd();
+        cw.visitEnd();
     }
 }

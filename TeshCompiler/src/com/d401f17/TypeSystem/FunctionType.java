@@ -51,4 +51,12 @@ public class FunctionType extends Type {
         sb.append(")");
         signature = sb.toString();
     }
+
+    public List<Type> getArgs() {
+        return args;
+    }
+
+    public void setArgs(List<Type> args) {
+        this.args = args;
+    }
 }
