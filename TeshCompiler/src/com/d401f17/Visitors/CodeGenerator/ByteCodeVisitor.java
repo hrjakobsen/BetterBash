@@ -4,13 +4,14 @@ import com.d401f17.AST.Nodes.*;
 import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.BaseVisitor;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
 
 import static org.objectweb.asm.Opcodes.*;
 
@@ -20,7 +21,6 @@ import static org.objectweb.asm.Opcodes.*;
 @SuppressWarnings("Duplicates")
 public class ByteCodeVisitor extends BaseVisitor<Void> {
     private ClassWriter cw = new ClassWriter(0);
-
     MethodVisitor mv = null;
     private SymbolTable symtab = new SymbolTable();
     private int nextAddress = 0;
@@ -32,6 +32,10 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
                 null,
                 "java/lang/Object",
                 null);
+        //Create the heap field
+        FieldVisitor fv = cw.visitField(ACC_PRIVATE + ACC_STATIC, "heap","Ljava/util/ArrayList;", "Ljava/util/ArrayList<Ljava/lang/Object;>;", null);
+        fv.visitEnd();
+
         //Set up main method
         mv = cw.visitMethod(
                 ACC_PUBLIC + ACC_STATIC,
@@ -40,6 +44,11 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
                 null,
                 null
         );
+        //Initialize heap
+        mv.visitTypeInsn(NEW, "java/util/ArrayList");
+        mv.visitInsn(DUP);
+        mv.visitMethodInsn(INVOKESPECIAL, "java/util/ArrayList", "<init>", "()V", false);
+        mv.visitFieldInsn(PUTSTATIC, "Main", "heap", "Ljava/util/ArrayList;");
     }
 
     @Override
@@ -320,6 +329,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(NotEqualNode node) {
+        compareNumerals(IF_ICMPNE, node);
         return null;
     }
 
@@ -421,9 +431,14 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
     @Override
     public Void visit(VariableDeclarationNode node) {
         Symbol s = new Symbol(node.getTypeNode().getType(), null);
-        s.setAddress(getWideVariable());
+        s.setAddress(getVariable());
         try {
             symtab.insert(node.getName().getName(), s);
+            //Add a new element to the heap
+            mv.visitFieldInsn(GETSTATIC, "Main", "heap", "Ljava/util/ArrayList;");
+            mv.visitInsn(ACONST_NULL);
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "add", "(Ljava/lang/Object;)Z", false);
+            mv.visitInsn(POP);
         } catch (VariableAlreadyDeclaredException e) {
             e.printStackTrace();
         }
@@ -484,42 +499,51 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
     }
 
     private int emitStore(Type type, int address) {
+        //Boxing of primitive types
         if (type instanceof IntType) {
-            mv.visitVarInsn(LSTORE, address);
+            mv.visitMethodInsn(INVOKESTATIC, "java/lang/Long", "valueOf", "(J)Ljava/lang/Long;", false);
         } else if (type instanceof FloatType) {
-            mv.visitVarInsn(DSTORE, address);
+            mv.visitMethodInsn(INVOKESTATIC, "java/lang/Double", "valueOf", "(D)Ljava/lang/Double;", false);
         } else if (type instanceof StringType) {
             mv.visitVarInsn(ASTORE, address);
         } else if (type instanceof CharType) {
             mv.visitVarInsn(ASTORE, address);
         } else if (type instanceof BoolType) {
-            mv.visitVarInsn(ISTORE, address);
-        } else if (type instanceof ArrayType) {
-            mv.visitVarInsn(ASTORE, address);
+            mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
         }
         else {
             System.out.println("something was not right");
         }
+
+        //set the element in the heap
+        mv.visitFieldInsn(GETSTATIC, "Main", "heap", "Ljava/util/ArrayList;");
+        mv.visitInsn(SWAP);
+        mv.visitLdcInsn(address);
+        mv.visitInsn(SWAP);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "set", "(ILjava/lang/Object;)Ljava/lang/Object;", false);
+        mv.visitInsn(POP);
+
         return address;
     }
 
-    private int emitLoad(Type type, int address) {
+    private void emitLoad(Type type, int address) {
+        //Load the element from the heap
+        mv.visitFieldInsn(GETSTATIC, "Main", "heap", "Ljava/util/ArrayList;");
+        mv.visitLdcInsn(address);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "get", "(I)Ljava/lang/Object;", false);
+
+        //Unboxing of primitive types
         if (type instanceof IntType) {
-            mv.visitVarInsn(LLOAD, address);
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Long", "longValue", "()J", false);
         } else if (type instanceof FloatType) {
-            mv.visitVarInsn(DLOAD, address);
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Double", "doubleValue", "()D", false);
         } else if (type instanceof StringType) {
-            mv.visitVarInsn(ALOAD, address);
         } else if (type instanceof CharType) {
-            mv.visitVarInsn(ALOAD, address);
         } else if (type instanceof BoolType) {
-            mv.visitVarInsn(ILOAD, address);
-        } else if (type instanceof ArrayType) {
-            mv.visitVarInsn(ALOAD, address);
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I", false);
         } else {
             System.out.println("something was not right");
         }
-        return address;
     }
 
     private void emitNop() {
