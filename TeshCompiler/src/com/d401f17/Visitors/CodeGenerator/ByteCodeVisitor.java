@@ -86,21 +86,54 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ArrayAccessNode node) {
+        try {
+            Symbol s = symtab.lookup(node.getArray().getName());
+            this.emitLoad(s.getType(), s.getAddress()); //Push arrayref
+            for (ArithmeticExpressionNode n : node.getIndices()) {
+                n.accept(this); //Push index
+                mv.visitInsn(AALOAD); //arrayref, index -> value; load value from array
+            }
+        } catch (VariableNotDeclaredException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 
     @Override
     public Void visit(ArrayBuilderNode node) {
+        //this.emitNop();
+        
         return null;
     }
 
     @Override
     public Void visit(ArrayLiteralNode node) {
+
+
         return null;
     }
 
     @Override
     public Void visit(ArrayElementAssignmentNode node) {
+        try {
+            int elements = node.getElement().getIndices().size()-1; //Number of elements in the array index
+            Symbol s = symtab.lookup(node.getElement().getArray().getName());
+            this.emitLoad(s.getType(), s.getAddress());    //push arrayref
+
+            //Iterate through all reference but the last one
+            //This will leave a ref to the inner array on the stack
+            for (int i = 0; i < elements; i++) {
+                node.getElement().getIndices().get(i).accept(this); //Push index
+                mv.visitInsn(AALOAD); //arrayref, index -> value; load value from array
+            }
+
+            node.getElement().getIndices().get(elements).accept(this); //Push index
+            node.getExpression().accept(this); //Push value to assign
+            mv.visitInsn(AASTORE);//arrayref, index, value -> ; store value in array
+        } catch (VariableNotDeclaredException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -639,8 +672,12 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     public void End() {
         mv.visitInsn(RETURN);
-        mv.visitMaxs(0,0);
+        mv.visitMaxs(0, 0);
         mv.visitEnd();
         cw.visitEnd();
+    }
+
+    private void emitNop() {
+        mv.visitInsn(NOP);
     }
 }
