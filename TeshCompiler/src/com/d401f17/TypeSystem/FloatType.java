@@ -11,4 +11,9 @@ public class FloatType extends Type {
     public String toString() {
         return "FLOAT";
     }
+
+    @Override
+    public String getJavaType() {
+        return "D";
+    }
 }

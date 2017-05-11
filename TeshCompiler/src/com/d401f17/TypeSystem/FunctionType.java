@@ -59,4 +59,9 @@ public class FunctionType extends Type {
     public void setArgs(List<Type> args) {
         this.args = args;
     }
+
+    @Override
+    public String getJavaType() {
+        return null;
+    }
 }

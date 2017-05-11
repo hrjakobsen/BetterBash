@@ -11,4 +11,9 @@ public class BinFileType extends Type {
     public String toString() {
         return "BINFILE";
     }
+
+    @Override
+    public String getJavaType() {
+        return null;
+    }
 }

@@ -41,4 +41,9 @@ public class ArrayType extends Type {
 
         return childType != null ? (childType.equals(arrayType.childType) || childType instanceof VoidType || arrayType.childType instanceof VoidType) : arrayType.childType == null;
     }
+
+    @Override
+    public String getJavaType() {
+        return "Ljava/util/ArrayList<" + getChildType().getJavaType() + ">;";
+    }
 }

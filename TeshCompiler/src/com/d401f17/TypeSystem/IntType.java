@@ -11,4 +11,9 @@ public class IntType extends FloatType {
     public String toString() {
         return "INT";
     }
+
+    @Override
+    public String getJavaType() {
+        return "J";
+    }
 }
