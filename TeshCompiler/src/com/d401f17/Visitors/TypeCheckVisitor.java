@@ -3,7 +3,7 @@ package com.d401f17.Visitors;
 import com.d401f17.AST.Nodes.*;
 import com.d401f17.Helper;
 import com.d401f17.TypeSystem.*;
-import jdk.nashorn.internal.codegen.types.BooleanType;
+import com.d401f17.TypeSystem.SymbolTable.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,15 +16,18 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     private List<Type> errorNodes = new ArrayList<>();
     private SymTab st;
     private SymTab rt;
+    private FunctionTable ft;
 
     public TypeCheckVisitor() {
         this.st = new SymbolTable();
         this.rt = new SymbolTable();
+        this.ft = new FunctionTable();
     }
 
-    public TypeCheckVisitor(SymTab symbolTable, SymTab recordTable) {
+    public TypeCheckVisitor(SymTab symbolTable, SymTab recordTable, FunctionTable functionTable) {
         this.st = symbolTable;
         this.rt = recordTable;
+        this.ft = functionTable;
     }
 
     public List<Type> getErrorNodes() {
@@ -426,27 +429,26 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     @Override
     public Void visit(FunctionCallNode node) {
         List<ArithmeticExpressionNode> arguments = node.getArguments();
-        Type[] argumentTypes = new Type[arguments.size()];
+        List<Type> argumentTypes = new ArrayList<>();
 
         //Visit argument nodes
         for (int i = 0; i < arguments.size(); i++) {
             arguments.get(i).accept(this);
-            argumentTypes[i] = arguments.get(i).getType();
+            argumentTypes.add(arguments.get(i).getType());
         }
 
         //Check if arguments were ok
-        if (invalidChildren(argumentTypes)) {
+        if (invalidChildren(argumentTypes.toArray(new Type[argumentTypes.size()]))) {
             node.setType(new IgnoreType());
             return null;
         }
 
-        FunctionType func = new FunctionType(node.getName().getName(), argumentTypes, new VoidType());
-
         try {
-            Type functionType = st.lookup(func.toString()).getType();
+            Type functionType = ft.lookup(node.getName().getName(), argumentTypes).getType();
             node.setType(((FunctionType)functionType).getReturnType());
         } catch (VariableNotDeclaredException e) {
-            node.setType(new ErrorType(node.getLine(), "Function with signature " + e.getMessage()));
+            FunctionType func = new FunctionType(node.getName().getName(), argumentTypes, new VoidType());
+            node.setType(new ErrorType(node.getLine(), "Function with signature " + func + " not declared"));
         }
 
         return null;
@@ -460,11 +462,11 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         openScope();
 
         List<VariableDeclarationNode> arguments = node.getFormalArguments();
-        Type[] argumentTypes = new Type[arguments.size()];
+        List<Type> argumentTypes = new ArrayList<>();
 
         for (int i = 0; i < arguments.size(); i++) {
             arguments.get(i).accept(this);
-            argumentTypes[i] = arguments.get(i).getTypeNode().getType();
+            argumentTypes.add(arguments.get(i).getTypeNode().getType());
         }
 
         closeScope();
@@ -476,10 +478,10 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         FunctionType function = new FunctionType(funcName, argumentTypes, funcType);
         try {
-            st.insert(function.toString(), new Symbol(function, node));
+            ft.insert(funcName, new Symbol(function, node));
             node.setType(funcType);
         } catch (VariableAlreadyDeclaredException e) {
-            node.setType(new ErrorType(node.getLine(), "Function with signature " + e.getMessage()));
+            node.setType(new ErrorType(node.getLine(), "Function with signature " + function + " has already been declared"));
             return null;
         }
 
@@ -492,10 +494,9 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         //Check if arguments were ok
-        if (invalidChildren(argumentTypes)) {
+        if (invalidChildren(argumentTypes.toArray(new Type[argumentTypes.size()]))) {
             //Close scope before leaving
-            st.closeScope();
-            rt.closeScope();
+            closeScope();
             node.setType(new IgnoreType());
             return null;
         }
@@ -958,27 +959,26 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     @Override
     public Void visit(ProcedureCallNode node) {
         List<ArithmeticExpressionNode> arguments = node.getArguments();
-        Type[] argumentTypes = new Type[arguments.size()];
+        List<Type> argumentTypes = new ArrayList<>();
 
         //Visit argument nodes
         for (int i = 0; i < arguments.size(); i++) {
             arguments.get(i).accept(this);
-            argumentTypes[i] = arguments.get(i).getType();
+            argumentTypes.add(arguments.get(i).getType());
         }
 
         //Check if arguments were ok
-        if (invalidChildren(argumentTypes)) {
+        if (invalidChildren(argumentTypes.toArray(new Type[argumentTypes.size()]))) {
             node.setType(new IgnoreType());
             return null;
         }
 
-        FunctionType func = new FunctionType(node.getName().getName(), argumentTypes, new VoidType());
-
         try {
-            st.lookup(func.toString());
+            ft.lookup(node.getName().getName(), argumentTypes);
             node.setType(new OkType());
         } catch (VariableNotDeclaredException e) {
-            node.setType(new ErrorType(node.getLine(), "Function with signature " + e.getMessage()));
+            FunctionType func = new FunctionType(node.getName().getName(), argumentTypes, new VoidType());
+            node.setType(new ErrorType(node.getLine(), "Function with signature " + func + " not declared"));
         }
 
         return null;
@@ -1141,10 +1141,12 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     private void openScope() {
         st.openScope();
         rt.openScope();
+        ft.openScope();
     }
 
     private void closeScope() {
         st.closeScope();
         rt.closeScope();
+        ft.closeScope();
     }
 }

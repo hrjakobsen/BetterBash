@@ -1,10 +1,11 @@
 package com.d401f17.TypeSystem;
 
-import com.d401f17.AST.Nodes.VariableDeclarationNode;
+import com.d401f17.TypeSystem.SymbolTable.SymTab;
+import com.d401f17.TypeSystem.SymbolTable.Symbol;
+import com.d401f17.TypeSystem.SymbolTable.VariableAlreadyDeclaredException;
+import com.d401f17.TypeSystem.SymbolTable.VariableNotDeclaredException;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by mathias on 4/28/17.

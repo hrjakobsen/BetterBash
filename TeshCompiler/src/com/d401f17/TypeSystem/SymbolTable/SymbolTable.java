@@ -1,8 +1,9 @@
-package com.d401f17.TypeSystem;
+package com.d401f17.TypeSystem.SymbolTable;
+
+import com.d401f17.TypeSystem.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by Henrik on 05-04-2017.
@@ -47,21 +48,5 @@ public class SymbolTable implements SymTab {
             i--;
         }
         throw new VariableNotDeclaredException(id + " not declared");
-    }
-
-    public static SymbolTable StandardTable() {
-        SymbolTable table = new SymbolTable();
-        try {
-            table.insert("str(INT)", new FunctionSymbol(new FunctionType("str", new Type[] {new IntType()}, new StringType()), null, null));
-            table.insert("str(FLOAT)", new FunctionSymbol(new FunctionType("str", new Type[] {new FloatType()}, new StringType()), null, null));
-            table.insert("str(CHAR)", new FunctionSymbol(new FunctionType("str", new Type[] {new CharType()}, new StringType()), null, null));
-            table.insert("str(BOOL)", new FunctionSymbol(new FunctionType("str", new Type[] {new BoolType()}, new StringType()), null, null));
-            table.insert("str(STRING)", new FunctionSymbol(new FunctionType("str", new Type[] {new StringType()}, new StringType()), null, null));
-            table.insert("print(STRING)", new FunctionSymbol(new FunctionType("print", new Type[] {new StringType()}, new VoidType()), null, null));
-            table.insert("read()", new FunctionSymbol(new FunctionType("read", new Type[] {}, new StringType()), null, null));
-        } catch (VariableAlreadyDeclaredException e) {
-            e.printStackTrace();
-        }
-        return table;
     }
 }

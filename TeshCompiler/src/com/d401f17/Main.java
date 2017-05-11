@@ -1,11 +1,10 @@
 package com.d401f17;
 
 import com.d401f17.AST.Nodes.*;
-import com.d401f17.TypeSystem.SymTab;
-import com.d401f17.TypeSystem.SymbolTable;
+import com.d401f17.TypeSystem.SymbolTable.FunctionTable;
+import com.d401f17.TypeSystem.SymbolTable.SymTab;
+import com.d401f17.TypeSystem.SymbolTable.SymbolTable;
 import com.d401f17.Visitors.BuildAstVisitor;
-import com.d401f17.Visitors.Interpreter.InterpretVisitor;
-import com.d401f17.Visitors.PrettyPrintASTVisitor;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -15,6 +14,7 @@ import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws Exception {
+/*
         if (args.length == 0) {
             System.err.println("You must specify an input file");
             return;
@@ -93,10 +93,10 @@ public class Main {
                 return;
             }
         }
+*/
 
-/*
         //InputStream is = new ByteArrayInputStream( "bool a = (10 * 0.1 == 1 && \"hej\" == (\"hej2\"))".getBytes() );
-        InputStream is = Main.class.getResourceAsStream("/recordTest.tsh");
+        InputStream is = Main.class.getResourceAsStream("/test.tsh");
 
         CharStream input = CharStreams.fromStream(is);
         TeshLexer lexer = new TeshLexer(input);
@@ -111,10 +111,11 @@ public class Main {
 
         AST ast = new BuildAstVisitor().visitCompileUnit(unit);
 
-        SymTab symbolTable = SymbolTable.StandardTable();
+        SymTab symbolTable = new SymbolTable();
         SymTab recordTable = new SymbolTable();
+        FunctionTable functionTable = FunctionTable.StandardTable();
 
-        TypeCheckVisitor typeCheck = new TypeCheckVisitor(symbolTable, recordTable);
+        TypeCheckVisitor typeCheck = new TypeCheckVisitor(symbolTable, recordTable, functionTable);
         ast.accept(typeCheck);
 
         for (String err : typeCheck.getErrors()) {

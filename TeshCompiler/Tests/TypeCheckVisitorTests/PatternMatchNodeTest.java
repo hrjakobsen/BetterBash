@@ -2,13 +2,14 @@ package TypeCheckVisitorTests;
 
 import com.d401f17.AST.Nodes.*;
 import com.d401f17.TypeSystem.*;
+import com.d401f17.TypeSystem.SymbolTable.SymTab;
+import com.d401f17.TypeSystem.SymbolTable.SymbolTable;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -116,9 +117,7 @@ public class PatternMatchNodeTest {
     @Test
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void PatternMatchNode_BothSidesToBeStrings_ExpectBool() {
-        SymTab symbolTable = new SymbolTable();
-        SymTab recordTable = new SymbolTable();
-        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
+        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
 
         PatternMatchNode node = new PatternMatchNode(new LiteralNode(0, leftType), new LiteralNode(0, rightType));
         node.accept(typeCheckVisitor);

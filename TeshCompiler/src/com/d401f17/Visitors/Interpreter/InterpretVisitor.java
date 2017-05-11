@@ -2,6 +2,7 @@ package com.d401f17.Visitors.Interpreter;
 
 import com.d401f17.AST.Nodes.*;
 import com.d401f17.TypeSystem.*;
+import com.d401f17.TypeSystem.SymbolTable.*;
 import com.d401f17.Visitors.BaseVisitor;
 
 import java.io.BufferedReader;
@@ -21,7 +22,7 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
     }
 
     private Store store = new Store();
-    private SymbolTable symtab = SymbolTable.StandardTable();
+    private SymbolTable symtab = new SymbolTable();
     private SymTab recTable;
 
     public InterpretVisitor(SymTab recTable) {
@@ -284,12 +285,12 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
     @Override
     public LiteralNode visit(FunctionCallNode node) {
         LiteralNode[] argResults = new LiteralNode[node.getArguments().size()];
-        Type[] argumentTypes = new Type[node.getArguments().size()];
+        List<Type> argumentTypes = new ArrayList<>();
 
         //Visit argument nodes
         for (int i = 0; i < node.getArguments().size(); i++) {
             argResults[i]=((LiteralNode)node.getArguments().get(i).accept(this));
-            argumentTypes[i] = node.getArguments().get(i).getType();
+            argumentTypes.add(node.getArguments().get(i).getType());
         }
 
         FunctionType func = new FunctionType(node.getName().getName(), argumentTypes, new VoidType());
@@ -326,11 +327,16 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         functionTable.openScope();
 
         List<VariableDeclarationNode> arguments = node.getFormalArguments();
-        Type[] argumentTypes = new Type[arguments.size()];
+        List<Type> argumentTypes = new ArrayList<>();
         SymbolTable old = symtab;
         symtab = functionTable;
         for (int i = 0; i < arguments.size(); i++) {
-            argumentTypes[i] = arguments.get(i).getTypeNode().getType();
+
+            /*
+            MATHIAS ARE YOU SURE ABOUT THE ORDER OF THE TWO LINES BELOW??????????
+             */
+
+            argumentTypes.add(arguments.get(i).getTypeNode().getType());
             arguments.get(i).accept(this);
         }
         symtab = old;

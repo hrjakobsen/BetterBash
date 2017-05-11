@@ -2,6 +2,8 @@ package TypeCheckVisitorTests;
 
 import com.d401f17.AST.Nodes.TypeNode;
 import com.d401f17.TypeSystem.*;
+import com.d401f17.TypeSystem.SymbolTable.SymTab;
+import com.d401f17.TypeSystem.SymbolTable.SymbolTable;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
 import org.junit.Test;
@@ -43,9 +45,7 @@ public class TypeNodeTest {
     @Test
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void TypeNode_Expect() {
-        SymTab symbolTable = new SymbolTable();
-        SymTab recordTable = new SymbolTable();
-        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
+        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
 
         TypeNode node = new TypeNode(predicateType.toString().toLowerCase());
         node.accept(typeCheckVisitor);

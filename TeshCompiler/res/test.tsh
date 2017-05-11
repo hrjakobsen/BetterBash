@@ -1,2 +1,13 @@
 #!/bin/tesh
 
+func myFunc(string a) int {
+    return 10
+}
+
+func myFunc(float a) string {
+    return "hej!"
+}
+
+int b = myFunc(10)
+
+print(str(10))

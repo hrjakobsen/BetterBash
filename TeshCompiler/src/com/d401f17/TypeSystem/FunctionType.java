@@ -15,7 +15,7 @@ public class FunctionType extends Type {
         return returnType;
     }
 
-    public FunctionType(String name, Type[] formalArguments, Type returnType) {
+    public FunctionType(String name, List<Type> formalArguments, Type returnType) {
         this.returnType = returnType;
         for (Type t : formalArguments) {
             this.args.add(t);
@@ -34,19 +34,19 @@ public class FunctionType extends Type {
         return signature;
     }
 
-    /*public String getSignature() {
-        return signature;
-    } */
+    public List<Type> getArgs() {
+        return args;
+    }
 
-    private void createSignature(String name, Type[] formalArguments) {
-        int numArgs = formalArguments.length;
+    private void createSignature(String name, List<Type> formalArguments) {
+        int numArgs = formalArguments.size();
         StringBuilder sb = new StringBuilder();
         sb.append(name + "(");
         if (numArgs > 0) {
             for (int i = 0; i < numArgs - 1; i++) {
-                sb.append(formalArguments[i] + ", ");
+                sb.append(formalArguments.get(i) + ", ");
             }
-            sb.append(formalArguments[numArgs - 1]);
+            sb.append(formalArguments.get(numArgs - 1));
         }
         sb.append(")");
         signature = sb.toString();

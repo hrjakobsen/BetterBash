@@ -1,7 +1,9 @@
-package com.d401f17.TypeSystem;
+package com.d401f17.TypeSystem.SymbolTable;
 
 import com.d401f17.AST.Nodes.AST;
-import com.d401f17.AST.Nodes.StatementNode;
+import com.d401f17.TypeSystem.SymbolTable.Symbol;
+import com.d401f17.TypeSystem.SymbolTable.SymbolTable;
+import com.d401f17.TypeSystem.Type;
 
 /**
  * Created by mathias on 4/28/17.

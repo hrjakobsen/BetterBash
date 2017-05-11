@@ -2,6 +2,8 @@ package TypeCheckVisitorTests;
 
 import com.d401f17.AST.Nodes.*;
 import com.d401f17.TypeSystem.*;
+import com.d401f17.TypeSystem.SymbolTable.SymTab;
+import com.d401f17.TypeSystem.SymbolTable.SymbolTable;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
 import org.junit.Test;
@@ -44,9 +46,7 @@ public class WhileNodeWithStatementsTest {
     @Test
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void WhileNode() {
-        SymTab symbolTable = new SymbolTable();
-        SymTab recordTable = new SymbolTable();
-        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
+        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
         WhileNode node = new WhileNode(new LiteralNode(1, new BoolType()), new StatementsNode(new ReturnNode(new LiteralNode(0, type))));
         node.accept(typeCheckVisitor);
 

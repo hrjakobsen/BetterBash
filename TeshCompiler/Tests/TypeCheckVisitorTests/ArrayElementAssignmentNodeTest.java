@@ -2,6 +2,8 @@ package TypeCheckVisitorTests;
 
 import com.d401f17.AST.Nodes.*;
 import com.d401f17.TypeSystem.*;
+import com.d401f17.TypeSystem.SymbolTable.SymTab;
+import com.d401f17.TypeSystem.SymbolTable.SymbolTable;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
 import org.junit.Test;
@@ -119,9 +121,7 @@ public class ArrayElementAssignmentNodeTest {
     @Test
     //Hvilken class skal testes, hvad skal ske, hvad vi forventer at få
     public void ArrayElementAssignmentNode_typeCheckWithParameters_expected() {
-        SymTab symbolTable = new SymbolTable();
-        SymTab recordTable = new SymbolTable();
-        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor(symbolTable, recordTable);
+        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
 
         SimpleIdentifierNode idNode = new SimpleIdentifierNode("a");
         ArrayType arrayType = new ArrayType(leftType);
