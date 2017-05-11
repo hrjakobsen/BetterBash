@@ -1,5 +1,6 @@
 package com.d401f17.AST.Nodes;
 
+import com.d401f17.TypeSystem.Type;
 import com.d401f17.Visitors.ASTVisitor;
 import jdk.nashorn.internal.ir.FunctionCall;
 
@@ -13,6 +14,16 @@ import java.util.List;
 public class ProcedureCallNode extends StatementNode {
     private IdentifierNode name;
     private List<ArithmeticExpressionNode> arguments;
+
+    public Type getReturnType() {
+        return returnType;
+    }
+
+    public void setReturnType(Type returnType) {
+        this.returnType = returnType;
+    }
+
+    private Type returnType;
 
     public IdentifierNode getName() {
         return name;
@@ -47,6 +58,8 @@ public class ProcedureCallNode extends StatementNode {
     }
 
     public FunctionCallNode ToFunction() {
-        return new FunctionCallNode(name, lineNum, getArguments().toArray(new ArithmeticExpressionNode[0]));
+        FunctionCallNode fNode = new FunctionCallNode(name, lineNum, getArguments().toArray(new ArithmeticExpressionNode[0]));
+        fNode.setType(getType());
+        return fNode;
     }
 }
