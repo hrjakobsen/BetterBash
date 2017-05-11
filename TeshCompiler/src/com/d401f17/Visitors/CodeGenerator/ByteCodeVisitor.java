@@ -80,54 +80,60 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ArrayAccessNode node) {
-        try {
-            Symbol s = symtab.lookup(node.getArray().getName());
-            this.emitLoad(s.getType(), s.getAddress()); //Push arrayref
-            for (ArithmeticExpressionNode n : node.getIndices()) {
-                n.accept(this); //Push index
-                mv.visitInsn(AALOAD); //arrayref, index -> value; load value from array
-            }
-        } catch (VariableNotDeclaredException e) {
-            e.printStackTrace();
-        }
+        //TODO Rewrite to use lists
+
 
         return null;
     }
 
     @Override
     public Void visit(ArrayBuilderNode node) {
-        //this.emitNop();
-        
         return null;
     }
 
     @Override
     public Void visit(ArrayLiteralNode node) {
+        //Make a new list object
+        mv.visitTypeInsn(NEW, "java/util/ArrayList"); //Push list ref
+        //TODO: Shall a new array be initialized by some magic method?
 
-
+        //Add elements to the list
+        for (ArithmeticExpressionNode n : node.getValue()) {
+            mv.visitInsn(DUP); //Push list ref
+            n.accept(this); //Push value to add to the list
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "add", "(Ljava/lang/Object;)Z", false); //Add to the list. Push null return value
+            mv.visitInsn(POP); //Pop and discard return value
+        }
         return null;
     }
 
     @Override
     public Void visit(ArrayElementAssignmentNode node) {
-        try {
-            int elements = node.getElement().getIndices().size()-1; //Number of elements in the array index
-            Symbol s = symtab.lookup(node.getElement().getArray().getName());
-            this.emitLoad(s.getType(), s.getAddress());    //push arrayref
+        this.emitNops(4);
 
-            //Iterate through all reference but the last one
-            //This will leave a ref to the inner array on the stack
-            for (int i = 0; i < elements; i++) {
+        //Get list ref
+        try {
+            //Get list ref
+            Symbol s = symtab.lookup(node.getElement().getArray().getName());
+            this.emitLoad(s.getType(), s.getAddress()); //Push list ref
+
+            //Traverse list refs to get ref to innermost array
+            int i = 0;
+            while (i < node.getElement().getIndices().size()) {
                 node.getElement().getIndices().get(i).accept(this); //Push index
-                mv.visitInsn(AALOAD); //arrayref, index -> value; load value from array
             }
 
-            node.getElement().getIndices().get(elements).accept(this); //Push index
-            node.getExpression().accept(this); //Push value to assign
-            mv.visitInsn(AASTORE);//arrayref, index, value -> ; store value in array
+
+            //Invoke setter
+
+            //Clean stack
+
         } catch (VariableNotDeclaredException e) {
             e.printStackTrace();
         }
+
+        this.emitNops(4);
+
         return null;
     }
 
@@ -546,8 +552,10 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         }
     }
 
-    private void emitNop() {
-        mv.visitInsn(NOP);
+    private void emitNops(int n) {
+        for (int i = 0; i<n; i++) {
+            mv.visitInsn(NOP);
+        }
         return;
     }
 }
