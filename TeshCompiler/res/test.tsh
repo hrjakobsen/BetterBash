@@ -1,5 +1,7 @@
 #!/bin/tesh
 
+char lol = '­'
+
 func myFunc(string a) int {
     return 10
 }

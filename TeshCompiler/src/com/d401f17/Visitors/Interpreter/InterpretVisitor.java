@@ -24,16 +24,17 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
     private Store store = new Store();
     private SymbolTable symtab = new SymbolTable();
     private SymTab recTable;
+    private FunctionTable funcTable = new FunctionTable();
 
     public InterpretVisitor(SymTab recTable) {
-        standardFunctions.put("str(FLOAT)", StandardLib::LiteralToString);
-        standardFunctions.put("str(CHAR)", StandardLib::LiteralToString);
-        standardFunctions.put("str(STRING)", StandardLib::LiteralToString);
-        standardFunctions.put("str(INT)", StandardLib::LiteralToString);
-        standardFunctions.put("str(BOOL)", StandardLib::LiteralToString);
-        standardFunctions.put("intval(FLOAT)", StandardLib::FloatToInt);
-        standardFunctions.put("print(STRING)", StandardLib::Print);
-        standardFunctions.put("read()", StandardLib::Read);
+        standardFunctions.put("str", StandardLib::LiteralToString);
+        standardFunctions.put("str", StandardLib::LiteralToString);
+        standardFunctions.put("str", StandardLib::LiteralToString);
+        standardFunctions.put("str", StandardLib::LiteralToString);
+        standardFunctions.put("str", StandardLib::LiteralToString);
+        standardFunctions.put("intval", StandardLib::FloatToInt);
+        standardFunctions.put("print", StandardLib::Print);
+        standardFunctions.put("read", StandardLib::Read);
         this.recTable = recTable;
     }
 
@@ -294,8 +295,8 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         }
 
         FunctionType func = new FunctionType(node.getName().getName(), argumentTypes, new VoidType());
-        String signature = func.toString();
-        if (standardFunctions.containsKey(signature)) {
+
+        if (standardFunctions.containsKey(node.getName().getName())) {
             Function stdFunc = standardFunctions.get(func.toString());
             return ((LiteralNode) stdFunc.apply(argResults));
         }
@@ -303,7 +304,7 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         SymbolTable old = symtab;
         LiteralNode res = null;
         try {
-            FunctionSymbol function = (FunctionSymbol)symtab.lookup(signature);
+            FunctionSymbol function = (FunctionSymbol)funcTable.lookup(node.getName().getName(), argumentTypes);
             symtab = new SymbolTable(function.getSymbolTable());
             symtab.openScope();
             FunctionNode declarationNode = (FunctionNode)function.getDeclarationNode();
