@@ -15,4 +15,9 @@ public class ErrorType extends Type {
     public String toString() {
         return "ERROR";
     }
+
+    @Override
+    public String getJavaType() {
+        return null;
+    }
 }

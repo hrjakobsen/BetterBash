@@ -11,4 +11,9 @@ public class OkType extends Type {
     public String toString() {
         return "OK";
     }
+
+    @Override
+    public String getJavaType() {
+        return null;
+    }
 }
