@@ -1,5 +1,7 @@
 package com.d401f17.TypeSystem;
 
+import com.d401f17.SymbolTable.MemberNotFoundException;
+
 import java.util.HashMap;
 
 /**

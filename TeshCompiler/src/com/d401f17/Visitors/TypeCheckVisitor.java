@@ -2,8 +2,9 @@ package com.d401f17.Visitors;
 
 import com.d401f17.AST.Nodes.*;
 import com.d401f17.Helper;
+import com.d401f17.SymbolTable.*;
 import com.d401f17.TypeSystem.*;
-import jdk.nashorn.internal.codegen.types.BooleanType;
+import com.d401f17.Visitors.Interpreter.StandardLib;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,11 +19,11 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     private SymTab rt;
 
     public TypeCheckVisitor() {
-        this.st = new SymbolTable();
-        this.rt = new SymbolTable();
+        this(new SymbolTable(), new SymbolTable());
     }
 
     public TypeCheckVisitor(SymTab symbolTable, SymTab recordTable) {
+        StandardLib.InsertFunctionNames(symbolTable);
         this.st = symbolTable;
         this.rt = recordTable;
     }
@@ -448,10 +449,8 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             return null;
         }
 
-        FunctionType func = new FunctionType(node.getName().getName(), argumentTypes, new VoidType());
-
         try {
-            Type functionType = st.lookup(func.toString()).getType();
+            Type functionType = st.lookup(node.getName().getName()).getType();
             node.setType(((FunctionType)functionType).getReturnType());
         } catch (VariableNotDeclaredException e) {
             node.setType(new ErrorType(node.getLine(), "Function with signature " + e.getMessage()));
@@ -484,7 +483,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         FunctionType function = new FunctionType(funcName, argumentTypes, funcType);
         try {
-            st.insert(function.toString(), new Symbol(function, node));
+            st.insert(funcName, new Symbol(function, node));
             node.setType(funcType);
         } catch (VariableAlreadyDeclaredException e) {
             node.setType(new ErrorType(node.getLine(), "Function with signature " + e.getMessage()));
@@ -502,8 +501,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         //Check if arguments were ok
         if (invalidChildren(argumentTypes)) {
             //Close scope before leaving
-            st.closeScope();
-            rt.closeScope();
+            closeScope();
             node.setType(new IgnoreType());
             return null;
         }
@@ -980,10 +978,8 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             return null;
         }
 
-        FunctionType func = new FunctionType(node.getName().getName(), argumentTypes, new VoidType());
-
         try {
-            st.lookup(func.toString());
+            st.lookup(node.getName().getName());
             node.setType(new OkType());
         } catch (VariableNotDeclaredException e) {
             node.setType(new ErrorType(node.getLine(), "Function with signature " + e.getMessage()));

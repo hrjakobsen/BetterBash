@@ -3,6 +3,8 @@ package TypeCheckVisitorTests; /**
  */
 
 import com.d401f17.AST.Nodes.*;
+import com.d401f17.SymbolTable.SymTab;
+import com.d401f17.SymbolTable.SymbolTable;
 import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;

@@ -1,8 +1,8 @@
 package com.d401f17;
 
 import com.d401f17.AST.Nodes.*;
-import com.d401f17.TypeSystem.SymTab;
-import com.d401f17.TypeSystem.SymbolTable;
+import com.d401f17.SymbolTable.SymTab;
+import com.d401f17.SymbolTable.SymbolTable;
 import com.d401f17.Visitors.BuildAstVisitor;
 import com.d401f17.Visitors.Interpreter.InterpretVisitor;
 import com.d401f17.Visitors.PrettyPrintASTVisitor;
@@ -53,7 +53,7 @@ public class Main {
             AST ast = ASTBuilder.visitCompileUnit(unit);
 
             //Create a symbol table containing standard library of functions
-            SymTab symbolTable = SymbolTable.StandardTable();
+            SymTab symbolTable = new SymbolTable();
             SymTab recordTable = new SymbolTable();
 
             //Type check the AST
@@ -112,18 +112,19 @@ public class Main {
 
             AST ast = new BuildAstVisitor().visitCompileUnit(unit);
 
-            SymTab symbolTable = SymbolTable.StandardTable();
+            SymTab symbolTable = new SymbolTable();
             SymTab recordTable = new SymbolTable();
 
             TypeCheckVisitor typeCheck = new TypeCheckVisitor(symbolTable, recordTable);
             ast.accept(typeCheck);
 
-            for (String err : typeCheck.getErrors()) {
-                System.err.println(err);
+
+            if (typeCheck.getErrors().size() > 0) {
+                for (String err : typeCheck.getErrors()) {
+                    System.err.println(err);
+                }
+                return;
             }
-
-
-            if (typeCheck.getErrors().size() > 0) return;
 
             InterpretVisitor run = new InterpretVisitor(recordTable);
             ast.accept(run);
