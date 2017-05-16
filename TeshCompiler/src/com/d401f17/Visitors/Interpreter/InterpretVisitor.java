@@ -33,6 +33,11 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         standardFunctions.put("intval(FLOAT)", StandardLib::FloatToInt);
         standardFunctions.put("print(STRING)", StandardLib::Print);
         standardFunctions.put("read()", StandardLib::Read);
+        standardFunctions.put("sqrt(INT)", StandardLib::SquareRoot);
+        standardFunctions.put("sqrt(FLOAT)", StandardLib::SquareRoot);
+        standardFunctions.put("rnd()", StandardLib::Random);
+        standardFunctions.put("ceil(FLOAT)", StandardLib::Ceil);
+        standardFunctions.put("floor(FLOAT)", StandardLib::Floor);
         this.recTable = recTable;
     }
 

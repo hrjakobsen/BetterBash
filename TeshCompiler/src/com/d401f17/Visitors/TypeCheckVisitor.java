@@ -119,6 +119,11 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
                 indexNodes.get(i).accept(this);
                 indexTypes[i] = indexNodes.get(i).getType();
 
+                if (invalidChildren(indexTypes[i])) {
+                    node.setType(new IgnoreType());
+                    return null;
+                }
+
                 if (!(indexTypes[i] instanceof IntType)) {
                     node.setType(new ErrorType(node.getLine(), Helper.ordinal(i + 1) + " index expected int, got " + indexTypes[i]));
                     return null;
@@ -392,6 +397,9 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
             //Get the type of the array
             Type varType = ((ArrayType) arrayType).getChildType();
+
+            //Make the variable immutable
+            varType.setImmutable(true);
 
             //Get name of variable
             String varName = node.getVariable().getName();
@@ -1056,6 +1064,10 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     private Type assignment(Type var, Type exp, int lineNum) {
         if (invalidChildren(var, exp)) {
             return new IgnoreType();
+        }
+
+        if (var.isImmutable()) {
+            return new ErrorType(lineNum, "Attempted assignment to immutable variable");
         }
 
         boolean success;

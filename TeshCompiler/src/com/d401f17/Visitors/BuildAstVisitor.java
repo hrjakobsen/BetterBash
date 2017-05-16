@@ -364,9 +364,9 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
         if (ctx.op.getType() == TeshParser.OP_SUB) {
             return new MultiplicationNode(
                     (ArithmeticExpressionNode) visit(ctx.value()),
-                    new LiteralNode(
+                    new IntLiteralNode(
                             -1,
-                            new IntType()
+                            ctx.start.getLine()
                     ),
                     ctx.start.getLine()
             );

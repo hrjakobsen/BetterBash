@@ -1,2 +1,40 @@
 #!/bin/tesh
 
+#*
+func range(int start, int end) int[] {
+    int[] result = []
+    int count = start
+    while count <= end {
+        result ::= count
+        count += 1
+    }
+
+    return result
+}
+
+func random(float max) int {
+    return floor(rnd() * max)
+}
+
+int size = 7
+#string[] trees = [":evergreen_tree:", ":evergreen_tree:", ":evergreen_tree:", ":evergreen_tree:", ":deciduous_tree:"]
+string[] trees = [":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":man::skin-tone-5:"]
+
+string result = ""
+
+for y in range(-size, size) {
+    for x in range(-size, size) {
+        float dist = sqrt((x * x) + (y * y))
+        int chance = random(dist)
+        if chance < 1 {
+            result += trees[random(10.0)]
+        } else {
+            for i in range(0, random(dist)) {
+                result += " "
+            }
+        }
+    }
+    print(result)
+    result = ""
+}
+*#

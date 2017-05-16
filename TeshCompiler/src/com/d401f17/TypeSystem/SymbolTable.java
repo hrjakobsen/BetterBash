@@ -59,6 +59,11 @@ public class SymbolTable implements SymTab {
             table.insert("str(STRING)", new FunctionSymbol(new FunctionType("str", new Type[] {new StringType()}, new StringType()), null, null));
             table.insert("print(STRING)", new FunctionSymbol(new FunctionType("print", new Type[] {new StringType()}, new VoidType()), null, null));
             table.insert("read()", new FunctionSymbol(new FunctionType("read", new Type[] {}, new StringType()), null, null));
+            table.insert("sqrt(INT)", new FunctionSymbol(new FunctionType("sqrt", new Type[] {new IntType()}, new FloatType()), null, null));
+            table.insert("sqrt(FLOAT)", new FunctionSymbol(new FunctionType("sqrt", new Type[] {new FloatType()}, new FloatType()), null, null));
+            table.insert("rnd()", new FunctionSymbol(new FunctionType("rnd", new Type[] {}, new FloatType()), null, null));
+            table.insert("ceil(FLOAT)", new FunctionSymbol(new FunctionType("ceil", new Type[] {new FloatType()}, new IntType()), null, null));
+            table.insert("floor(FLOAT)", new FunctionSymbol(new FunctionType("float", new Type[] {new FloatType()}, new IntType()), null, null));
         } catch (VariableAlreadyDeclaredException e) {
             e.printStackTrace();
         }

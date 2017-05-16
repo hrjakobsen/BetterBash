@@ -1,7 +1,9 @@
 package com.d401f17.Visitors.Interpreter;
 
 import com.d401f17.AST.Nodes.*;
+import com.d401f17.TypeSystem.IntType;
 
+import java.util.Random;
 import java.util.Scanner;
 
 /**
@@ -34,5 +36,30 @@ public final class StandardLib {
     public static LiteralNode Print(LiteralNode[] nodes) {
         System.out.println(nodes[0].getValue());
         return null;
+    }
+
+    public static FloatLiteralNode SquareRoot(LiteralNode[] nodes) {
+        FloatLiteralNode result = null;
+        if (nodes[0] instanceof IntLiteralNode) {
+            long val = (long) nodes[0].getValue();
+            result = new FloatLiteralNode(Math.sqrt(val));
+        } else if (nodes[0] instanceof FloatLiteralNode) {
+            double val = (double) nodes[0].getValue();
+            result = new FloatLiteralNode(Math.sqrt(val));
+        }
+        return result;
+    }
+
+    public static FloatLiteralNode Random(LiteralNode[] nodes) {
+        Random rnd = new Random();
+        return new FloatLiteralNode(rnd.nextDouble());
+    }
+
+    public static IntLiteralNode Ceil(LiteralNode[] nodes) {
+        return new IntLiteralNode((long)Math.ceil((double) nodes[0].getValue()));
+    }
+
+    public static IntLiteralNode Floor(LiteralNode[] nodes) {
+        return new IntLiteralNode((long)Math.floor((double) nodes[0].getValue()));
     }
 }
