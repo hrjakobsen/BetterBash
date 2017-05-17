@@ -80,8 +80,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         try {
             //Get array ref
             Symbol s = symtab.lookup(node.getVariable().getName());
-            emitLoad(s.getType(), s.getAddress()); //push array ref
-
+            emitLoad(node.getVariable().getName(), s.getType()); //push array ref
             
 
         } catch (VariableNotDeclaredException e) {
@@ -97,7 +96,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         try {
             //Get Array ref
             Symbol s = symtab.lookup(node.getArray().getName());
-            this.emitLoad(s.getType(), s.getAddress());//Push array ref
+            this.emitLoad(node.getArray().getName(), s.getType());//Push array ref
 
             //Get ref to innermost array
             for (int i = 0; i < node.getIndices().size(); i++) {
@@ -107,8 +106,6 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         } catch (VariableNotDeclaredException e) {
             e.printStackTrace();
         }
-
-
 
         return null;
     }
@@ -122,7 +119,9 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
     public Void visit(ArrayLiteralNode node) {
         //Make a new list object
         mv.visitTypeInsn(NEW, "java/util/ArrayList"); //Push list ref
-        //TODO: Shall a new array be initialized by some magic method?
+        mv.visitInsn(DUP); //push list ref
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "<init>", "()Z", false); //pop list ref, push NULL
+        mv.visitInsn(POP); //pop NULL
 
         //Add elements to the list
         for (ArithmeticExpressionNode n : node.getValue()) {
