@@ -44,7 +44,7 @@ public class Main {
         ast.accept(run);
 
         try {
-            FileOutputStream fos = new FileOutputStream("/home/mathias/Desktop/classThing.class");
+            FileOutputStream fos = new FileOutputStream("/home/daniel/Skrivebord/classThing.class");
             fos.write(run.getBytes());
             fos.close();
         } catch (FileNotFoundException e) {
