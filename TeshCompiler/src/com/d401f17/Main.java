@@ -16,7 +16,7 @@ import java.io.*;
 public class Main {
     public static void main(String[] args) throws Exception {
         //InputStream is = new ByteArrayInputStream( "bool a = (10 * 0.1 == 1 && \"hej\" == (\"hej2\"))".getBytes() );
-        InputStream is = Main.class.getResourceAsStream("/bytecodetest.tsh");
+        InputStream is = Main.class.getResourceAsStream("/simple.tsh");
         //Lex the input file to convert it to tokens
         CharStream input = CharStreams.fromStream(is);
         TeshLexer lexer = new TeshLexer(input);
