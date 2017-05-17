@@ -77,12 +77,37 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ArrayAppendNode node) {
+        try {
+            //Get array ref
+            Symbol s = symtab.lookup(node.getVariable().getName());
+            emitLoad(s.getType(), s.getAddress()); //push array ref
+
+            
+
+        } catch (VariableNotDeclaredException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 
     @Override
     public Void visit(ArrayAccessNode node) {
-        //TODO Rewrite to use lists
+
+        try {
+            //Get Array ref
+            Symbol s = symtab.lookup(node.getArray().getName());
+            this.emitLoad(s.getType(), s.getAddress());//Push array ref
+
+            //Get ref to innermost array
+            for (int i = 0; i < node.getIndices().size(); i++) {
+                node.getIndices().get(i).accept(this); //push index
+                mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "get", "(I)Ljava/lang/Object;", false);//pop ref; pop index; push value
+            }
+        } catch (VariableNotDeclaredException e) {
+            e.printStackTrace();
+        }
+
 
 
         return null;
