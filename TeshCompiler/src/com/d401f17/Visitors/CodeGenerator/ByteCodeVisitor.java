@@ -1,17 +1,16 @@
 package com.d401f17.Visitors.CodeGenerator;
 
 import com.d401f17.AST.Nodes.*;
+import com.d401f17.SymbolTable.*;
 import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.BaseVisitor;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
 import java.io.IOException;
 
 import java.util.*;
-import java.util.function.*;
 
 import static org.objectweb.asm.Opcodes.*;
 
@@ -27,7 +26,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
     private int nextAddress = 0;
     public ByteCodeVisitor() throws IOException {
         standardFunctions.put("print", "(Ljava/lang/String;)V");
-        standardFunctions.put("str", "(J)Ljava/lang/String;");
+        standardFunctions.put("intToStr", "(J)Ljava/lang/String;");
         //Set up main class
         cw.visit(52,
                 ACC_PUBLIC + ACC_STATIC,
@@ -263,7 +262,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         try {
             f = (FunctionNode) (symtab.lookup(funcName)).getDeclarationNode();
         } catch (VariableNotDeclaredException e) {
-            //e.printStackTrace();
+            e.printStackTrace();
         }
 
         //We want to visit the node using this functions symbol table, but bind them in the new functions symbol table
@@ -681,6 +680,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         } else if (variable instanceof VoidType || variable instanceof OkType) {
             return "V";
         } else {
+            System.out.println(variable);
             System.out.println("Invalid type conversion");
         }
         return null;

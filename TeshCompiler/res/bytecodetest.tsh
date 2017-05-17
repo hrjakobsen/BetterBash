@@ -13,8 +13,7 @@ func global(int d) int {
             }
         }
 
-    print(str(local(10)))
-    int u = global(3)
+    print(intToStr(local(1000)))
     return 0
 }
 

@@ -41,6 +41,10 @@ public class Main {
         TypeCheckVisitor typeCheck = new TypeCheckVisitor(symbolTable, recordTable);
         ast.accept(typeCheck);
 
+        for (String s : typeCheck.getErrors()) {
+            System.out.println(s);
+        }
+
         //InterpretVisitor run = new InterpretVisitor(recordTable);
         ByteCodeVisitor run = new ByteCodeVisitor();
 
