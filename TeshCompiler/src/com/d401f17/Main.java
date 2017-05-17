@@ -5,6 +5,7 @@ import com.d401f17.TypeSystem.SymTab;
 import com.d401f17.TypeSystem.SymbolTable;
 import com.d401f17.Visitors.BuildAstVisitor;
 import com.d401f17.Visitors.CodeGenerator.ByteCodeVisitor;
+import com.d401f17.Visitors.PrettyPrintASTVisitor;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -42,9 +43,10 @@ public class Main {
         ByteCodeVisitor run = new ByteCodeVisitor();
 
         ast.accept(run);
+        run.End();
 
         try {
-            FileOutputStream fos = new FileOutputStream("/home/mathias/Desktop/classThing.class");
+            FileOutputStream fos = new FileOutputStream("/home/mathias/Desktop/Main.class");
             fos.write(run.getBytes());
             fos.close();
         } catch (FileNotFoundException e) {
@@ -62,7 +64,7 @@ public class Main {
         writer.print("graph {\n" + p.toString() + "\n}\n");
         writer.flush();
         writer.close();
-*/
 
+*/
     }
 }
