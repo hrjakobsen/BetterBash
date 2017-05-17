@@ -52,7 +52,7 @@ public class Main {
         run.End();
 
         try {
-            FileOutputStream fos = new FileOutputStream("/home/mathias/Desktop/Main.class");
+            FileOutputStream fos = new FileOutputStream("/home/daniel/Skrivebord/Main.class");
             fos.write(run.getBytes());
             fos.close();
         } catch (FileNotFoundException e) {

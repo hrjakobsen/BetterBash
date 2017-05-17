@@ -78,11 +78,11 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
     @Override
     public Void visit(ArrayAppendNode node) {
         try {
-            //Get array ref
             Symbol s = symtab.lookup(node.getVariable().getName());
             emitLoad(node.getVariable().getName(), s.getType()); //push array ref
-            
-
+            node.getExpression().accept(this); //push value to append
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "add", "(Ljava/lang/Object;)Z", false); //Add to the list. Push null return value//Call appending method
+            mv.visitInsn(POP); //Clean stack
         } catch (VariableNotDeclaredException e) {
             e.printStackTrace();
         }
@@ -92,21 +92,18 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ArrayAccessNode node) {
-
         try {
             //Get Array ref
-            Symbol s = symtab.lookup(node.getArray().getName());
-            this.emitLoad(node.getArray().getName(), s.getType());//Push array ref
+            this.emitLoad(node.getArray().getName(), node.getArray().getType());//Push array ref
 
             //Get ref to innermost array
             for (int i = 0; i < node.getIndices().size(); i++) {
                 node.getIndices().get(i).accept(this); //push index
-                mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "get", "(I)Ljava/lang/Object;", false);//pop ref; pop index; push value
+                mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "get", "(I)Ljava/lang/Object;", false); //pop ref; pop index; push value
             }
         } catch (VariableNotDeclaredException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 
@@ -140,20 +137,19 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         //Get list ref
         try {
             //Get list ref
-            Symbol s = symtab.lookup(node.getElement().getArray().getName());
-            //this.emitLoad(node.gets.getType()); //Push list ref
+            this.emitLoad(node.getElement().getArray().getName(), node.getElement().getArray().getType()); //Push array ref
 
             //Traverse list refs to get ref to innermost array
-            int i = 0;
-            while (i < node.getElement().getIndices().size()) {
-                node.getElement().getIndices().get(i).accept(this); //Push index
+            for (int i = 0; i < node.getElement().getIndices().size()-1; i++) {
+                node.getElement().getIndices().get(i).accept(this)//push index
+                mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "get", "(I)Ljava/lang/Object;", false); //pop list ref; pop index; push list ref
             }
 
-
             //Invoke setter
-
-            //Clean stack
-
+            node.getElement().getIndices().get(node.getElement().getIndices().size()-1).accept(this); //push index
+            node.getExpression().accept(this) //push value
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "set", "(I)Ljava/lang/Object;", false); //pop index; pop value; push null
+            mv.visitInsn(POP); //pop null
         } catch (VariableNotDeclaredException e) {
             e.printStackTrace();
         }
