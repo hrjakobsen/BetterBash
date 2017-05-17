@@ -1,6 +1,7 @@
 package com.d401f17.Visitors.CodeGenerator;
 
 
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
 import static org.objectweb.asm.Opcodes.*;
@@ -25,5 +26,16 @@ public final class BytecodeStandardLib {
 
     public static void IntToString(MethodVisitor mv) {
         mv.visitMethodInsn(INVOKESTATIC, "java/lang/String", "valueOf", "(J)Ljava/lang/String;", false);
+    }
+
+    public static void BoolToString(MethodVisitor mv) {
+        Label f = new Label();
+        Label done = new Label();
+        mv.visitJumpInsn(IFEQ, f);
+        mv.visitLdcInsn("true");
+        mv.visitJumpInsn(GOTO, done);
+        mv.visitLabel(f);
+        mv.visitLdcInsn("false");
+        mv.visitLabel(done);
     }
 }

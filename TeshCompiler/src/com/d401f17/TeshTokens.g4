@@ -10,7 +10,6 @@ ELSE: 'else';
 WHILE: 'while';
 RETURN: 'return';
 FOR: 'for';
-VAR: 'var';
 RECORD: 'record';
 FUNCTION: 'func';
 FORK: 'fork';

@@ -9,12 +9,12 @@ import java.util.List;
 /**
  * Created by mathias on 4/28/17.
  */
-public class RecursiveSymbolTable implements SymTab {
-    private RecursiveSymbolTable parent = null;
-    private RecursiveSymbolTable currentTable = this;
-    private HashMap<String, Symbol> entries = new HashMap<>();
+public class RecursiveSymbolTable<T> {
+    private RecursiveSymbolTable<T> parent = null;
+    private RecursiveSymbolTable<T> currentTable = this;
+    private HashMap<String, T> entries = new HashMap<>();
 
-    public RecursiveSymbolTable(RecursiveSymbolTable parent) {
+    public RecursiveSymbolTable(RecursiveSymbolTable<T> parent) {
         this.parent = parent;
     }
 
@@ -27,30 +27,26 @@ public class RecursiveSymbolTable implements SymTab {
     public RecursiveSymbolTable() {
     }
 
-    @Override
     public void openScope() {
-        currentTable = new RecursiveSymbolTable(this);
+        currentTable = new RecursiveSymbolTable<T>(this);
     }
 
-    @Override
     public void closeScope() {
         currentTable = currentTable.parent;
     }
 
-    @Override
-    public void insert(String id, Symbol s) throws VariableAlreadyDeclaredException {
+    public void insert(String id, T s) throws VariableAlreadyDeclaredException {
         if (currentTable.entries.containsKey(id)) {
             throw new VariableAlreadyDeclaredException(id);
         }
         currentTable.entries.put(id, s);
     }
 
-    @Override
-    public Symbol lookup(String id) throws VariableNotDeclaredException {
+    public T lookup(String id) throws VariableNotDeclaredException {
         return currentTable.recursiveLookup(id);
     }
 
-    private Symbol recursiveLookup(String id) throws VariableNotDeclaredException {
+    private T recursiveLookup(String id) throws VariableNotDeclaredException {
         if (entries.containsKey(id)) {
             return entries.get(id);
         }
@@ -58,5 +54,13 @@ public class RecursiveSymbolTable implements SymTab {
             throw new VariableNotDeclaredException(id);
         }
         return parent.recursiveLookup(id);
+    }
+
+    public RecursiveSymbolTable<T> clone() {
+        return new RecursiveSymbolTable<>(this.parent);
+    }
+
+    public void change(String name, T element) {
+        currentTable.entries.put(name, element);
     }
 }

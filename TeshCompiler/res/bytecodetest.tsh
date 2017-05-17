@@ -1,3 +1,29 @@
-int[] A = [1000, 2000, 3000, 4000, 5000, 6000]
+func global(int d) int {
 
-int g = A[5]
+    int var = 0
+
+    func local(int a) int {
+            var += 1
+
+            int b
+            if (a <= 0) {
+                return 0
+            } else {
+                return a + local(a - 1)
+            }
+        }
+
+    print(str(local(10)))
+    int u = global(3)
+    return 0
+}
+
+int a = global(3)
+
+func test() void {
+    if (true) {
+
+    } else {
+        return
+    }
+}
