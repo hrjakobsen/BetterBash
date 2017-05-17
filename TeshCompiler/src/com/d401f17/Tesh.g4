@@ -17,7 +17,6 @@ simpleStatement
     //| identifier CHANNEL_OP SIMPLE_IDENTIFIER                                                                           #readFromChannelStatementToVariable
     | arrayAccess CHANNEL_OP expression                                                                                 #readFromChannelStatementToArray
     | SIMPLE_IDENTIFIER CHANNEL_OP expression                                                                           #channelStatement
-    | VAR identifier ASSIGN expression                                                                                  #varStatement
     | functionCall                                                                                                      #functionCallStatement
     | SIMPLE_IDENTIFIER CHANNEL_OP DOLLAR expression                                                                    #executeShellCommandIntoChannelStatement
     | DOLLAR expression                                                                                                 #executeShellCommandStatement

@@ -518,7 +518,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         //If return is same type as function, set type of the node to the return type of the function
         if (funcType.equals(statementsType) || (funcType instanceof VoidType && statementsType instanceof OkType)) {
-            node.setType(funcType);
+            node.setType(new OkType());
         } else {
             node.setType(new ErrorType(node.getLine(), "Return expected " + funcType + ", got " + statementsType));
         }

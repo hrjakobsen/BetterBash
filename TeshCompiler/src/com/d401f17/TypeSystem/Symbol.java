@@ -9,6 +9,7 @@ public class Symbol {
     private Type type;
     private AST declarationNode;
     private int address;
+    private int functionPointer = 0;
 
     public Symbol(Type type, AST declarationNode) {
         this.type = type;
@@ -31,5 +32,11 @@ public class Symbol {
         this.address = address;
     }
 
+    public int getFunctionPointer() {
+        return functionPointer;
+    }
 
+    public void setFunctionPointer(int functionPointer) {
+        this.functionPointer = functionPointer;
+    }
 }

@@ -1,6 +1,7 @@
 package com.d401f17.TypeSystem;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -17,8 +18,8 @@ public class FunctionType extends Type {
 
     public FunctionType(String name, Type[] formalArguments, Type returnType) {
         this.returnType = returnType;
-        for (Type t : formalArguments) {
-            this.args.add(t);
+        if (formalArguments != null) {
+            this.args.addAll(Arrays.asList(formalArguments));
         }
 
         createSignature(name, formalArguments);
@@ -39,7 +40,7 @@ public class FunctionType extends Type {
     }
 
     private void createSignature(String name, Type[] formalArguments) {
-        int numArgs = formalArguments.length;
+        int numArgs = formalArguments == null ? 0 : formalArguments.length;
         StringBuilder sb = new StringBuilder();
         sb.append(name + "(");
         if (numArgs > 0) {
