@@ -449,11 +449,17 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             return null;
         }
 
+        FunctionType tempFunc = new FunctionType(node.getName().getName(), argumentTypes, new VoidType());
+
         try {
-            Type functionType = st.lookup(node.getName().getName()).getType();
-            node.setType(((FunctionType)functionType).getReturnType());
+            FunctionType functionType = (FunctionType)st.lookup(node.getName().getName()).getType();
+            if (tempFunc.isValidCallOf(functionType)) {
+                node.setType(functionType.getReturnType());
+            } else {
+                node.setType(new ErrorType(node.getLine(), "Function with signature " + tempFunc.toString() + " not declared"));
+            }
         } catch (VariableNotDeclaredException e) {
-            node.setType(new ErrorType(node.getLine(), "Function with signature " + e.getMessage()));
+            node.setType(new ErrorType(node.getLine(), "Function with name " + e.getMessage()));
         }
 
         return null;
@@ -978,11 +984,17 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             return null;
         }
 
+        FunctionType tempFunc = new FunctionType(node.getName().getName(), argumentTypes, new VoidType());
+
         try {
-            st.lookup(node.getName().getName());
-            node.setType(new OkType());
+            FunctionType functionType = (FunctionType)st.lookup(node.getName().getName()).getType();
+            if (tempFunc.isValidCallOf(functionType)) {
+                node.setType(new OkType());
+            } else {
+                node.setType(new ErrorType(node.getLine(), "Function with signature " + tempFunc.toString() + " not declared"));
+            }
         } catch (VariableNotDeclaredException e) {
-            node.setType(new ErrorType(node.getLine(), "Function with signature " + e.getMessage()));
+            node.setType(new ErrorType(node.getLine(), "Function with name " + e.getMessage()));
         }
 
         return null;

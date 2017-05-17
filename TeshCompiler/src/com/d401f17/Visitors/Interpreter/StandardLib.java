@@ -17,33 +17,33 @@ import java.util.function.Function;
 public final class StandardLib {
     public static void InsertFunctionNames (SymTab table) {
         try {
-            table.insert("intToStr", new FunctionSymbol(new FunctionType("str", new Type[] {new IntType()}, new StringType()), null, null));
-            table.insert("floatToStr", new FunctionSymbol(new FunctionType("str", new Type[] {new FloatType()}, new StringType()), null, null));
-            table.insert("charToStr", new FunctionSymbol(new FunctionType("str", new Type[] {new CharType()}, new StringType()), null, null));
-            table.insert("boolToStr", new FunctionSymbol(new FunctionType("str", new Type[] {new BoolType()}, new StringType()), null, null));
+            table.insert("intToStr", new FunctionSymbol(new FunctionType("intToStr", new Type[] {new IntType()}, new StringType()), null, null));
+            table.insert("floatToStr", new FunctionSymbol(new FunctionType("floatToStr", new Type[] {new FloatType()}, new StringType()), null, null));
+            table.insert("charToStr", new FunctionSymbol(new FunctionType("charToStr", new Type[] {new CharType()}, new StringType()), null, null));
+            table.insert("boolToStr", new FunctionSymbol(new FunctionType("boolToStr", new Type[] {new BoolType()}, new StringType()), null, null));
+            table.insert("intVal", new FunctionSymbol(new FunctionType("intVal", new Type[] {new StringType()}, new IntType()), null, null));
+            table.insert("floatVal", new FunctionSymbol(new FunctionType("floatVal", new Type[] {new StringType()}, new FloatType()), null, null));
             table.insert("print", new FunctionSymbol(new FunctionType("print", new Type[] {new StringType()}, new VoidType()), null, null));
             table.insert("read", new FunctionSymbol(new FunctionType("read", new Type[] {}, new StringType()), null, null));
             table.insert("sqrt", new FunctionSymbol(new FunctionType("sqrt", new Type[] {new FloatType()}, new FloatType()), null, null));
             table.insert("rnd", new FunctionSymbol(new FunctionType("rnd", new Type[] {}, new FloatType()), null, null));
             table.insert("ceil", new FunctionSymbol(new FunctionType("ceil", new Type[] {new FloatType()}, new IntType()), null, null));
-            table.insert("floor", new FunctionSymbol(new FunctionType("float", new Type[] {new FloatType()}, new IntType()), null, null));
+            table.insert("floor", new FunctionSymbol(new FunctionType("floor", new Type[] {new FloatType()}, new IntType()), null, null));
         } catch (VariableAlreadyDeclaredException e) {}
     }
     
     public static void InsertFunctions (HashMap<String, Function<LiteralNode[], LiteralNode>> table) {
-        table.put("str(FLOAT)", StandardLib::LiteralToString);
-        table.put("str(CHAR)", StandardLib::LiteralToString);
-        table.put("str(STRING)", StandardLib::LiteralToString);
-        table.put("str(INT)", StandardLib::LiteralToString);
-        table.put("str(BOOL)", StandardLib::LiteralToString);
-        table.put("intval(FLOAT)", StandardLib::FloatToInt);
-        table.put("print(STRING)", StandardLib::Print);
-        table.put("read()", StandardLib::Read);
-        table.put("sqrt(INT)", StandardLib::SquareRoot);
-        table.put("sqrt(FLOAT)", StandardLib::SquareRoot);
-        table.put("rnd()", StandardLib::Random);
-        table.put("ceil(FLOAT)", StandardLib::Ceil);
-        table.put("floor(FLOAT)", StandardLib::Floor);
+        table.put("intToStr", StandardLib::LiteralToString);
+        table.put("charToStr", StandardLib::LiteralToString);
+        table.put("boolToStr", StandardLib::LiteralToString);
+        table.put("intVal", StandardLib::ParseInt);
+        table.put("floatVal", StandardLib::ParseFloat);
+        table.put("print", StandardLib::Print);
+        table.put("read", StandardLib::Read);
+        table.put("sqrt", StandardLib::SquareRoot);
+        table.put("rnd", StandardLib::Random);
+        table.put("ceil", StandardLib::Ceil);
+        table.put("floor", StandardLib::Floor);
     }
 
     public static StringLiteralNode LiteralToString(LiteralNode[] nodes) {
@@ -54,10 +54,18 @@ public final class StandardLib {
         return null;
     }
 
-    public static IntLiteralNode FloatToInt(LiteralNode[] nodes) {
+    public static IntLiteralNode ParseInt(LiteralNode[] nodes) {
         LiteralNode node = nodes[0];
-        if (node instanceof FloatLiteralNode) {
-            return new IntLiteralNode(((FloatLiteralNode)node).getValue().intValue());
+        if (node instanceof StringLiteralNode) {
+            return new IntLiteralNode(Long.parseLong(((StringLiteralNode)node).getValue()));
+        }
+        return null;
+    }
+
+    public static FloatLiteralNode ParseFloat(LiteralNode[] nodes) {
+        LiteralNode node = nodes[0];
+        if (node instanceof StringLiteralNode) {
+            return new FloatLiteralNode(Double.parseDouble(((StringLiteralNode)node).getValue()));
         }
         return null;
     }
@@ -76,10 +84,7 @@ public final class StandardLib {
 
     public static FloatLiteralNode SquareRoot(LiteralNode[] nodes) {
         FloatLiteralNode result = null;
-        if (nodes[0] instanceof IntLiteralNode) {
-            long val = (long) nodes[0].getValue();
-            result = new FloatLiteralNode(Math.sqrt(val));
-        } else if (nodes[0] instanceof FloatLiteralNode) {
+        if (nodes[0] instanceof FloatLiteralNode) {
             double val = (double) nodes[0].getValue();
             result = new FloatLiteralNode(Math.sqrt(val));
         }

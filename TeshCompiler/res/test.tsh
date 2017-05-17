@@ -3,30 +3,57 @@
 func range(int start, int end) int[] {
     int[] result = []
     int count = start
-    while count <= end {
-        result ::= count
-        count += 1
+    if (start < end) {
+        while count <= end {
+            result ::= count
+            count += 1
+        }
+    } else {
+        while count <= end {
+             result ::= count
+             count -= 1
+         }
     }
 
     return result
+}
+
+func sizeInt(int[] input) int {
+    int size = 0
+    for x in input {
+        size += 1
+    }
+    return size
+}
+
+func sizeStr(string[] input) int {
+    int size = 0
+    for x in input {
+        size += 1
+    }
+    return size
 }
 
 func random(float max) int {
     return floor(rnd() * max)
 }
 
+
+
 int size = 10
-string[] trees = [":herb:", ":herb:", ":herb:", ":herb:", ":sunflower:", ":sunflower:", ":seedling:", ":seedling:", ":ear_of_rice:", ":ear_of_rice:"]
+string[] trees = [":herb:", ":tulip:", ":seedling:", ":seedling:", ":sunflower:", ":hibiscus:", ":rose:", ":tulip:", ":blossom:", ":cherry_blossom:"]
+#string[] trees = [":herb:", ":herb:", ":herb:", ":herb:", ":sunflower:", ":sunflower:", ":seedling:", ":seedling:", ":ear_of_rice:", ":ear_of_rice:"]
 #string[] trees = [":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":man::skin-tone-5:"]
 
 string result = ""
+random(10)
 
 for y in range(-size, size) {
     for x in range(-size, size) {
         float dist = sqrt((x * x) + (y * y))
         int chance = random(dist)
         if chance < 1 {
-            result += trees[random(10.0)]
+            result += trees[random(sizeStr(trees))]
         } else {
             for i in range(0, random(dist)) {
                 result += " "
