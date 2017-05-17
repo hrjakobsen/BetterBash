@@ -731,6 +731,8 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
             return "D";
         } else if (variable instanceof StringType || variable instanceof CharType) {
             return "Ljava/lang/String;";
+        } else if (variable instanceof ArrayType) {
+            return "java/util/ArrayList";
         } else if (variable instanceof VoidType || variable instanceof OkType) {
             return "V";
         } else {
