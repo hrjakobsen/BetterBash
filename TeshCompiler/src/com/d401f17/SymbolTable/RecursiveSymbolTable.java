@@ -1,10 +1,6 @@
-package com.d401f17.TypeSystem;
+package com.d401f17.SymbolTable;
 
-import com.d401f17.AST.Nodes.VariableDeclarationNode;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by mathias on 4/28/17.

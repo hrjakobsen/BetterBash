@@ -2,8 +2,9 @@ package com.d401f17.Visitors;
 
 import com.d401f17.AST.Nodes.*;
 import com.d401f17.Helper;
+import com.d401f17.SymbolTable.*;
 import com.d401f17.TypeSystem.*;
-import jdk.nashorn.internal.codegen.types.BooleanType;
+import com.d401f17.Visitors.Interpreter.StandardLib;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,11 +19,11 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     private SymTab rt;
 
     public TypeCheckVisitor() {
-        this.st = new SymbolTable();
-        this.rt = new SymbolTable();
+        this(new SymbolTable(), new SymbolTable());
     }
 
     public TypeCheckVisitor(SymTab symbolTable, SymTab recordTable) {
+        StandardLib.InsertFunctionNames(symbolTable);
         this.st = symbolTable;
         this.rt = recordTable;
     }
@@ -74,11 +75,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         if (leftType instanceof FloatType && rightType instanceof FloatType) {
-            if (leftType instanceof IntType && rightType instanceof IntType) {
-                node.setType(leftType); //Int + Int = Int
-            } else {
-                node.setType(new FloatType()); //Int + Float = Float, Float + Int = Float, Float + Float = Float
-            }
+            node.setType(new FloatType()); //Int + Float = Float, Float + Int = Float, Float + Float = Float
             return null;
         } else {
             if (leftType instanceof CharType || rightType instanceof CharType) {
@@ -122,6 +119,11 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
                 }
                 indexNodes.get(i).accept(this);
                 indexTypes[i] = indexNodes.get(i).getType();
+
+                if (invalidChildren(indexTypes[i])) {
+                    node.setType(new IgnoreType());
+                    return null;
+                }
 
                 if (!(indexTypes[i] instanceof IntType)) {
                     node.setType(new ErrorType(node.getLine(), Helper.ordinal(i + 1) + " index expected int, got " + indexTypes[i]));
@@ -397,6 +399,9 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             //Get the type of the array
             Type varType = ((ArrayType) arrayType).getChildType();
 
+            //Make the variable immutable
+            varType.setImmutable(true);
+
             //Get name of variable
             String varName = node.getVariable().getName();
 
@@ -444,13 +449,17 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             return null;
         }
 
-        FunctionType func = new FunctionType(node.getName().getName(), argumentTypes, new VoidType());
+        FunctionType tempFunc = new FunctionType(node.getName().getName(), argumentTypes, new VoidType());
 
         try {
-            Type functionType = st.lookup(func.getSignature()).getType();
-            node.setType(((FunctionType)functionType).getReturnType());
+            FunctionType functionType = (FunctionType)st.lookup(node.getName().getName()).getType();
+            if (tempFunc.isValidCallOf(functionType)) {
+                node.setType(functionType.getReturnType());
+            } else {
+                node.setType(new ErrorType(node.getLine(), "Function with signature " + tempFunc.toString() + " not declared"));
+            }
         } catch (VariableNotDeclaredException e) {
-            node.setType(new ErrorType(node.getLine(), "Function with signature " + e.getMessage()));
+            node.setType(new ErrorType(node.getLine(), "Function with name " + e.getMessage()));
         }
 
         return null;
@@ -480,7 +489,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
 
         FunctionType function = new FunctionType(funcName, argumentTypes, funcType);
         try {
-            st.insert(function.getSignature(), new Symbol(function, node));
+            st.insert(funcName, new Symbol(function, node));
             node.setType(funcType);
         } catch (VariableAlreadyDeclaredException e) {
             node.setType(new ErrorType(node.getLine(), "Function with signature " + e.getMessage()));
@@ -498,8 +507,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         //Check if arguments were ok
         if (invalidChildren(argumentTypes)) {
             //Close scope before leaving
-            st.closeScope();
-            rt.closeScope();
+            closeScope();
             node.setType(new IgnoreType());
             return null;
         }
@@ -512,7 +520,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         //Check if statements were ok
         Type statementsType = node.getStatements().getType();
         if (invalidChildren(statementsType)) {
-            node.setType(new ErrorType(node.getLine(), "Failed to declare function " + funcName));
+            node.setType(new IgnoreType());
             return null;
         }
 
@@ -917,6 +925,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
                 //The typenode of a record doesn't know anything about the members of the record
                 node.getTypeNode().setType(varType);
             } catch (VariableNotDeclaredException e) {
+                node.setType(new ErrorType(node.getLine(), "Record " + e.getMessage()));
                 node.getTypeNode().setType(new ErrorType(node.getLine(), "Record " + e.getMessage()));
                 return null;
             }
@@ -975,13 +984,17 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             return null;
         }
 
-        FunctionType func = new FunctionType(node.getName().getName(), argumentTypes, new VoidType());
+        FunctionType tempFunc = new FunctionType(node.getName().getName(), argumentTypes, new VoidType());
 
         try {
-            st.lookup(func.getSignature());
-            node.setType(new OkType());
+            FunctionType functionType = (FunctionType)st.lookup(node.getName().getName()).getType();
+            if (tempFunc.isValidCallOf(functionType)) {
+                node.setType(new OkType());
+            } else {
+                node.setType(new ErrorType(node.getLine(), "Function with signature " + tempFunc.toString() + " not declared"));
+            }
         } catch (VariableNotDeclaredException e) {
-            node.setType(new ErrorType(node.getLine(), "Function with signature " + e.getMessage()));
+            node.setType(new ErrorType(node.getLine(), "Function with name " + e.getMessage()));
         }
 
         return null;
@@ -1059,6 +1072,10 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
     private Type assignment(Type var, Type exp, int lineNum) {
         if (invalidChildren(var, exp)) {
             return new IgnoreType();
+        }
+
+        if (var.isImmutable()) {
+            return new ErrorType(lineNum, "Attempted assignment to immutable variable");
         }
 
         boolean success;

@@ -1,6 +1,7 @@
 package com.d401f17.Visitors.Interpreter;
 
 import com.d401f17.AST.Nodes.*;
+import com.d401f17.SymbolTable.*;
 import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.BaseVisitor;
 
@@ -27,19 +28,15 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
     }
 
     private Store store = new Store();
-    private SymbolTable symtab = SymbolTable.StandardTable();
-    private SymTab recTable;
+    private SymbolTable symbolTable;
+    private SymTab recordTable;
 
-    public InterpretVisitor(SymTab recTable) {
-        standardFunctions.put("str(FLOAT)", StandardLib::LiteralToString);
-        standardFunctions.put("str(CHAR)", StandardLib::LiteralToString);
-        standardFunctions.put("str(STRING)", StandardLib::LiteralToString);
-        standardFunctions.put("str(INT)", StandardLib::LiteralToString);
-        standardFunctions.put("str(BOOL)", StandardLib::LiteralToString);
-        standardFunctions.put("intval(FLOAT)", StandardLib::FloatToInt);
-        standardFunctions.put("print(STRING)", StandardLib::Print);
-        standardFunctions.put("read()", StandardLib::Read);
-        this.recTable = recTable;
+    public InterpretVisitor(SymTab recordTable) {
+        this.symbolTable = new SymbolTable();
+        this.recordTable = recordTable;
+
+        StandardLib.InsertFunctionNames(this.symbolTable);
+        StandardLib.InsertFunctions(standardFunctions);
     }
 
     @Override
@@ -79,7 +76,7 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         Symbol entry;
 
         try {
-            entry = symtab.lookup(node.getVariable().getName());
+            entry = symbolTable.lookup(node.getVariable().getName());
             ValueArrayLiteralNode array = (ValueArrayLiteralNode) store.getElement(entry.getAddress());
             array.getValue().add((LiteralNode) node.expression.accept(this));
         } catch (VariableNotDeclaredException e) {
@@ -94,7 +91,7 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         Symbol entry;
 
         try {
-            entry = symtab.lookup(node.getArray().getName());
+            entry = symbolTable.lookup(node.getArray().getName());
             ValueArrayLiteralNode values = (ValueArrayLiteralNode) store.getElement(entry.getAddress());
             List<ArithmeticExpressionNode> indices = node.getIndices();
             for (int i = 0, indicesSize = indices.size(); i < indicesSize - 1; i++) {
@@ -117,14 +114,14 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         ValueArrayLiteralNode newArray = new ValueArrayLiteralNode(new ArrayList<>());
         try {
             for (LiteralNode child : array.getValue()) {
-                symtab.openScope();
+                symbolTable.openScope();
                 Symbol newEntry = new Symbol(child.getType(), child);
                 newEntry.setAddress(store.setNext(child));
-                symtab.insert(node.getVariable().getName(), newEntry);
+                symbolTable.insert(node.getVariable().getName(), newEntry);
 
                 BoolLiteralNode predRes = (BoolLiteralNode)node.expression.accept(this);
                 if (predRes.getValue()) newArray.getValue().add(child);
-                symtab.closeScope();
+                symbolTable.closeScope();
             }
             return newArray;
         } catch (VariableAlreadyDeclaredException e) {
@@ -148,7 +145,7 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         Symbol entry;
         ArrayAccessNode elementNode = node.getElement();
         try {
-            entry = symtab.lookup(elementNode.getArray().getName());
+            entry = symbolTable.lookup(elementNode.getArray().getName());
             ValueArrayLiteralNode values = (ValueArrayLiteralNode) store.getElement(entry.getAddress());
             List<ArithmeticExpressionNode> indices = elementNode.getIndices();
             for (int i = 0, indicesSize = indices.size(); i < indicesSize - 1; i++) {
@@ -173,14 +170,14 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         Symbol entry;
         try {
             if (variable instanceof SimpleIdentifierNode) {
-                entry = symtab.lookup(variable.getName());
+                entry = symbolTable.lookup(variable.getName());
                 if (variable.getType() instanceof FloatType) {
                     store.setElement(entry.getAddress(), ToFloat(value.getValue()));
                 }
                 store.setElement(entry.getAddress(), value);
             } else if (variable instanceof RecordIdentifierNode) {
                 //Find record in store
-                entry = symtab.lookup(variable.getName());
+                entry = symbolTable.lookup(variable.getName());
                 RecordLiteralNode element = (RecordLiteralNode)store.getElement(entry.getAddress());
                 //Find the element denoted in the source code
                 while (!(((RecordIdentifierNode) variable).getChild() instanceof SimpleIdentifierNode)) {
@@ -274,17 +271,17 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         ValueArrayLiteralNode array = (ValueArrayLiteralNode)node.getArray().accept(this);
         try {
             for (LiteralNode child : array.getValue()) {
-                symtab.openScope();
+                symbolTable.openScope();
                 Symbol newEntry = new Symbol(child.getType(), child);
                 newEntry.setAddress(store.setNext(child));
-                symtab.insert(node.getVariable().getName(), newEntry);
+                symbolTable.insert(node.getVariable().getName(), newEntry);
 
                 LiteralNode res = (LiteralNode)node.getStatements().accept(this);
                 if (res != null) {
-                    symtab.closeScope();
+                    symbolTable.closeScope();
                     return res;
                 }
-                symtab.closeScope();
+                symbolTable.closeScope();
             }
         } catch (VariableAlreadyDeclaredException e) {
             e.printStackTrace();
@@ -304,26 +301,26 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         }
 
         FunctionType func = new FunctionType(node.getName().getName(), argumentTypes, new VoidType());
-        String signature = func.getSignature();
+        String signature = func.toString();
         if (standardFunctions.containsKey(signature)) {
-            Function stdFunc = standardFunctions.get(func.getSignature());
+            Function stdFunc = standardFunctions.get(func.toString());
             return ((LiteralNode) stdFunc.apply(argResults));
         }
 
-        SymbolTable old = symtab;
+        SymbolTable old = symbolTable;
         LiteralNode res = null;
         try {
-            FunctionSymbol function = (FunctionSymbol)symtab.lookup(signature);
-            symtab = new SymbolTable(function.getSymbolTable());
-            symtab.openScope();
+            FunctionSymbol function = (FunctionSymbol) symbolTable.lookup(signature);
+            symbolTable = new SymbolTable(function.getSymbolTable());
+            symbolTable.openScope();
             FunctionNode declarationNode = (FunctionNode)function.getDeclarationNode();
             for (int i = 0; i < argResults.length; i++) {
-                Symbol s = symtab.lookup(declarationNode.getFormalArguments().get(i).getName().getName());
+                Symbol s = symbolTable.lookup(declarationNode.getFormalArguments().get(i).getName().getName());
                 store.setElement(s.getAddress(), argResults[i]);
             }
             res =  (LiteralNode)declarationNode.getStatements().accept(this);
-            symtab.closeScope();
-            symtab = old;
+            symbolTable.closeScope();
+            symbolTable = old;
         } catch (VariableNotDeclaredException e) {
             e.printStackTrace();
         }
@@ -333,18 +330,18 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
 
     @Override
     public LiteralNode visit(FunctionNode node) {
-        SymbolTable functionTable = new SymbolTable(symtab);
+        SymbolTable functionTable = new SymbolTable(symbolTable);
         functionTable.openScope();
 
         List<VariableDeclarationNode> arguments = node.getFormalArguments();
         Type[] argumentTypes = new Type[arguments.size()];
-        SymbolTable old = symtab;
-        symtab = functionTable;
+        SymbolTable old = symbolTable;
+        symbolTable = functionTable;
         for (int i = 0; i < arguments.size(); i++) {
             argumentTypes[i] = arguments.get(i).getTypeNode().getType();
             arguments.get(i).accept(this);
         }
-        symtab = old;
+        symbolTable = old;
 
         String funcName = node.getName().getName();
         Type funcType = node.getType();
@@ -352,8 +349,8 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         FunctionType function = new FunctionType(funcName, argumentTypes, funcType);
         try {
             FunctionSymbol f = new FunctionSymbol(function, node, new SymbolTable(functionTable));
-            f.getSymbolTable().insert(function.getSignature(), f);
-            symtab.insert(function.getSignature(), f);
+            f.getSymbolTable().insert(function.toString(), f);
+            symbolTable.insert(function.toString(), f);
         } catch (VariableAlreadyDeclaredException e) {
             e.printStackTrace();
         }
@@ -392,13 +389,13 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
     public LiteralNode visit(IfNode node) {
         BoolLiteralNode predicate = (BoolLiteralNode)node.getPredicate().accept(this);
         LiteralNode res;
-        symtab.openScope();
+        symbolTable.openScope();
         if (predicate.getValue()) {
             res = (LiteralNode)node.getTrueBranch().accept(this);
         } else {
             res =  (LiteralNode)node.getFalseBranch().accept(this);
         }
-        symtab.closeScope();
+        symbolTable.closeScope();
         return res;
     }
 
@@ -486,7 +483,7 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
     @Override
     public LiteralNode visit(RecordIdentifierNode node) {
         try {
-            Symbol identifier = symtab.lookup(node.getName());
+            Symbol identifier = symbolTable.lookup(node.getName());
             LiteralNode element = (LiteralNode) store.getElement(identifier.getAddress());
             IdentifierNode child = node.getChild();
             //Follow the chain of record identifiers
@@ -538,7 +535,7 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
     @Override
     public LiteralNode visit(SimpleIdentifierNode node) {
         try {
-            Symbol entry = symtab.lookup(node.getName());
+            Symbol entry = symbolTable.lookup(node.getName());
             return (LiteralNode)store.getElement(entry.getAddress());
 
         } catch (VariableNotDeclaredException e) {
@@ -589,7 +586,7 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
             } else {
                 store.setElement(entry.getAddress(), LiteralNode.fromType(node.getTypeNode().getType()));
             }
-            symtab.insert(node.getName().getName(), entry);
+            symbolTable.insert(node.getName().getName(), entry);
         } catch (VariableAlreadyDeclaredException e) {
             e.printStackTrace();
         }
@@ -599,13 +596,13 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
     @Override
     public LiteralNode visit(WhileNode node) {
         while ((boolean)((LiteralNode)node.getPredicate().accept(this)).getValue()) {
-            symtab.openScope();
+            symbolTable.openScope();
             LiteralNode res = (LiteralNode) node.getStatements().accept(this);
             if (res != null) {
-                symtab.closeScope();
+                symbolTable.closeScope();
                 return res;
             }
-            symtab.closeScope();
+            symbolTable.closeScope();
         }
         return null;
     }
@@ -627,7 +624,7 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         if (node.getIdentifier().getType() instanceof ChannelType) {
             StringLiteralNode output = (StringLiteralNode)node.getExpression().accept(this);
             try {
-                Symbol symbol = symtab.lookup(node.getIdentifier().getName());
+                Symbol symbol = symbolTable.lookup(node.getIdentifier().getName());
                 ChannelLiteralNode c = (ChannelLiteralNode) store.getElement(symbol.getAddress());
                 c.write(output.getValue());
             } catch (VariableNotDeclaredException e) {
@@ -638,7 +635,7 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
             ChannelLiteralNode c = (ChannelLiteralNode) node.getExpression().accept(this);
             Symbol symbol = null;
             try {
-                symbol = symtab.lookup(node.getIdentifier().getName());
+                symbol = symbolTable.lookup(node.getIdentifier().getName());
                 store.setElement(symbol.getAddress(), new StringLiteralNode(c.read()));
             } catch (VariableNotDeclaredException e) {
                 e.printStackTrace();
@@ -675,7 +672,7 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
     private RecordLiteralNode createRecord(String name) {
         RecordLiteralNode val = null;
         try {
-            Symbol recSymbol = recTable.lookup(name);
+            Symbol recSymbol = recordTable.lookup(name);
             RecordType type = (RecordType)recSymbol.getType();
             Iterator it = type.getMembers().entrySet().iterator();
             val = new RecordLiteralNode(new HashMap<>(), type);

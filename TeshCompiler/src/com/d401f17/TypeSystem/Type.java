@@ -6,6 +6,7 @@ package com.d401f17.TypeSystem;
 public abstract class Type implements Comparable<Type> {
     private int lineNum;
     private String errorMessage;
+    private boolean immutable;
 
     public Type() {}
 
@@ -20,6 +21,14 @@ public abstract class Type implements Comparable<Type> {
 
     public String getErrorMessage() {
         return "Error on line " + lineNum + ": " + errorMessage;
+    }
+
+    public boolean isImmutable() {
+        return immutable;
+    }
+
+    public void setImmutable(boolean immutable) {
+        this.immutable = immutable;
     }
 
     @Override

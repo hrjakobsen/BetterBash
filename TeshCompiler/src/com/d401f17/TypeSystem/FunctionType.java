@@ -25,17 +25,42 @@ public class FunctionType extends Type {
         createSignature(name, formalArguments);
     }
 
+    public boolean isValidCallOf(FunctionType other) {
+        if (args.size() != other.args.size()) {
+            return false;
+        }
+
+        boolean valid = true;
+        for (int i = 0; i < args.size(); i++) {
+            Type arg = args.get(i);
+            Type argOther = other.args.get(i);
+
+            if (!argOther.getClass().isInstance(arg)) {
+                valid = false;
+                break;
+            }
+        }
+        return valid;
+    }
+
     @Override
     public boolean equals(Object o) {
-        return super.equals(o);
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        FunctionType that = (FunctionType) o;
+
+        return args != null ? args.equals(that.args) : that.args == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return args != null ? args.hashCode() : 0;
     }
 
     @Override
     public String toString() {
-        return returnType.toString();
-    }
-
-    public String getSignature() {
         return signature;
     }
 

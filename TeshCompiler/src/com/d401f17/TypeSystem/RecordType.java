@@ -1,5 +1,7 @@
 package com.d401f17.TypeSystem;
 
+import com.d401f17.SymbolTable.MemberNotFoundException;
+
 import java.util.HashMap;
 
 /**
@@ -27,7 +29,10 @@ public class RecordType extends Type {
 
     public RecordType(String name, String[] memberNames, Type[] memberTypes) {
         this.name = name;
+        setMembers(memberNames, memberTypes);
+    }
 
+    public void setMembers(String[] memberNames, Type[] memberTypes) {
         if (memberNames != null && memberNames.length == memberTypes.length) {
             for (int i = 0; i < memberNames.length; i++) {
                 members.put(memberNames[i], memberTypes[i]);

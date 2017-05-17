@@ -1,6 +1,7 @@
-package com.d401f17.TypeSystem;
+package com.d401f17.SymbolTable;
 
 import com.d401f17.AST.Nodes.AST;
+import com.d401f17.TypeSystem.Type;
 
 /**
  * Created by Henrik on 05-04-2017.
@@ -9,7 +10,6 @@ public class Symbol {
     private Type type;
     private AST declarationNode;
     private int address;
-    private int functionPointer = 0;
 
     public Symbol(Type type, AST declarationNode) {
         this.type = type;
@@ -30,13 +30,5 @@ public class Symbol {
 
     public void setAddress(int address) {
         this.address = address;
-    }
-
-    public int getFunctionPointer() {
-        return functionPointer;
-    }
-
-    public void setFunctionPointer(int functionPointer) {
-        this.functionPointer = functionPointer;
     }
 }
