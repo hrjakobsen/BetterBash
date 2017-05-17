@@ -1,12 +1,1 @@
-func _1(string b) void {
-    func _2(int a) int {
-        if (a <= 0) {
-            return 0
-        } else {
-            return a + _2(a - 1)
-        }
-    }
-    print(str(_2(10)))
-}
-
-_1("2")
+$"i3lock"

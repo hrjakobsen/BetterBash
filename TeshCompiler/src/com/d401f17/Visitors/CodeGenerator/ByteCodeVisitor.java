@@ -243,7 +243,45 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(ForNode node) {
+    public Void visit(ForNode node) { //TODO: Test this when arrays work
+        //Push array ref to top of stack
+        node.getArray().accept(this);
+        mv.visitVarInsn(ASTORE, 3);
+
+        Label evaluate = new Label();
+        Label execute = new Label();
+
+        //Array Index
+        mv.visitLdcInsn(0);
+        mv.visitVarInsn(ISTORE, 4);
+
+        //Begin while loop
+        mv.visitJumpInsn(GOTO, evaluate);
+        mv.visitLabel(execute);
+
+        //Get symbol table of function
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "openScope", "()V", false);
+
+        //Bind name to array value
+        mv.visitVarInsn(ALOAD, 3);
+        mv.visitVarInsn(ILOAD, 4);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "get", "(I)Ljava/lang/Object;", false);
+
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitLdcInsn(node.getVariable().getName());
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "insert", "(Ljava/lang/String;Ljava/lang/Object;)V", false);
+
+        node.getStatements().accept(this);
+
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "closeScope", "()V", false);
+
+        mv.visitLabel(evaluate);
+        mv.visitVarInsn(ILOAD, 4);
+        mv.visitVarInsn(ALOAD, 3);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "size", "()I", false);
+        mv.visitJumpInsn(IF_ICMPLT, execute);
         return null;
     }
 
@@ -519,6 +557,11 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ShellNode node) {
+        mv.visitMethodInsn(INVOKESTATIC, "java/lang/Runtime", "getRuntime", "()Ljava/lang/Runtime;", false);
+        node.getCommand().accept(this);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Runtime", "exec", "(Ljava/lang/String;)Ljava/lang/Process;", false);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Process", "waitFor", "()I", false);
+        mv.visitInsn(POP);
         return null;
     }
 
