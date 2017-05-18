@@ -5,13 +5,14 @@ import com.d401f17.SymbolTable.SymTab;
 import com.d401f17.SymbolTable.SymbolTable;
 import com.d401f17.Visitors.BuildAstVisitor;
 import com.d401f17.Visitors.CodeGenerator.ByteCodeVisitor;
-import com.d401f17.Visitors.PrettyPrintASTVisitor;
+import com.d401f17.Visitors.CodeGenerator.ClassDescriptor;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
 import java.io.*;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -51,10 +52,16 @@ public class Main {
         ast.accept(run);
         run.End();
 
+        List<ClassDescriptor> classes = run.getOtherClasses();
+        classes.add(0, new ClassDescriptor("Main", run.getCw()));
+
         try {
-            FileOutputStream fos = new FileOutputStream("/home/mathias/Desktop/Main.class");
-            fos.write(run.getBytes());
-            fos.close();
+            for (ClassDescriptor c : classes) {
+                FileOutputStream fos = new FileOutputStream("/home/mathias/Desktop/javaprivatetest/" + c.getName() + ".class");
+                fos.write(c.getWriter().toByteArray());
+                fos.close();
+
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

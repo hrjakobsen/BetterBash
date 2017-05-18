@@ -19,7 +19,8 @@ import static org.objectweb.asm.Opcodes.*;
  */
 
 public class ByteCodeVisitor extends BaseVisitor<Void> {
-    private HashMap<String, String> standardFunctions= new HashMap<String, String>();
+    private List<ClassDescriptor> otherClasses = new ArrayList<>();
+    private HashMap<String, String> standardFunctions= new HashMap<>();
     private ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES + ClassWriter.COMPUTE_MAXS);
     MethodVisitor mv = null;
     private SymbolTable symtab = new SymbolTable();
@@ -51,6 +52,14 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         mv.visitVarInsn(ASTORE, 0);
 
 
+    }
+
+    public List<ClassDescriptor> getOtherClasses() {
+        return otherClasses;
+    }
+
+    public ClassWriter getCw() {
+        return cw;
     }
 
     @Override
@@ -253,6 +262,54 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ForkNode node) {
+        ClassWriter innerClass = new ClassWriter(ClassWriter.COMPUTE_FRAMES + ClassWriter.COMPUTE_MAXS);
+        ClassWriter mainClass = cw;
+        cw = innerClass;
+        MethodVisitor mainMethod = mv;
+
+        String className = "fork";
+
+        innerClass.visit(52, ACC_PUBLIC, className, null, "java/lang/Thread", null);
+
+        innerClass.visitField(ACC_PRIVATE, "table", "LRecursiveSymbolTable;", null, null);
+
+        //Create constructor that accepts a SymbolTable
+        MethodVisitor constructor = innerClass.visitMethod(ACC_PUBLIC, "<init>", "(LRecursiveSymbolTable;)V", null, null);
+        constructor.visitVarInsn(ALOAD, 0);
+        constructor.visitMethodInsn(INVOKESPECIAL, "java/lang/Thread", "<init>", "()V", false);
+        constructor.visitVarInsn(ALOAD, 0);
+        constructor.visitVarInsn(ALOAD, 1);
+        constructor.visitFieldInsn(PUTFIELD, className, "table", "LRecursiveSymbolTable;");
+        constructor.visitInsn(RETURN);
+        constructor.visitMaxs(0,0);
+        constructor.visitEnd();
+
+        //implement the interface
+        mv = innerClass.visitMethod(ACC_PUBLIC, "run", "()V", null, null);
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitFieldInsn(GETFIELD, className, "table", "LRecursiveSymbolTable;");
+        mv.visitVarInsn(ASTORE, 0);
+
+        node.getChild().accept(this);
+
+        //Return back to method that used "fork"
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(0, 0);
+        mv.visitEnd();
+        innerClass.visitEnd();
+
+        otherClasses.add(new ClassDescriptor(className, innerClass));
+
+        cw = mainClass;
+        mv = mainMethod;
+
+        //Create new instance of class and call fork
+        mv.visitTypeInsn(NEW, className);
+        mv.visitInsn(DUP);
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKESPECIAL, className, "<init>", "(LRecursiveSymbolTable;)V", false);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Thread", "start", "()V", false);
+
         return null;
     }
 
@@ -646,7 +703,9 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ProcedureCallNode node) {
-        node.ToFunction().accept(this);
+        FunctionCallNode n = node.ToFunction();
+        n.accept(this);
+        //Do some check for return value and pop if it has one
         //mv.visitInsn(POP);
         return null;
     }
@@ -658,6 +717,22 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(PatternMatchNode node) {
+        node.getLeft().accept(this);
+        node.getRight().accept(this);
+
+        Label exit = new Label();
+        Label falseBranch = new Label();
+
+        mv.visitMethodInsn(INVOKEVIRTUAL,"java/lang/String", "matches", "(Ljava/lang/String;)Z", false);
+
+        //Convert the boolean (Z) value to a 1/0 integer.
+        mv.visitJumpInsn(IFEQ, falseBranch);
+        mv.visitInsn(ICONST_1);
+        mv.visitJumpInsn(GOTO, exit);
+        mv.visitLabel(falseBranch);
+        mv.visitInsn(ICONST_0);
+        mv.visitLabel(exit);
+
         return null;
     }
 
