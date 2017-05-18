@@ -41,7 +41,7 @@ public class FunctionCallNodeTest {
                 {new IntType(), new ChannelType(), new ErrorType()},
                 {new IntType(), new TextFileType(), new ErrorType()},
                 {new IntType(), new BinFileType(), new ErrorType()},
-                {new FloatType(), new IntType(), new ErrorType()},
+                {new FloatType(), new IntType(), new FloatType()},
                 {new FloatType(), new FloatType(), new FloatType()},
                 {new FloatType(), new CharType(), new ErrorType()},
                 {new FloatType(), new StringType(), new ErrorType()},

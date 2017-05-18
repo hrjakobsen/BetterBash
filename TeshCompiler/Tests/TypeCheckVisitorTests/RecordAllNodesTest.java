@@ -1,8 +1,7 @@
 package TypeCheckVisitorTests;
 
 import com.d401f17.AST.Nodes.*;
-import com.d401f17.SymbolTable.SymTab;
-import com.d401f17.SymbolTable.SymbolTable;
+import com.d401f17.SymbolTable.*;
 import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
@@ -12,10 +11,12 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 
 /**
  * Created by hu on 4/27/17.
@@ -29,6 +30,7 @@ public class RecordAllNodesTest {
     private SimpleIdentifierNode myPage;
     private TypeCheckVisitor typeCheckVisitor;
     private Type recordType;
+    private VariableDeclarationNode recordInstance;
 
     @Before
     public void SetUp() {
@@ -66,7 +68,7 @@ public class RecordAllNodesTest {
         recordType = new RecordType("page");
         myPage.setType(recordType);
         myPage.setName("myPage");
-        VariableDeclarationNode recordInstance = new VariableDeclarationNode(myPage, new TypeNode("recordpage"));
+        recordInstance = new VariableDeclarationNode(myPage, new TypeNode("recordpage"));
         recordInstance.setType(recordType);
         recordInstance.accept(typeCheckVisitor);
     }
@@ -118,6 +120,15 @@ public class RecordAllNodesTest {
         } else {
             node = new AdditionNode(new LiteralNode(0, leftType), myPage);
         }
+        Type type;
+        SimpleIdentifierNode a;
+        try {
+            type = ((RecordType) recordInstance.getName().getType()).getMemberType("child");
+            Assert.assertEquals(new IntType(), type);
+        } catch (com.d401f17.SymbolTable.MemberNotFoundException e) {
+            type = null;
+        }
+        new AdditionNode(new LiteralNode(0, type), new LiteralNode(0, new IntType()));
         node.accept(typeCheckVisitor);
         Assert.assertEquals(new ErrorType(), node.getType());
     }
@@ -441,7 +452,7 @@ public class RecordAllNodesTest {
         functionNode.accept(typeCheckVisitor);
 
         if (leftType instanceof RecordType && rightType instanceof RecordType) {
-            Assert.assertEquals(recordType, functionNode.getType());
+            Assert.assertEquals(new OkType(), functionNode.getType());
         } else {
             Assert.assertEquals(expectedType, functionNode.getType());
         }
