@@ -1,1 +1,5 @@
-fork print("hej")
+func fun() int {
+    return 4
+}
+
+fun()

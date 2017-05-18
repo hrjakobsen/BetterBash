@@ -50,8 +50,6 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         mv.visitInsn(DUP);
         mv.visitMethodInsn(INVOKESPECIAL, "RecursiveSymbolTable", "<init>", "()V", false);
         mv.visitVarInsn(ASTORE, 0);
-
-
     }
 
     public List<ClassDescriptor> getOtherClasses() {
@@ -694,7 +692,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         symtab.openScope();
         node.getStatements().accept(this);
         symtab.closeScope();
-        mv.visitLabel(head);
+         mv.visitLabel(head);
         node.getPredicate().accept(this);
         mv.visitInsn(ICONST_1);
         mv.visitJumpInsn(IF_ICMPEQ, body);
@@ -705,8 +703,15 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
     public Void visit(ProcedureCallNode node) {
         FunctionCallNode n = node.ToFunction();
         n.accept(this);
-        //Do some check for return value and pop if it has one
-        //mv.visitInsn(POP);
+        Type returnType = node.getReturnType();
+        if (!(returnType instanceof VoidType || returnType instanceof OkType)) {
+            //We need to remove the return element. It can be either one or two bytes
+            if (returnType instanceof IntType || returnType instanceof FloatType) {
+                mv.visitInsn(POP2);
+            } else {
+                mv.visitInsn(POP);
+            }
+        }
         return null;
     }
 

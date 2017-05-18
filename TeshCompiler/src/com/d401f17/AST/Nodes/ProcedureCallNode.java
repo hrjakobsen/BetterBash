@@ -59,7 +59,7 @@ public class ProcedureCallNode extends StatementNode {
 
     public FunctionCallNode ToFunction() {
         FunctionCallNode fNode = new FunctionCallNode(name, lineNum, getArguments().toArray(new ArithmeticExpressionNode[0]));
-        fNode.setType(getType());
+        fNode.setType(getReturnType());
         return fNode;
     }
 }

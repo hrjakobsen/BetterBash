@@ -990,6 +990,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             FunctionType functionType = (FunctionType)st.lookup(node.getName().getName()).getType();
             if (tempFunc.isValidCallOf(functionType)) {
                 node.setType(new OkType());
+                node.setReturnType(functionType.getReturnType());
             } else {
                 node.setType(new ErrorType(node.getLine(), "Function with signature " + tempFunc.toString() + " not declared"));
             }
