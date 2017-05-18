@@ -1,0 +1,13 @@
+func function (int a) int {
+    return 2
+}
+
+record page {
+	int number
+	string numberAsString
+    func b
+}
+
+record page myPage
+
+myPage.number = 2

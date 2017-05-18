@@ -10,10 +10,12 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 
 /**
  * Created by hu on 4/27/17.
@@ -27,6 +29,7 @@ public class RecordAllNodesTest {
     private SimpleIdentifierNode myPage;
     private TypeCheckVisitor typeCheckVisitor;
     private Type recordType;
+    private VariableDeclarationNode recordInstance;
 
     @Before
     public void SetUp() {
@@ -64,7 +67,7 @@ public class RecordAllNodesTest {
         recordType = new RecordType("page");
         myPage.setType(recordType);
         myPage.setName("myPage");
-        VariableDeclarationNode recordInstance = new VariableDeclarationNode(myPage, new TypeNode("recordpage"));
+        recordInstance = new VariableDeclarationNode(myPage, new TypeNode("recordpage"));
         recordInstance.setType(recordType);
         recordInstance.accept(typeCheckVisitor);
     }
@@ -116,6 +119,15 @@ public class RecordAllNodesTest {
         } else {
             node = new AdditionNode(new LiteralNode(0, leftType), myPage);
         }
+        Type type;
+        SimpleIdentifierNode a;
+        try {
+            type = ((RecordType) recordInstance.getName().getType()).getMemberType("child");
+            Assert.assertEquals(new IntType(), type);
+        } catch (MemberNotFoundException e) {
+            type = null;
+        }
+        new AdditionNode(new LiteralNode(0, type), new LiteralNode(0, new IntType()));
         node.accept(typeCheckVisitor);
         Assert.assertEquals(new ErrorType(), node.getType());
     }
