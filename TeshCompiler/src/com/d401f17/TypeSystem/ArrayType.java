@@ -46,4 +46,8 @@ public class ArrayType extends Type {
     public String getJavaType() {
         return "Ljava/util/ArrayList<" + getChildType().getJavaType() + ">;";
     }
+
+    public Type getInnerMostType() {
+        return childType instanceof ArrayType ? ((ArrayType)childType).getInnerMostType() : childType;
+    }
 }

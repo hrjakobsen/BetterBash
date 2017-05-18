@@ -88,6 +88,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
             Symbol s = symtab.lookup(node.getVariable().getName());
             emitLoad(node.getVariable().getName(), s.getType()); //push array ref
             node.getExpression().accept(this); //push value to append
+            boxElement(node.getExpression().getType());
             mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "add", "(Ljava/lang/Object;)Z", false); //Add to the list. Push null return value//Call appending method
             mv.visitInsn(POP); //Clean stack
         } catch (VariableNotDeclaredException e) {
@@ -105,13 +106,78 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         //Get ref to innermost array
         for (int i = 0; i < node.getIndices().size(); i++) {
             node.getIndices().get(i).accept(this); //push index
+            mv.visitInsn(L2I); //Truncate to 32 bit
             mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "get", "(I)Ljava/lang/Object;", false); //pop ref; pop index; push value
         }
+        unboxElement(((ArrayType)node.getArray().getType()).getInnerMostType());
         return null;
     }
 
     @Override
     public Void visit(ArrayBuilderNode node) {
+        Label evaluate = new Label();
+        Label exit = new Label();
+
+        node.getArray().accept(this);
+
+        //Create new array
+        mv.visitTypeInsn(NEW, "java/util/ArrayList");
+        mv.visitInsn(DUP);
+        mv.visitMethodInsn(INVOKESPECIAL, "java/util/ArrayList", "<init>", "()V", false);
+        mv.visitVarInsn(ASTORE, 9);
+
+        //Evaluate array
+        mv.visitInsn(DUP);
+        mv.visitVarInsn(ASTORE, 7);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "size", "()I", false);
+        mv.visitVarInsn(ISTORE, 5);
+        mv.visitInsn(ICONST_0);
+        mv.visitVarInsn(ISTORE, 6);
+
+        //Test if still inside array bounds
+        mv.visitLabel(evaluate);
+        mv.visitVarInsn(ILOAD, 6);
+        mv.visitVarInsn(ILOAD, 5);
+        mv.visitJumpInsn(IF_ICMPGE, exit);
+
+
+        //Open a new scope in the symbol table
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "openScope", "()V", false);
+
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitLdcInsn(node.getVariable().getName());
+
+        //Get the i'th element of the list
+        mv.visitVarInsn(ALOAD, 7);
+        mv.visitVarInsn(ILOAD, 6);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "get", "(I)Ljava/lang/Object;", false);
+        mv.visitVarInsn(ASTORE, 8);
+        mv.visitVarInsn(ALOAD, 8);
+
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "insert", "(Ljava/lang/String;Ljava/lang/Object;)V", false);
+
+        node.getExpression().accept(this);
+
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "closeScope", "()V", false);
+
+        mv.visitVarInsn(ILOAD, 6);
+        mv.visitInsn(ICONST_1);
+        mv.visitInsn(IADD);
+        mv.visitVarInsn(ISTORE, 6);
+
+        mv.visitJumpInsn(IFEQ, evaluate);
+        mv.visitVarInsn(ALOAD, 9);
+        mv.visitVarInsn(ALOAD, 8);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "add", "(Ljava/lang/Object;)Z", false);
+        mv.visitInsn(POP);
+
+        mv.visitJumpInsn(GOTO, evaluate);
+        mv.visitLabel(exit);
+
+        mv.visitVarInsn(ALOAD, 9);
+
         return null;
     }
 
@@ -120,13 +186,13 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         //Make a new list object
         mv.visitTypeInsn(NEW, "java/util/ArrayList"); //Push list ref
         mv.visitInsn(DUP); //push list ref
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "<init>", "()Z", false); //pop list ref, push NULL
-        mv.visitInsn(POP); //pop NULL
+        mv.visitMethodInsn(INVOKESPECIAL, "java/util/ArrayList", "<init>", "()V", false); //pop list ref, push NULL
 
         //Add elements to the list
         for (ArithmeticExpressionNode n : node.getValue()) {
             mv.visitInsn(DUP); //Push list ref
             n.accept(this); //Push value to add to the list
+            boxElement(n.getType());
             mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "add", "(Ljava/lang/Object;)Z", false); //Add to the list. Push null return value
             mv.visitInsn(POP); //Pop and discard return value
         }
@@ -441,7 +507,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
         //Create the new static method
         MethodVisitor oldMv = mv;
-        mv = cw.visitMethod(ACC_PRIVATE + ACC_STATIC, node.getName().getName(), "(LRecursiveSymbolTable;)" + toJavaType(node.getStatements().getType()), null, null);
+        mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, node.getName().getName(), "(LRecursiveSymbolTable;)" + toJavaType(node.getStatements().getType()), null, null);
 
         //Generate the method itself
         node.getStatements().accept(this);
@@ -746,6 +812,16 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
     }
 
     private void emitStore(String name, Type type, int address) {
+        boxElement(type);
+        //set the element in the heap
+        mv.visitVarInsn(ALOAD, address);
+        mv.visitInsn(SWAP);
+        mv.visitLdcInsn(name);
+        mv.visitInsn(SWAP);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "change", "(Ljava/lang/String;Ljava/lang/Object;)V", false);
+    }
+
+    private void boxElement(Type type) {
         //Boxing of primitive types
         if (type instanceof IntType) {
             mv.visitMethodInsn(INVOKESTATIC, "java/lang/Long", "valueOf", "(J)Ljava/lang/Long;", false);
@@ -756,25 +832,9 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         } else if (type instanceof BoolType) {
             mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
         }
-        else {
-            System.out.println("something was not right");
-        }
-
-        //set the element in the heap
-        mv.visitVarInsn(ALOAD, address);
-        mv.visitInsn(SWAP);
-        mv.visitLdcInsn(name);
-        mv.visitInsn(SWAP);
-        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "change", "(Ljava/lang/String;Ljava/lang/Object;)V", false);
     }
 
-    private void emitLoad(String name, Type type) {
-        //Load the element from the heap
-        mv.visitVarInsn(ALOAD, 0);
-        mv.visitLdcInsn(name);
-        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "lookup", "(Ljava/lang/String;)Ljava/lang/Object;", false);
-
-        //Unboxing of primitive types
+    private void unboxElement(Type type) {
         if (type instanceof IntType) {
             mv.visitTypeInsn(CHECKCAST, "java/lang/Long");
             mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Long", "longValue", "()J", false);
@@ -785,9 +845,19 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         } else if (type instanceof CharType) {
         } else if (type instanceof BoolType) {
             mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I", false);
-        } else {
-            System.out.println("something was not right");
+        } else if (type instanceof ArrayType) {
+            mv.visitTypeInsn(CHECKCAST, "java/util/ArrayList");
         }
+    }
+
+    private void emitLoad(String name, Type type) {
+        //Load the element from the heap
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitLdcInsn(name);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "lookup", "(Ljava/lang/String;)Ljava/lang/Object;", false);
+
+        //Unboxing of primitive types
+        unboxElement(type);
     }
 
     private String byteCodeSignature(FunctionType typeNode) {
