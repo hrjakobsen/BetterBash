@@ -1,235 +1,65 @@
 #!/bin/tesh
 
-#stdlib begin
-func str(int i) string {
-    string o
-    return o
-}
-func str(float i) string {
-    string o
-    return o
-}
-func str(char i) string {
-    string o
-    return o
-}
-func str(bool i) string {
-    string o
-    return o
-}
-func intVal(string str) int {
-    int value
-    return value
-}
-func wait() void {
-}
-func makeFile(string str) textfile {
-    textfile f
-    return f
-}
-channel stdio
-#stdlib end
+func range(int start, int end) int[] {
+    int[] result = []
+    int count = start
+    if (start < end) {
+        while count <= end {
+            result ::= count
+            count += 1
+        }
+    } else {
+        while count <= end {
+             result ::= count
+             count -= 1
+         }
+    }
 
-record page {
-	int number
+    return result
 }
 
-record book {
-	int year
-	record page pageInBook
+func sizeInt(int[] input) int {
+    int size = 0
+    for x in input {
+        size += 1
+    }
+    return size
+}
+
+func sizeStr(string[] input) int {
+    int size = 0
+    for x in input {
+        size += 1
+    }
+    return size
+}
+
+func random(float max) int {
+    return floor(rnd() * max)
 }
 
 
-myBook.pageInBook = notAPage
-myBook.pageInBook = 10
-record book myBook
-record book myBook2
-record book myBook3
-record page myPage
 
-#Ok
-record book[] myBookArray = [myBook, myBook2, myBook3]
+int size = 10
+string[] trees = [":herb:", ":tulip:", ":seedling:", ":seedling:", ":sunflower:", ":hibiscus:", ":rose:", ":tulip:", ":blossom:", ":cherry_blossom:"]
+#string[] trees = [":herb:", ":herb:", ":herb:", ":herb:", ":sunflower:", ":sunflower:", ":seedling:", ":seedling:", ":ear_of_rice:", ":ear_of_rice:"]
+#string[] trees = [":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":man::skin-tone-5:"]
 
-#Fail line 21
-record book[] myBookArray2 = [myBook, myPage]
+string result = ""
+random(10)
 
-#Fail line 24
-record book[] myBookArray3 = [myPage]
-
-#Ok
-myPage.number = 10
-
-#Ok
-myPage.numberAsString = "10"
-
-#Ok
-myBook.pageInBook = myPage
-
-#Ok
-record book notAPage
-
-#Fail line 39
-myBook.pageInBook = notAPage
-
-#Fail line 42
-myBook.pageInBook.year = 1994
-
-#Fail line 45
-myBook.pageInBook.year = myPage
-
-#Fail line 48
-myBook.notPageInBook = notAPage
-
-#Ok
-myBook.pageInBook.number = 1994
-
-#Fail line 54
-myBook.pageInBook.number = "1994"
-
-#Ok
-myBook.author = "Henrik"
-
-#Fail line 60
-mathiasBook.author = "Jacob"
-
-#Fail line 63
-myBook.year = "Sidste år"
-
-#OK
-int[] intArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-
-#OK
-int[][] intArrayArray
-
-#OK
-float[] floatArray1 = [1.0, 2.2]
-
-#Fail line 11
-float[] floatArray2 = [1, 2]
-
-#Fail line 14
-float[][] floatArrayArray = [[1, 2], floatArray1]
-
-#Fail line 17
-floatArrayArray = [[2.3], intArrayArray[0]]
-
-#OK
-intArrayArray = [[2, 2], [4, 5]]
-
-#OK
-intArrayArray[0] = intArray
-
-#Fail line 26
-intArrayArray[0][1] = intArray
-
-#OK
-intArrayArray[0][1] = intArray[0]
-
-#OK
-intArrayArray[0][1] = 1
-
-#Fail line 35
-intArrayArray[0][1] = "1"
-
-#OK
-floatArray1[0] = 2.3
-
-#OK
-floatArray1[1] = 2
-floatArray1 ::= 4.3
-
-#OK
-for i in intArray {
-	i = 10
-	int a = i * 10
-	string b
-	b = "Number is " + a
-}
-
-#OK
-for i in intArrayArray {
-	#Fail line 54
-	i = 10
-}
-
-#OK
-for i in intArrayArray[0] {
-    #OK
-    int a = i + 10
-}
-
-#OK
-for i in [1, 2, 3] {
-    #Fail line 66
-	string a = i + 10
-}
-
-char c = 'a'
-
-func myFun(int a, string b) void {
-	int i = 2
-	i += a
-
-	if i > 10 {
-		return
-	} else {
-		b = "Oh no!"
-	}
-
-	return
-}
-
-func myFun(int a, char b) int {
-	return a + 2
-}
-
-int a = myFun(2, 'b')
-
-func myFun2(int a, string b) int {
-	int i = 10
-
-	if true {
-		if true == false {
-			while true {
-				if false {
-					return i
-				} else {
-					return i
-				}
-			}
-		} else {
-			return i
-		}
-	} else {
-		return i
-	}
-
-	if true {
-		return i
-	} else {
-		float f = 2.3
-		b = str(f) + str(a) + str(2) + str(c)
-		return 42
-	}
-
-	if false {
-		return a
-	} else {
-		float f2 = 2
-		return i + a
-	}
-
-	#return b
-}
-
-func myFun3(int a, string b) float {
-	return 2.0
-}
-
-func wontwork() string {
-	int a
-	a = 10
-	string b = "hej"
-
-	return b
+for y in range(-size, size) {
+    for x in range(-size, size) {
+        float dist = sqrt((x * x) + (y * y))
+        int chance = random(dist)
+        if chance < 1 {
+            result += trees[random(sizeStr(trees))]
+        } else {
+            for i in range(0, random(dist)) {
+                result += " "
+            }
+        }
+    }
+    print(result)
+    result = ""
 }

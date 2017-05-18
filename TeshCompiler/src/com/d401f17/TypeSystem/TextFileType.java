@@ -11,4 +11,9 @@ public class TextFileType extends Type {
     public String toString() {
         return "TEXTFILE";
     }
+
+    @Override
+    public String getJavaType() {
+        return null;
+    }
 }

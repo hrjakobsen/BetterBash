@@ -11,4 +11,9 @@ public class CharType extends Type {
     public String toString() {
         return "CHAR";
     }
+
+    @Override
+    public String getJavaType() {
+        return "Ljava/lang/String;";
+    }
 }

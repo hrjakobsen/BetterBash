@@ -1,18 +1,16 @@
 package com.d401f17.Visitors.CodeGenerator;
 
 import com.d401f17.AST.Nodes.*;
+import com.d401f17.SymbolTable.*;
 import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.BaseVisitor;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
 import java.io.IOException;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.function.*;
+import java.util.*;
 
 import static org.objectweb.asm.Opcodes.*;
 
@@ -21,16 +19,14 @@ import static org.objectweb.asm.Opcodes.*;
  */
 
 public class ByteCodeVisitor extends BaseVisitor<Void> {
-    private HashMap<String, Consumer<MethodVisitor>> standardFunctions= new HashMap<>();
+    private HashMap<String, String> standardFunctions= new HashMap<String, String>();
     private ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES + ClassWriter.COMPUTE_MAXS);
     MethodVisitor mv = null;
     private SymbolTable symtab = new SymbolTable();
     private int nextAddress = 0;
     public ByteCodeVisitor() throws IOException {
-        standardFunctions.put("print(STRING)", BytecodeStandardLib::Print);
-        standardFunctions.put("str(FLOAT)", BytecodeStandardLib::FloatToString);
-        standardFunctions.put("str(INT)", BytecodeStandardLib::IntToString);
-        standardFunctions.put("str(CHAR)", BytecodeStandardLib::CharToString);
+        standardFunctions.put("print", "(Ljava/lang/String;)V");
+        standardFunctions.put("intToStr", "(J)Ljava/lang/String;");
         //Set up main class
         cw.visit(52,
                 ACC_PUBLIC + ACC_STATIC,
@@ -38,9 +34,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
                 null,
                 "java/lang/Object",
                 null);
-        //Create the heap field
-        FieldVisitor fv = cw.visitField(ACC_PRIVATE + ACC_STATIC, "heap","Ljava/util/ArrayList;", "Ljava/util/ArrayList<Ljava/lang/Object;>;", null);
-        fv.visitEnd();
+
 
         //Set up main method
         mv = cw.visitMethod(
@@ -50,11 +44,13 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
                 null,
                 null
         );
-        //Initialize heap
-        mv.visitTypeInsn(NEW, "java/util/ArrayList");
+
+        mv.visitTypeInsn(NEW, "RecursiveSymbolTable");
         mv.visitInsn(DUP);
-        mv.visitMethodInsn(INVOKESPECIAL, "java/util/ArrayList", "<init>", "()V", false);
-        mv.visitFieldInsn(PUTSTATIC, "Main", "heap", "Ljava/util/ArrayList;");
+        mv.visitMethodInsn(INVOKESPECIAL, "RecursiveSymbolTable", "<init>", "()V", false);
+        mv.visitVarInsn(ASTORE, 0);
+
+
     }
 
     @Override
@@ -81,59 +77,76 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ArrayAppendNode node) {
+        try {
+            Symbol s = symtab.lookup(node.getVariable().getName());
+            emitLoad(node.getVariable().getName(), s.getType()); //push array ref
+            node.getExpression().accept(this); //push value to append
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "add", "(Ljava/lang/Object;)Z", false); //Add to the list. Push null return value//Call appending method
+            mv.visitInsn(POP); //Clean stack
+        } catch (VariableNotDeclaredException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 
     @Override
     public Void visit(ArrayAccessNode node) {
-        try {
-            Symbol s = symtab.lookup(node.getArray().getName());
-            this.emitLoad(s.getType(), s.getAddress()); //Push arrayref
-            for (ArithmeticExpressionNode n : node.getIndices()) {
-                n.accept(this); //Push index
-                mv.visitInsn(AALOAD); //arrayref, index -> value; load value from array
-            }
-        } catch (VariableNotDeclaredException e) {
-            e.printStackTrace();
-        }
+        //Get Array ref
+        this.emitLoad(node.getArray().getName(), node.getArray().getType());//Push array ref
 
+        //Get ref to innermost array
+        for (int i = 0; i < node.getIndices().size(); i++) {
+            node.getIndices().get(i).accept(this); //push index
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "get", "(I)Ljava/lang/Object;", false); //pop ref; pop index; push value
+        }
         return null;
     }
 
     @Override
     public Void visit(ArrayBuilderNode node) {
-        //this.emitNop();
-        
         return null;
     }
 
     @Override
     public Void visit(ArrayLiteralNode node) {
+        //Make a new list object
+        mv.visitTypeInsn(NEW, "java/util/ArrayList"); //Push list ref
+        mv.visitInsn(DUP); //push list ref
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "<init>", "()Z", false); //pop list ref, push NULL
+        mv.visitInsn(POP); //pop NULL
 
-
+        //Add elements to the list
+        for (ArithmeticExpressionNode n : node.getValue()) {
+            mv.visitInsn(DUP); //Push list ref
+            n.accept(this); //Push value to add to the list
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "add", "(Ljava/lang/Object;)Z", false); //Add to the list. Push null return value
+            mv.visitInsn(POP); //Pop and discard return value
+        }
         return null;
     }
 
     @Override
     public Void visit(ArrayElementAssignmentNode node) {
-        try {
-            int elements = node.getElement().getIndices().size()-1; //Number of elements in the array index
-            Symbol s = symtab.lookup(node.getElement().getArray().getName());
-            this.emitLoad(s.getType(), s.getAddress());    //push arrayref
+        this.emitNops(4);
+        
+        //Get list ref
+        this.emitLoad(node.getElement().getArray().getName(), node.getElement().getArray().getType()); //Push array ref
 
-            //Iterate through all reference but the last one
-            //This will leave a ref to the inner array on the stack
-            for (int i = 0; i < elements; i++) {
-                node.getElement().getIndices().get(i).accept(this); //Push index
-                mv.visitInsn(AALOAD); //arrayref, index -> value; load value from array
-            }
-
-            node.getElement().getIndices().get(elements).accept(this); //Push index
-            node.getExpression().accept(this); //Push value to assign
-            mv.visitInsn(AASTORE);//arrayref, index, value -> ; store value in array
-        } catch (VariableNotDeclaredException e) {
-            e.printStackTrace();
+        //Traverse list refs to get ref to innermost array
+        for (int i = 0; i < node.getElement().getIndices().size()-1; i++) {
+            node.getElement().getIndices().get(i).accept(this);//push index
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "get", "(I)Ljava/lang/Object;", false); //pop list ref; pop index; push list ref
         }
+
+        //Invoke setter
+        node.getElement().getIndices().get(node.getElement().getIndices().size()-1).accept(this); //push index
+        node.getExpression().accept(this); //push value
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "set", "(I)Ljava/lang/Object;", false); //pop index; pop value; push null
+        mv.visitInsn(POP); //pop null
+
+        this.emitNops(4);
+
         return null;
     }
 
@@ -143,7 +156,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         child.accept(this);
         try {
             Symbol s = symtab.lookup(node.variable.getName());
-            emitStore(s.getType(), s.getAddress());
+            emitStore(node.getVariable().getName(), s.getType(), 0);
         } catch (VariableNotDeclaredException e) {
             e.printStackTrace();
         }
@@ -230,38 +243,125 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(ForNode node) {
+    public Void visit(ForNode node) { //TODO: Test this when arrays work
+        //Push array ref to top of stack
+        node.getArray().accept(this);
+        mv.visitVarInsn(ASTORE, 3);
+
+        Label evaluate = new Label();
+        Label execute = new Label();
+
+        //Array Index
+        mv.visitLdcInsn(0);
+        mv.visitVarInsn(ISTORE, 4);
+
+        //Begin while loop
+        mv.visitJumpInsn(GOTO, evaluate);
+        mv.visitLabel(execute);
+
+        //Get symbol table of function
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "openScope", "()V", false);
+
+        //Bind name to array value
+        mv.visitVarInsn(ALOAD, 3);
+        mv.visitVarInsn(ILOAD, 4);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "get", "(I)Ljava/lang/Object;", false);
+
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitLdcInsn(node.getVariable().getName());
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "insert", "(Ljava/lang/String;Ljava/lang/Object;)V", false);
+
+        node.getStatements().accept(this);
+
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "closeScope", "()V", false);
+
+        mv.visitLabel(evaluate);
+        mv.visitVarInsn(ILOAD, 4);
+        mv.visitVarInsn(ALOAD, 3);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "size", "()I", false);
+        mv.visitJumpInsn(IF_ICMPLT, execute);
         return null;
     }
 
     @Override
     public Void visit(FunctionCallNode node) {
-        List<ArithmeticExpressionNode> arguments = node.getArguments();
-        Type[] argumentTypes = new Type[arguments.size()];
-        for (int i = 0; i < arguments.size(); i++) {
-            argumentTypes[i] = arguments.get(i).getType();
-        }
-
         String funcName = node.getName().getName();
-        Type funcType = node.getType();
 
-        FunctionType function = new FunctionType(funcName, argumentTypes, funcType);
 
-        for (ArithmeticExpressionNode argument : node.getArguments()) {
-            argument.accept(this);
-        }
-
-        if (standardFunctions.containsKey(function.getSignature())) {
-            standardFunctions.get(function.getSignature()).accept(mv);
+        if (standardFunctions.containsKey(funcName)) {
+            for (ArithmeticExpressionNode arg : node.getArguments()) {
+                arg.accept(this);
+            }
+            mv.visitMethodInsn(INVOKESTATIC, "StdFunc", funcName, standardFunctions.get(funcName), false);
             return null;
         }
 
-        mv.visitMethodInsn(INVOKESTATIC, "Main", node.getName().getName(), byteCodeSignature(function), false);
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitLdcInsn(funcName);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "lookup", "(Ljava/lang/String;)Ljava/lang/Object;", false);
+        mv.visitTypeInsn(CHECKCAST, "RecursiveSymbolTable");
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "clone", "()LRecursiveSymbolTable;", false);
+        mv.visitInsn(DUP);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "openScope", "()V", false);
+        mv.visitVarInsn(ASTORE, 1);
+
+        FunctionNode f = null;
+        try {
+            f = (FunctionNode) (symtab.lookup(funcName)).getDeclarationNode();
+        } catch (VariableNotDeclaredException e) {
+            e.printStackTrace();
+        }
+
+        //We want to visit the node using this functions symbol table, but bind them in the new functions symbol table
+        List<ArithmeticExpressionNode> arguments = node.getArguments();
+        for (int i = 0; i < arguments.size(); i++) {
+            ArithmeticExpressionNode argument = arguments.get(i);
+            argument.accept(this);
+            emitStore(f.getFormalArguments().get(i).getName().getName(), argument.getType(), 1);
+        }
+
+        mv.visitVarInsn(ALOAD, 1);
+        mv.visitMethodInsn(INVOKESTATIC, "Main", node.getName().getName(), "(LRecursiveSymbolTable;)" + toJavaType(node.getType()), false);
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "closeScope", "()V", false);
+
+        //Restore the old symtab pointer
+        mv.visitVarInsn(ALOAD, 1);
+        mv.visitVarInsn(ASTORE, 0);
         return null;
     }
 
     @Override
     public Void visit(FunctionNode node) {
+        //Get the current symbol table
+        mv.visitVarInsn(ALOAD, 0);
+
+        //Create the new symbol table for the function
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "clone", "()LRecursiveSymbolTable;", false);
+
+        //Order the stack: {'REC', 'func name', 'REC', 'REC', }
+        mv.visitInsn(DUP);
+        mv.visitInsn(DUP);
+        mv.visitLdcInsn(node.getName().getName());
+        mv.visitInsn(SWAP);
+
+        //Insert the new table into itself
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "insert", "(Ljava/lang/String;Ljava/lang/Object;)V", false);
+        //(Stack is now: {'REC'})
+
+        //Load the original table
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitInsn(SWAP);
+        mv.visitLdcInsn(node.getName().getName());
+        mv.visitInsn(SWAP);
+
+        //Stack is now: {'REC', "func name', 'OLD'}
+
+        //Insert the new table into that as well
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "insert", "(Ljava/lang/String;Ljava/lang/Object;)V", false);
+
         //Create the snapshot of the symbol table at declaration time
         SymbolTable functionTable = new SymbolTable(symtab);
         functionTable.openScope();
@@ -270,50 +370,29 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         SymbolTable old = symtab;
         symtab = functionTable;
 
-        //Find all argument types to build functiontype
-        List<VariableDeclarationNode> arguments = node.getFormalArguments();
-        Type[] argumentTypes = new Type[arguments.size()];
-        for (int i = 0; i < arguments.size(); i++) {
-            argumentTypes[i] = arguments.get(i).getTypeNode().getType();
-        }
-
         String funcName = node.getName().getName();
         Type funcType = node.getType();
 
-        FunctionType function = new FunctionType(funcName, argumentTypes, funcType);
+        FunctionType function = new FunctionType(funcName, null, funcType);
 
         try {
             //Insert the function into the old symbol table
             FunctionSymbol f = new FunctionSymbol(function, node, new SymbolTable(functionTable));
-            f.getSymbolTable().insert(function.getSignature(), f);
-            old.insert(function.getSignature(), f);
+            f.getSymbolTable().insert(funcName, f);
+            old.insert(funcName, f);
         } catch (VariableAlreadyDeclaredException e) {
             e.printStackTrace();
         }
 
         //Create the new static method
         MethodVisitor oldMv = mv;
-        mv = cw.visitMethod(ACC_PRIVATE + ACC_STATIC, node.getName().getName(), byteCodeSignature(function), null, null);
-
-        //Allocate space in the heap for arguments
-        for (int i = 0; i < arguments.size(); i++) {
-            VariableDeclarationNode argument = arguments.get(i);
-            argument.accept(this);
-            try {
-                Symbol s = symtab.lookup(argument.getName().getName());
-                mv.visitVarInsn(LLOAD, i);
-                emitStore(argument.getTypeNode().getType(), s.getAddress());
-            } catch (VariableNotDeclaredException e) {
-                e.printStackTrace();
-            }
-        }
-
+        mv = cw.visitMethod(ACC_PRIVATE + ACC_STATIC, node.getName().getName(), "(LRecursiveSymbolTable;)" + toJavaType(node.getStatements().getType()), null, null);
 
         //Generate the method itself
         node.getStatements().accept(this);
 
-        //if void it may not have a specific return statement. Now add it
-        if (node.getType() instanceof VoidType) {
+        //if void it may not have an explicit return statement. Now add it
+        if (node.getStatements().getType() instanceof OkType || node.getStatements().getType() instanceof VoidType) {
             mv.visitInsn(RETURN);
         }
 
@@ -324,6 +403,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         //Restore the symbol table and method to main
         symtab = old;
         mv = oldMv;
+
         return null;
     }
 
@@ -477,6 +557,11 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ShellNode node) {
+        mv.visitMethodInsn(INVOKESTATIC, "java/lang/Runtime", "getRuntime", "()Ljava/lang/Runtime;", false);
+        node.getCommand().accept(this);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Runtime", "exec", "(Ljava/lang/String;)Ljava/lang/Process;", false);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Process", "waitFor", "()I", false);
+        mv.visitInsn(POP);
         return null;
     }
 
@@ -487,12 +572,8 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(SimpleIdentifierNode node) {
-        try {
-            Symbol s = symtab.lookup(node.getName());
-            emitLoad(s.getType(), s.getAddress());
-        } catch (VariableNotDeclaredException e) {
-            e.printStackTrace();
-        }
+        emitLoad(node.getName(), node.getType());
+
         return null;
     }
 
@@ -527,11 +608,6 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         s.setAddress(getVariable());
         try {
             symtab.insert(node.getName().getName(), s);
-            //Add a new element to the heap
-            mv.visitFieldInsn(GETSTATIC, "Main", "heap", "Ljava/util/ArrayList;");
-            mv.visitInsn(ACONST_NULL);
-            mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "add", "(Ljava/lang/Object;)Z", false);
-            mv.visitInsn(POP);
         } catch (VariableAlreadyDeclaredException e) {
             e.printStackTrace();
         }
@@ -589,11 +665,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         return cw.toByteArray();
     }
 
-    private int emitStore(Type type) {
-        return emitStore(type, getWideVariable());
-    }
-
-    private int emitStore(Type type, int address) {
+    private void emitStore(String name, Type type, int address) {
         //Boxing of primitive types
         if (type instanceof IntType) {
             mv.visitMethodInsn(INVOKESTATIC, "java/lang/Long", "valueOf", "(J)Ljava/lang/Long;", false);
@@ -609,21 +681,18 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         }
 
         //set the element in the heap
-        mv.visitFieldInsn(GETSTATIC, "Main", "heap", "Ljava/util/ArrayList;");
+        mv.visitVarInsn(ALOAD, address);
         mv.visitInsn(SWAP);
-        mv.visitLdcInsn(address);
+        mv.visitLdcInsn(name);
         mv.visitInsn(SWAP);
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "set", "(ILjava/lang/Object;)Ljava/lang/Object;", false);
-        mv.visitInsn(POP);
-
-        return address;
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "change", "(Ljava/lang/String;Ljava/lang/Object;)V", false);
     }
 
-    private void emitLoad(Type type, int address) {
+    private void emitLoad(String name, Type type) {
         //Load the element from the heap
-        mv.visitFieldInsn(GETSTATIC, "Main", "heap", "Ljava/util/ArrayList;");
-        mv.visitLdcInsn(address);
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "get", "(I)Ljava/lang/Object;", false);
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitLdcInsn(name);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "lookup", "(Ljava/lang/String;)Ljava/lang/Object;", false);
 
         //Unboxing of primitive types
         if (type instanceof IntType) {
@@ -662,9 +731,12 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
             return "D";
         } else if (variable instanceof StringType || variable instanceof CharType) {
             return "Ljava/lang/String;";
+        } else if (variable instanceof ArrayType) {
+            return "java/util/ArrayList";
         } else if (variable instanceof VoidType || variable instanceof OkType) {
             return "V";
         } else {
+            System.out.println(variable);
             System.out.println("Invalid type conversion");
         }
         return null;
@@ -677,7 +749,30 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         cw.visitEnd();
     }
 
-    private void emitNop() {
-        mv.visitInsn(NOP);
+    private void emitNops(int n) {
+        for (int i = 0; i<n; i++) {
+            mv.visitInsn(NOP);
+        }
+        return;
+    }
+
+    private void comment(String s) {
+        mv.visitLdcInsn("COMMENT: " + s);
+        mv.visitInsn(POP);
+    }
+
+    private void print() {
+        mv.visitInsn(DUP);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Object", "toString", "()Ljava/lang/String;", false);
+        mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+        mv.visitInsn(SWAP);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+    }
+
+    private void print(String s) {
+        mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+        mv.visitLdcInsn(s);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+        print();
     }
 }

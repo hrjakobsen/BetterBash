@@ -20,14 +20,14 @@ import java.util.regex.Pattern;
 public class BuildAstVisitor extends TeshBaseVisitor<AST>{
     @Override
     public AST visitCompileUnit(TeshParser.CompileUnitContext ctx) {
-        StatementsNode prog = new StatementsNode(ctx.start.getLine());
+        StatementsNode programStatements = new StatementsNode(ctx.start.getLine());
         for (ParseTree tree : ctx.statement()) {
             AST child = visit(tree);
             if (child != null) {
-                prog.getChildren().add((StatementNode) child);
+                programStatements.getChildren().add((StatementNode) child);
             }
         }
-        return prog;
+        return programStatements;
     }
 
     @Override
@@ -364,9 +364,9 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
         if (ctx.op.getType() == TeshParser.OP_SUB) {
             return new MultiplicationNode(
                     (ArithmeticExpressionNode) visit(ctx.value()),
-                    new LiteralNode(
+                    new IntLiteralNode(
                             -1,
-                            new IntType()
+                            ctx.start.getLine()
                     ),
                     ctx.start.getLine()
             );

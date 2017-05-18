@@ -11,4 +11,9 @@ public class BoolType extends Type {
     public String toString() {
         return "BOOL";
     }
+
+    @Override
+    public String getJavaType() {
+        return "I";
+    }
 }

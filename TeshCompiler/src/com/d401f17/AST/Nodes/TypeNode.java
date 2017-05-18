@@ -12,7 +12,6 @@ public class TypeNode extends AST {
     }
 
     public TypeNode(String primitiveType, int lineNum) {
-        //primitiveType = primitiveType.toLowerCase();
         this.lineNum = lineNum;
         if (primitiveType.endsWith("[]")) {
             String[] parts = primitiveType.split("\\[");

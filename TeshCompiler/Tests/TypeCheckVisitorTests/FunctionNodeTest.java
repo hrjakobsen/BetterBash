@@ -30,7 +30,7 @@ public class FunctionNodeTest {
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {new IntType(), new IntType(), new IntType()},
+                {new IntType(), new IntType(), new OkType()},
                 {new IntType(), new FloatType(), new ErrorType()},
                 {new IntType(), new CharType(), new ErrorType()},
                 {new IntType(), new StringType(), new ErrorType()},
@@ -42,7 +42,7 @@ public class FunctionNodeTest {
                 {new IntType(), new TextFileType(), new ErrorType()},
                 {new IntType(), new VoidType(), new ErrorType()},
                 {new FloatType(), new IntType(), new ErrorType()},
-                {new FloatType(), new FloatType(), new FloatType()},
+                {new FloatType(), new FloatType(), new OkType()},
                 {new FloatType(), new CharType(), new ErrorType()},
                 {new FloatType(), new StringType(), new ErrorType()},
                 {new FloatType(), new BoolType(), new ErrorType()},
@@ -56,7 +56,7 @@ public class FunctionNodeTest {
                 {new CharType(), new FloatType(), new ErrorType()},
                 {new CharType(), new StringType(), new ErrorType()},
                 {new CharType(), new BoolType(), new ErrorType()},
-                {new CharType(), new CharType(), new CharType()},
+                {new CharType(), new CharType(), new OkType()},
                 {new CharType(), new ArrayType(), new ErrorType()},
                 {new CharType(), new ChannelType(), new ErrorType()},
                 {new CharType(), new TextFileType(), new ErrorType()},
@@ -66,7 +66,7 @@ public class FunctionNodeTest {
                 {new StringType(), new IntType(), new ErrorType()},
                 {new StringType(), new FloatType(), new ErrorType()},
                 {new StringType(), new CharType(), new ErrorType()},
-                {new StringType(), new StringType(), new StringType()},
+                {new StringType(), new StringType(), new OkType()},
                 {new StringType(), new BoolType(), new ErrorType()},
                 {new StringType(), new ArrayType(), new ErrorType()},
                 {new StringType(), new ChannelType(), new ErrorType()},
@@ -77,7 +77,7 @@ public class FunctionNodeTest {
                 {new BoolType(), new FloatType(), new ErrorType()},
                 {new BoolType(), new StringType(), new ErrorType()},
                 {new BoolType(), new CharType(), new ErrorType()},
-                {new BoolType(), new BoolType(), new BoolType()},
+                {new BoolType(), new BoolType(), new OkType()},
                 {new BoolType(), new ArrayType(), new ErrorType()},
                 {new BoolType(), new ChannelType(), new ErrorType()},
                 {new BoolType(), new TextFileType(), new ErrorType()},
@@ -88,7 +88,7 @@ public class FunctionNodeTest {
                 {new ArrayType(), new CharType(), new ErrorType()},
                 {new ArrayType(), new StringType(), new ErrorType()},
                 {new ArrayType(), new BoolType(), new ErrorType()},
-                {new ArrayType(), new ArrayType(), new ArrayType()},
+                {new ArrayType(), new ArrayType(), new OkType()},
                 {new ArrayType(), new ChannelType(), new ErrorType()},
                 {new ArrayType(), new BinFileType(), new ErrorType()},
                 {new ArrayType(), new TextFileType(), new ErrorType()},
@@ -99,7 +99,7 @@ public class FunctionNodeTest {
                 {new ChannelType(), new StringType(), new ErrorType()},
                 {new ChannelType(), new BoolType(), new ErrorType()},
                 {new ChannelType(), new ArrayType(), new ErrorType()},
-                {new ChannelType(), new ChannelType(), new ChannelType()},
+                {new ChannelType(), new ChannelType(), new OkType()},
                 {new ChannelType(), new BinFileType(), new ErrorType()},
                 {new ChannelType(), new TextFileType(), new ErrorType()},
                 {new ChannelType(), new VoidType(), new ErrorType()},
@@ -110,7 +110,7 @@ public class FunctionNodeTest {
                 {new BinFileType(), new BoolType(), new ErrorType()},
                 {new BinFileType(), new ArrayType(), new ErrorType()},
                 {new BinFileType(), new ChannelType(), new ErrorType()},
-                {new BinFileType(), new BinFileType(), new BinFileType()},
+                {new BinFileType(), new BinFileType(), new OkType()},
                 {new BinFileType(), new TextFileType(), new ErrorType()},
                 {new BinFileType(), new VoidType(), new ErrorType()},
                 {new TextFileType(), new IntType(), new ErrorType()},
@@ -121,7 +121,7 @@ public class FunctionNodeTest {
                 {new TextFileType(), new ArrayType(), new ErrorType()},
                 {new TextFileType(), new ChannelType(), new ErrorType()},
                 {new TextFileType(), new BinFileType(), new ErrorType()},
-                {new TextFileType(), new TextFileType(), new TextFileType()},
+                {new TextFileType(), new TextFileType(), new OkType()},
                 {new TextFileType(), new VoidType(), new ErrorType()},
                 {new VoidType(), new IntType(), new ErrorType()},
                 {new VoidType(), new FloatType(), new ErrorType()},
@@ -132,7 +132,7 @@ public class FunctionNodeTest {
                 {new VoidType(), new ChannelType(), new ErrorType()},
                 {new VoidType(), new BinFileType(), new ErrorType()},
                 {new VoidType(), new TextFileType(), new ErrorType()},
-                {new VoidType(), new VoidType(), new VoidType()},
+                {new VoidType(), new VoidType(), new OkType()},
         });
     }
 
@@ -209,7 +209,7 @@ public class FunctionNodeTest {
 
         String errMessage = functionType + " => " + new ErrorType() + "\n" + typeCheckVisitor.getAllErrors();
         if (functionType instanceof VoidType) {
-            Assert.assertEquals(errMessage, new VoidType(), node.getType());
+            Assert.assertEquals(errMessage, new OkType(), node.getType());
         } else {
             Assert.assertEquals(errMessage, new ErrorType(), node.getType());
         }

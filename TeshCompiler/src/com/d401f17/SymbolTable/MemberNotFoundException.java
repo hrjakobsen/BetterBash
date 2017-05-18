@@ -1,4 +1,4 @@
-package com.d401f17.TypeSystem;
+package com.d401f17.SymbolTable;
 
 /**
  * Created by hense on 4/18/17.

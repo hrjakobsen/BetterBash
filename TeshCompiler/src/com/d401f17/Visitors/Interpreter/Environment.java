@@ -1,9 +1,7 @@
 package com.d401f17.Visitors.Interpreter;
 
 
-import com.d401f17.TypeSystem.SymbolTable;
-
-import java.util.Stack;
+import com.d401f17.SymbolTable.SymbolTable;
 
 /**
  * Created by mathias on 4/27/17.

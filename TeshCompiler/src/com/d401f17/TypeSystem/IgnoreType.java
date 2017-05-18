@@ -11,4 +11,9 @@ public class IgnoreType extends Type {
     public String toString() {
         return "IGNORE";
     }
+
+    @Override
+    public String getJavaType() {
+        return null;
+    }
 }

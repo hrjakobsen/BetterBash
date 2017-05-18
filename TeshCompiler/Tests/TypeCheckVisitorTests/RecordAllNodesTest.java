@@ -1,6 +1,7 @@
 package TypeCheckVisitorTests;
 
 import com.d401f17.AST.Nodes.*;
+import com.d401f17.SymbolTable.*;
 import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.junit.Assert;
@@ -124,7 +125,7 @@ public class RecordAllNodesTest {
         try {
             type = ((RecordType) recordInstance.getName().getType()).getMemberType("child");
             Assert.assertEquals(new IntType(), type);
-        } catch (MemberNotFoundException e) {
+        } catch (com.d401f17.SymbolTable.MemberNotFoundException e) {
             type = null;
         }
         new AdditionNode(new LiteralNode(0, type), new LiteralNode(0, new IntType()));
@@ -451,7 +452,7 @@ public class RecordAllNodesTest {
         functionNode.accept(typeCheckVisitor);
 
         if (leftType instanceof RecordType && rightType instanceof RecordType) {
-            Assert.assertEquals(recordType, functionNode.getType());
+            Assert.assertEquals(new OkType(), functionNode.getType());
         } else {
             Assert.assertEquals(expectedType, functionNode.getType());
         }

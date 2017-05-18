@@ -11,4 +11,9 @@ public class StringType extends Type {
     public String toString() {
         return "STRING";
     }
+
+    @Override
+    public String getJavaType() {
+        return "Ljava/lang/String;";
+    }
 }
