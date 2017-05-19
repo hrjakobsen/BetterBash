@@ -3,6 +3,7 @@ package com.d401f17.Visitors.Interpreter;
 import com.d401f17.AST.Nodes.*;
 import com.d401f17.SymbolTable.FunctionSymbol;
 import com.d401f17.SymbolTable.SymTab;
+import com.d401f17.SymbolTable.SymbolTable;
 import com.d401f17.SymbolTable.VariableAlreadyDeclaredException;
 import com.d401f17.TypeSystem.*;
 
@@ -31,7 +32,13 @@ public final class StandardLib {
             table.insert("floor", new FunctionSymbol(new FunctionType("floor", new Type[] {new FloatType()}, new IntType()), null, null));
         } catch (VariableAlreadyDeclaredException e) {}
     }
-    
+
+    public static SymTab InsertFunctionNames() {
+        SymTab table = new SymbolTable();
+        InsertFunctionNames(table);
+        return table;
+    }
+
     public static void InsertFunctions (HashMap<String, Function<LiteralNode[], LiteralNode>> table) {
         table.put("intToStr", StandardLib::LiteralToString);
         table.put("charToStr", StandardLib::LiteralToString);
@@ -44,6 +51,12 @@ public final class StandardLib {
         table.put("rnd", StandardLib::Random);
         table.put("ceil", StandardLib::Ceil);
         table.put("floor", StandardLib::Floor);
+    }
+
+    public static HashMap<String, Function<LiteralNode[], LiteralNode>> InsertFunctions() {
+        HashMap<String, Function<LiteralNode[], LiteralNode>> table = new HashMap<>();
+        InsertFunctions(table);
+        return table;
     }
 
     public static StringLiteralNode LiteralToString(LiteralNode[] nodes) {
