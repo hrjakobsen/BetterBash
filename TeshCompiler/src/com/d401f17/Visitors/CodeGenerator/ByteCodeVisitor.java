@@ -364,7 +364,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
     }
 
     @Override
-    public Void visit(ForNode node) { //TODO: Test this when arrays work
+    public Void visit(ForNode node) {
         //Push array ref to top of stack
         node.getArray().accept(this);
         mv.visitVarInsn(ASTORE, 3);
@@ -385,18 +385,25 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "openScope", "()V", false);
 
         //Bind name to array value
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitLdcInsn(node.getVariable().getName());
+
         mv.visitVarInsn(ALOAD, 3);
         mv.visitVarInsn(ILOAD, 4);
         mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "get", "(I)Ljava/lang/Object;", false);
 
-        mv.visitVarInsn(ALOAD, 0);
-        mv.visitLdcInsn(node.getVariable().getName());
         mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "insert", "(Ljava/lang/String;Ljava/lang/Object;)V", false);
 
         node.getStatements().accept(this);
 
         mv.visitVarInsn(ALOAD, 0);
         mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "closeScope", "()V", false);
+
+        //Increment index
+        mv.visitVarInsn(ILOAD, 4);
+        mv.visitInsn(ICONST_1);
+        mv.visitInsn(IADD);
+        mv.visitVarInsn(ISTORE, 4);
 
         mv.visitLabel(evaluate);
         mv.visitVarInsn(ILOAD, 4);

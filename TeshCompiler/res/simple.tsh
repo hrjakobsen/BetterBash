@@ -1,3 +1,6 @@
 
-int[] a = [x in [y in [1, 2, 3, 4, 5, 10, 15, 20] | y < 10] | x > 2]
-print(intToStr(a[0]))
+int[] a = [1, 2, 3, 4, 5, 6]
+
+for x in a {
+    print(intToStr(x))
+}
