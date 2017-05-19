@@ -9,7 +9,7 @@ func range(int start, int end) int[] {
             count += 1
         }
     } else {
-        while count <= end {
+        while count >= end {
              result ::= count
              count -= 1
          }
@@ -41,12 +41,12 @@ func random(float max) int {
 
 
 int size = 10
-string[] trees = [":herb:", ":tulip:", ":seedling:", ":seedling:", ":sunflower:", ":hibiscus:", ":rose:", ":tulip:", ":blossom:", ":cherry_blossom:"]
+#string[] trees = [":herb:", ":tulip:", ":seedling:", ":seedling:", ":sunflower:", ":hibiscus:", ":rose:", ":tulip:", ":blossom:", ":cherry_blossom:"]
 #string[] trees = [":herb:", ":herb:", ":herb:", ":herb:", ":sunflower:", ":sunflower:", ":seedling:", ":seedling:", ":ear_of_rice:", ":ear_of_rice:"]
-#string[] trees = [":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":man::skin-tone-5:"]
+string[] trees = [":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":man::skin-tone-5:"]
 
 string result = ""
-#random(10)
+random(10)
 print(intToStr(random(10)))
 
 for y in range(-size, size) {

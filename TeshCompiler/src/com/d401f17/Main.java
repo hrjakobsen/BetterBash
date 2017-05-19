@@ -6,6 +6,7 @@ import com.d401f17.SymbolTable.SymbolTable;
 import com.d401f17.Visitors.BuildAstVisitor;
 import com.d401f17.Visitors.CodeGenerator.ByteCodeVisitor;
 import com.d401f17.Visitors.CodeGenerator.ClassDescriptor;
+import com.d401f17.Visitors.Interpreter.InterpretVisitor;
 import com.d401f17.Visitors.TypeCheckVisitor;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -17,7 +18,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws Exception {
         //InputStream is = new ByteArrayInputStream( "bool a = (10 * 0.1 == 1 && \"hej\" == (\"hej2\"))".getBytes() );
-        InputStream is = Main.class.getResourceAsStream("/simple.tsh");
+        InputStream is = Main.class.getResourceAsStream("/test.tsh");
         //Lex the input file to convert it to tokens
         CharStream input = CharStreams.fromStream(is);
         TeshLexer lexer = new TeshLexer(input);
@@ -46,8 +47,9 @@ public class Main {
             System.out.println(s);
         }
 
-        //InterpretVisitor run = new InterpretVisitor(recordTable);
-        ByteCodeVisitor run = new ByteCodeVisitor();
+        InterpretVisitor run = new InterpretVisitor(recordTable);
+        ast.accept(run);
+        /*ByteCodeVisitor run = new ByteCodeVisitor();
 
         ast.accept(run);
         run.End();
@@ -67,6 +69,7 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        */
 
 /*
         PrettyPrintASTVisitor p = new PrettyPrintASTVisitor();

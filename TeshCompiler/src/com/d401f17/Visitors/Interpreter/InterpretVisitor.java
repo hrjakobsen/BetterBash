@@ -172,6 +172,9 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
             if (variable instanceof SimpleIdentifierNode) {
                 entry = symbolTable.lookup(variable.getName());
                 if (variable.getType() instanceof FloatType) {
+                    if (value == null || entry == null) {
+                        System.out.println("value null");
+                    }
                     store.setElement(entry.getAddress(), ToFloat(value.getValue()));
                 }
                 store.setElement(entry.getAddress(), value);
@@ -609,7 +612,8 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
 
     @Override
     public LiteralNode visit(ProcedureCallNode node) {
-        return (LiteralNode)node.ToFunction().accept(this);
+        node.ToFunction().accept(this);
+        return null;
     }
 
     @Override

@@ -97,9 +97,15 @@ public final class StandardLib {
 
     public static FloatLiteralNode SquareRoot(LiteralNode[] nodes) {
         FloatLiteralNode result = null;
-        if (nodes[0] instanceof FloatLiteralNode) {
-            double val = (double) nodes[0].getValue();
-            result = new FloatLiteralNode(Math.sqrt(val));
+        if (nodes[0].getType() instanceof FloatType) {
+            double d;
+            if (nodes[0].getType() instanceof IntType) {
+                d = ((Long)nodes[0].getValue()).doubleValue();
+            } else {
+                d = (double) nodes[0].getValue();
+            }
+
+            result = new FloatLiteralNode(Math.sqrt(d));
         }
         return result;
     }
