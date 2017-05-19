@@ -1,0 +1,6 @@
+func a() void {
+    print("hej")
+}
+
+
+fork a()

@@ -3,7 +3,7 @@ package com.d401f17.TypeSystem;
 /**
  * Created by hense on 4/5/17.
  */
-public class Type implements Comparable<Type> {
+public abstract class Type implements Comparable<Type> {
     private int lineNum;
     private String errorMessage;
     private boolean immutable;
@@ -40,4 +40,6 @@ public class Type implements Comparable<Type> {
     public int compareTo(Type o) {
         return lineNum - o.lineNum;
     }
+
+    public abstract String getJavaType();
 }

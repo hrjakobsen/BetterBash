@@ -11,4 +11,9 @@ public class VoidType extends Type {
     public String toString() {
         return "VOID";
     }
+
+    @Override
+    public String getJavaType() {
+        return "V";
+    }
 }

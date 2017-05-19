@@ -21,6 +21,12 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         this(new SymbolTable());
     }
 
+    public InterpretVisitor(Store store, SymbolTable symtab, SymTab recTable) {
+        this(recTable);
+        this.store = store;
+        this.symbolTable = symtab;
+    }
+
     private Store store = new Store();
     private SymbolTable symbolTable;
     private SymTab recordTable;
@@ -252,6 +258,11 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
 
     @Override
     public LiteralNode visit(ForkNode node) {
+        Thread t = new Thread(() -> {
+            InterpretVisitor v = new InterpretVisitor(store, symbolTable, recordTable);
+            node.getChild().accept(v);
+        });
+        t.start();
         return null;
     }
 

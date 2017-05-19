@@ -11,4 +11,9 @@ public class ChannelType extends Type {
     public String toString() {
         return "CHANNEL";
     }
+
+    @Override
+    public String getJavaType() {
+        return null;
+    }
 }

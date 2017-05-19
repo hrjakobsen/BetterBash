@@ -1,0 +1,28 @@
+func global(int d) int {
+
+    int var = 0
+
+    func local(int a) int {
+            var += 1
+
+            int b
+            if (a <= 0) {
+                return 0
+            } else {
+                return a + local(a - 1)
+            }
+        }
+
+    print(intToStr(local(1000)))
+    return 0
+}
+
+int a = global(3)
+
+func test() void {
+    if (true) {
+
+    } else {
+        return
+    }
+}

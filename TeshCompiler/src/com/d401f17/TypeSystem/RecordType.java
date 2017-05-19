@@ -63,4 +63,9 @@ public class RecordType extends Type {
             throw new MemberNotFoundException(toString() + " does not contain member " + id);
         }
     }
+
+    @Override
+    public String getJavaType() {
+        return null;
+    }
 }

@@ -10,11 +10,11 @@ record book {
     record pageTwo secondPageInBook
 }
 
-record book myBook
+record Book myBook
 record book myBook2
 record book myBook3
 record page myPage
-
+#*
 #Ok
 record book[] myBookArray = [myBook, myBook2, myBook3]
 
