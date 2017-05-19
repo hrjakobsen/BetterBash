@@ -14,6 +14,9 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class Main {
@@ -89,7 +92,7 @@ public class Main {
                 }
             }
         }
-        InputStream is = Main.class.getResourceAsStream("/recordTest.tsh");
+        InputStream is = Main.class.getResourceAsStream("/simple.tsh");
         CharStream input = CharStreams.fromStream(is);
 
         //Lex the input file to convert it to tokens
@@ -120,6 +123,10 @@ public class Main {
             System.out.println(s);
         }
 
+        if (typeCheck.getErrors().size() > 0) {
+            return;
+        }
+
         //InterpretVisitor run = new InterpretVisitor(recordTable);
         //ast.accept(run);
         ByteCodeVisitor run = new ByteCodeVisitor();
@@ -131,11 +138,33 @@ public class Main {
         classes.add(0, new ClassDescriptor("Main", run.getCw()));
 
         try {
+            Path tempDir = Files.createTempDirectory("teshsource");
+            System.out.println("Executing in: " + tempDir);
             for (ClassDescriptor c : classes) {
-                FileOutputStream fos = new FileOutputStream("/home/mathias/Desktop/javaprivatetest/" + c.getName() + ".class");
+                FileOutputStream fos = new FileOutputStream(tempDir.toString() + "/" + c.getName() + ".class");
                 fos.write(c.getWriter().toByteArray());
                 fos.close();
+            }
+            String[] Libraries = {"RecursiveSymbolTable.class", "StdFunc.class"};
+            for (String lib : Libraries) {
+                InputStream stream = Main.class.getResourceAsStream("/" + lib);
+                Path p = Paths.get(tempDir.toString(), lib);
+                Files.copy(stream, p);
+            }
 
+            Runtime r = Runtime.getRuntime();
+            Process p = r.exec("java -cp " + tempDir.toString() + " Main");
+            p.waitFor();
+            BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            BufferedReader berr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            String line;
+
+            while ((line = b.readLine()) != null) {
+                System.out.println(line);
+            }
+
+            while ((line = berr.readLine()) != null) {
+                System.err.println(line);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
