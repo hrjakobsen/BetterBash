@@ -21,7 +21,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        boolean debug = true;
+        boolean debug = false;
         if (!debug) {
             if (args.length == 0) {
                 System.err.println("You must specify an input file");
@@ -73,7 +73,50 @@ public class Main {
                 return;
             }
 
-            if (args.length > 1) {
+            if (args.length == 1) {
+                ByteCodeVisitor run = new ByteCodeVisitor();
+
+                ast.accept(run);
+                run.End();
+
+                List<ClassDescriptor> classes = run.getOtherClasses();
+                classes.add(0, new ClassDescriptor("Main", run.getCw()));
+
+                try {
+                    Path tempDir = Files.createTempDirectory("teshsource");
+                    System.out.println("Executing in: " + tempDir);
+                    for (ClassDescriptor c : classes) {
+                        FileOutputStream fos = new FileOutputStream(tempDir.toString() + "/" + c.getName() + ".class");
+                        fos.write(c.getWriter().toByteArray());
+                        fos.close();
+                    }
+                    String[] Libraries = {"RecursiveSymbolTable.class", "StdFunc.class"};
+                    for (String lib : Libraries) {
+                        InputStream stream = Main.class.getResourceAsStream("/" + lib);
+                        Path p = Paths.get(tempDir.toString(), lib);
+                        Files.copy(stream, p);
+                    }
+
+                    Runtime r = Runtime.getRuntime();
+                    Process p = r.exec("java -cp " + tempDir.toString() + " Main");
+                    p.waitFor();
+                    BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                    BufferedReader berr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+                    String line;
+
+                    while ((line = b.readLine()) != null) {
+                        System.out.println(line);
+                    }
+
+                    while ((line = berr.readLine()) != null) {
+                        System.err.println(line);
+                    }
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else if (args.length > 1) {
                 if (args[1].equals("-i") || args[1].equals("-interpret")) {
                     InterpretVisitor run = new InterpretVisitor(recordTable);
                     ast.accept(run);
@@ -92,6 +135,11 @@ public class Main {
                 }
             }
         }
+
+        if (!debug) {
+            return;
+        }
+
         InputStream is = Main.class.getResourceAsStream("/simple.tsh");
         CharStream input = CharStreams.fromStream(is);
 
@@ -171,7 +219,5 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 }
