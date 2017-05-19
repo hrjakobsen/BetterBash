@@ -300,17 +300,17 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
             argumentTypes[i] = node.getArguments().get(i).getType();
         }
 
-        FunctionType func = new FunctionType(node.getName().getName(), argumentTypes, new VoidType());
-        String signature = func.toString();
-        if (standardFunctions.containsKey(signature)) {
-            Function stdFunc = standardFunctions.get(func.toString());
+        String funcName = node.getName().getName();
+        FunctionType func = new FunctionType(funcName, argumentTypes, new VoidType());
+        if (standardFunctions.containsKey(funcName)) {
+            Function stdFunc = standardFunctions.get(funcName);
             return ((LiteralNode) stdFunc.apply(argResults));
         }
 
         SymbolTable old = symbolTable;
         LiteralNode res = null;
         try {
-            FunctionSymbol function = (FunctionSymbol) symbolTable.lookup(signature);
+            FunctionSymbol function = (FunctionSymbol) symbolTable.lookup(funcName);
             symbolTable = new SymbolTable(function.getSymbolTable());
             symbolTable.openScope();
             FunctionNode declarationNode = (FunctionNode)function.getDeclarationNode();
@@ -350,7 +350,7 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         try {
             FunctionSymbol f = new FunctionSymbol(function, node, new SymbolTable(functionTable));
             f.getSymbolTable().insert(function.toString(), f);
-            symbolTable.insert(function.toString(), f);
+            symbolTable.insert(funcName, f);
         } catch (VariableAlreadyDeclaredException e) {
             e.printStackTrace();
         }
