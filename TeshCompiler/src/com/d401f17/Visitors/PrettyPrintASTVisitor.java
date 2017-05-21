@@ -14,7 +14,7 @@ public class PrettyPrintASTVisitor extends BaseVisitor<Void> {
 
     @Override
     public String toString() {
-        return sb.toString();
+        return "graph {\n" + sb.toString() + "\n}";
     }
 
     public String makeNode(String name, AST ... children) {

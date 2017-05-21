@@ -1,5 +1,9 @@
 package com.d401f17.SymbolTable;
 
+import com.d401f17.TypeSystem.RecordType;
+import com.d401f17.TypeSystem.StringType;
+import com.d401f17.TypeSystem.Type;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -50,5 +54,16 @@ public class SymbolTable implements SymTab {
             i--;
         }
         throw new VariableNotDeclaredException(id + " not declared");
+    }
+
+    public static SymbolTable TableWithDefaultRecords() {
+        SymbolTable st = new SymbolTable();
+        try {
+            st.insert("binfile", new Symbol(new RecordType("binfile", new String[]{"path"}, new Type[]{new StringType()}), null));
+            st.insert("textfile", new Symbol(new RecordType("textfile", new String[]{"path"}, new Type[]{new StringType()}), null));
+        } catch (VariableAlreadyDeclaredException e) {
+            e.printStackTrace();
+        }
+        return st;
     }
 }

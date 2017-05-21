@@ -1,11 +1,2 @@
-record page {
-    int a
-}
-record book {
-    record page p
-    int a
-}
-
-record book test
-test.p.a = 5
-print(intToStr(test.p.a))
+binfile b
+print(b.path + "hej")

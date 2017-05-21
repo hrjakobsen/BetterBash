@@ -60,7 +60,7 @@ public class Main {
 
             //Create a symbol table containing standard library of functions
             SymTab symbolTable = new SymbolTable();
-            SymTab recordTable = new SymbolTable();
+            SymTab recordTable = SymbolTable.TableWithDefaultRecords();
 
             //Type check the AST
             TypeCheckVisitor typeCheck = new TypeCheckVisitor(symbolTable, recordTable);
@@ -118,7 +118,7 @@ public class Main {
                 }
             } else if (args.length > 1) {
                 if (args[1].equals("-i") || args[1].equals("-interpret")) {
-                    InterpretVisitor run = new InterpretVisitor(recordTable);
+                    InterpretVisitor run = new InterpretVisitor(SymbolTable.TableWithDefaultRecords());
                     ast.accept(run);
                 } else if (args[1].equals("-p") || args[1].equals("-print")) {
                     if (args.length != 3) {
@@ -132,6 +132,9 @@ public class Main {
 
                     PrettyPrintASTVisitor p = new PrettyPrintASTVisitor();
                     ast.accept(p);
+                    FileOutputStream fos = new FileOutputStream(args[2]);
+                    fos.write(p.toString().getBytes());
+                    fos.close();
                 }
             }
         }
@@ -161,7 +164,7 @@ public class Main {
 
         //Create a symbol table containing standard library of functions
         SymTab symbolTable = new SymbolTable();
-        SymTab recordTable = new SymbolTable();
+        SymTab recordTable = SymbolTable.TableWithDefaultRecords();
 
         //Type check the AST
         TypeCheckVisitor typeCheck = new TypeCheckVisitor(symbolTable, recordTable);
@@ -193,7 +196,7 @@ public class Main {
                 fos.write(c.getWriter().toByteArray());
                 fos.close();
             }
-            String[] Libraries = {"RecursiveSymbolTable.class", "StdFunc.class"};
+            String[] Libraries = {"RecursiveSymbolTable.class", "StdFunc.class", "binfile.class"};
             for (String lib : Libraries) {
                 InputStream stream = Main.class.getResourceAsStream("/" + lib);
                 Path p = Paths.get(tempDir.toString(), lib);

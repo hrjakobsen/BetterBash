@@ -457,7 +457,7 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
                         ),
                         //The return type of the function is the last element of the type list
                         //so we need to subtract one access this array as 0-indexed
-                        new TypeNode(ctx.type(i - 1).getText(), lineNum),
+                        new TypeNode(ensureFileTypes(ctx.type(i - 1).getText()), lineNum),
                         lineNum
                     )
             );
@@ -469,7 +469,7 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
                         lineNum
                 ),
                 new TypeNode(
-                        ctx.returntype.getText(),
+                        ensureFileTypes(ctx.returntype.getText()),
                         lineNum
                 ),
                 formalArgs,
@@ -520,7 +520,7 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
 
     @Override
     public AST visitType(TeshParser.TypeContext ctx) {
-        return new TypeNode(ctx.getText(), ctx.start.getLine());
+        return new TypeNode(ensureFileTypes(ctx.getText()), ctx.start.getLine());
     }
 
     @Override
@@ -531,5 +531,12 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
     @Override
     public AST visitParenthesisExpr(TeshParser.ParenthesisExprContext ctx) {
         return visit(ctx.expression());
+    }
+
+    private String ensureFileTypes(String s) {
+        if (s.equals("textfile") || s.equals("binfile")) {
+            return "record" + s;
+        }
+        return s;
     }
 }
