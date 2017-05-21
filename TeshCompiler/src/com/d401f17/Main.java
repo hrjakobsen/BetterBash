@@ -21,7 +21,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        boolean debug = false;
+        boolean debug = true;
         if (!debug) {
             if (args.length == 0) {
                 System.err.println("You must specify an input file");

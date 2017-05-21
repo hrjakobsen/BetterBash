@@ -1,6 +1,11 @@
-
-int[] a = [1, 2, 3, 4, 5, 6]
-
-for x in a {
-    print(intToStr(x))
+record page {
+    int a
 }
+record book {
+    record page p
+    int a
+}
+
+record book test
+test.p.a = 5
+print(intToStr(test.p.a))

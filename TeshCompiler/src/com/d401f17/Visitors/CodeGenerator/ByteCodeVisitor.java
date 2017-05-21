@@ -4,12 +4,15 @@ import com.d401f17.AST.Nodes.*;
 import com.d401f17.SymbolTable.*;
 import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.BaseVisitor;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
 import java.io.IOException;
 
+import java.lang.reflect.Method;
 import java.util.*;
 
 import static org.objectweb.asm.Opcodes.*;
@@ -226,13 +229,43 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
     @Override
     public Void visit(AssignmentNode node) {
         ArithmeticExpressionNode child = node.getExpression();
-        child.accept(this);
+
+
+        Symbol s = null;
         try {
-            Symbol s = symtab.lookup(node.variable.getName());
-            emitStore(node.getVariable().getName(), s.getType(), 0);
+            s = symtab.lookup(node.variable.getName());
         } catch (VariableNotDeclaredException e) {
             e.printStackTrace();
         }
+
+        if (node.getVariable() instanceof RecordIdentifierNode) {
+            IdentifierNode traveller = ((RecordIdentifierNode) node.getVariable()).getChild();
+            IdentifierNode previous = node.getVariable();
+            previous.setType(s.getType());
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitLdcInsn(node.getVariable().getName());
+            mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "lookup", "(Ljava/lang/String;)Ljava/lang/Object;", false);
+            mv.visitTypeInsn(CHECKCAST, toJavaType(s.getType()));
+            //Find the lowest element
+            //The second to last element must be the one we are interested in
+            while (traveller != null) {
+                if (traveller instanceof SimpleIdentifierNode) {
+                    //Base case if last element
+                    child.accept(this);
+                    mv.visitFieldInsn(PUTFIELD, ((RecordType)previous.getType()).getName(), traveller.getName(), toJavaType(node.getExpression().getType()));
+                    traveller = null;
+                } else {
+                    //If another record
+                    mv.visitFieldInsn(GETFIELD, ((RecordType)previous.getType()).getName(), traveller.getName(), toJavaType(traveller.getType()));
+                    previous = traveller;
+                    traveller = ((RecordIdentifierNode)traveller).getChild();
+                }
+            }
+        } else {
+            child.accept(this);
+            emitStore(node.getVariable().getName(), s.getType(), 0);
+        }
+
         return null;
     }
 
@@ -656,11 +689,83 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(RecordDeclarationNode node) {
+        String name = node.getName();
+        List<VariableDeclarationNode> variables = node.getVariables();
+
+        ClassWriter record = new ClassWriter(ClassWriter.COMPUTE_FRAMES + ClassWriter.COMPUTE_MAXS);
+
+        //Create class
+        record.visit(52, ACC_PUBLIC, name, null, "java/lang/Object", null);
+        //Create fields
+        StringBuilder signature = new StringBuilder();
+        for (VariableDeclarationNode variable : variables) {
+            String javaType = toJavaType(variable.getTypeNode().getType());
+            FieldVisitor fv = record.visitField(ACC_PUBLIC, variable.getName().getName(), javaType, null, null);
+            fv.visitEnd();
+        }
+
+        //Create default constructor
+        MethodVisitor constructor = record.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+        constructor.visitVarInsn(ALOAD, 0);
+        constructor.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
+
+        //In our constructor, we want to initialise our fields
+        for (VariableDeclarationNode variable : variables) {
+            constructor.visitVarInsn(ALOAD, 0);
+            MethodVisitor old = mv;
+            mv = constructor;
+            getDefaultValue(variable.getTypeNode().getType());
+            unboxElement(variable.getTypeNode().getType());
+            mv = old;
+
+            constructor.visitFieldInsn(PUTFIELD, name, variable.getName().getName(), toJavaType(variable.getTypeNode().getType()));
+        }
+
+        constructor.visitInsn(RETURN);
+
+        constructor.visitMaxs(0, 0);
+        constructor.visitEnd();
+        record.visitEnd();
+
+        otherClasses.add(new ClassDescriptor(name, record));
+
         return null;
     }
 
     @Override
     public Void visit(RecordIdentifierNode node) {
+        String varName = node.getName();
+        RecordType recType = null;
+        try {
+            Symbol s = symtab.lookup(varName);
+            recType = (RecordType) s.getType();
+        } catch (VariableNotDeclaredException e) {
+            e.printStackTrace();
+        }
+        Type terminalType = node.getType();
+        node.setType(recType);
+        //Get the symbol table
+        mv.visitVarInsn(ALOAD, 0);
+
+        //Lookup the name
+        mv.visitLdcInsn(varName);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "lookup", "(Ljava/lang/String;)Ljava/lang/Object;", false);
+        mv.visitTypeInsn(CHECKCAST, recType.getName());
+
+        IdentifierNode traveller = node.getChild();
+        IdentifierNode previous = node;
+        while (traveller != null) {
+            if (traveller instanceof SimpleIdentifierNode) {
+                //Base case if last element
+                mv.visitFieldInsn(GETFIELD, ((RecordType)previous.getType()).getName(), traveller.getName(), toJavaType(terminalType));
+                traveller = null;
+            } else {
+                //If another record
+                mv.visitFieldInsn(GETFIELD, ((RecordType)previous.getType()).getName(), traveller.getName(), toJavaType(traveller.getType()));
+                previous = traveller;
+                traveller = ((RecordIdentifierNode)traveller).getChild();
+            }
+        }
         return null;
     }
 
@@ -734,12 +839,56 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
     public Void visit(VariableDeclarationNode node) {
         Symbol s = new Symbol(node.getTypeNode().getType(), null);
         s.setAddress(getVariable());
+
+        getDefaultValue(node.getTypeNode().getType());
+
+        //Insert into symbolTable
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitInsn(SWAP);
+        mv.visitLdcInsn(node.getName().getName());
+        mv.visitInsn(SWAP);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "insert", "(Ljava/lang/String;Ljava/lang/Object;)V", false);
         try {
             symtab.insert(node.getName().getName(), s);
         } catch (VariableAlreadyDeclaredException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private void getDefaultValue(Type type) {
+        if (type instanceof IntType) {
+            mv.visitTypeInsn(NEW, "java/lang/Long");
+            mv.visitInsn(DUP);
+            mv.visitLdcInsn(0L);
+            mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Long", "<init>", "(J)V", false);
+        } else if (type instanceof FloatType) {
+            mv.visitTypeInsn(NEW, "java/lang/Double");
+            mv.visitInsn(DUP);
+            mv.visitLdcInsn(0D);
+            mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Double", "<init>", "(D)V", false);
+        } else if (type instanceof BoolType) {
+            mv.visitTypeInsn(NEW, "java/lang/Integer");
+            mv.visitInsn(DUP);
+            mv.visitLdcInsn(0);
+            mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Integer", "<init>", "(I)V", false);
+        } else if (type instanceof StringType) {
+            mv.visitTypeInsn(NEW, "java/lang/String");
+            mv.visitInsn(DUP);
+            mv.visitMethodInsn(INVOKESPECIAL, "java/lang/String", "<init>", "()V", false);
+        } else if (type instanceof RecordType) {
+            RecordType t = (RecordType)type;
+            String name = t.getName();
+            mv.visitTypeInsn(NEW, name);
+            mv.visitInsn(DUP);
+            mv.visitMethodInsn(INVOKESPECIAL, name, "<init>", "()V", false);
+        } else if (type instanceof ArrayType) {
+            mv.visitTypeInsn(NEW, "java/util/ArrayList");
+            mv.visitInsn(DUP);
+            mv.visitMethodInsn(INVOKESPECIAL, "java/util/ArrayList", "<init>", "()V", false);
+        } else {
+            System.out.println("Other type");
+        }
     }
 
     @Override
@@ -892,11 +1041,31 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
             return "java/util/ArrayList";
         } else if (variable instanceof VoidType || variable instanceof OkType) {
             return "V";
+        } else if (variable instanceof BoolType) {
+            return "I";
+        } else if (variable instanceof RecordType) {
+            return "L" + ((RecordType)variable).getName() + ";";
         } else {
             System.out.println(variable);
             System.out.println("Invalid type conversion");
         }
         return null;
+    }
+
+    private int LoadIns(Type variable) {
+        if (variable instanceof IntType) {
+            return LLOAD;
+        } else if (variable instanceof FloatType) {
+            return DLOAD;
+        } else if (variable instanceof StringType || variable instanceof CharType) {
+            return ALOAD;
+        } else if (variable instanceof ArrayType) {
+            return ALOAD;
+        } else {
+            System.out.println(variable);
+            System.out.println("Invalid type conversion");
+        }
+        return 0;
     }
 
     public void End() {
