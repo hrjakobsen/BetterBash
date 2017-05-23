@@ -794,7 +794,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         if (commandType instanceof StringType) {
-            node.setType(commandType); //String
+            node.setType(new OkType());
         } else {
             node.setType(new ErrorType(node.getLine(), "Expected string, got " + commandType));
         }
@@ -815,7 +815,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             return null;
         }
 
-        if (channelType instanceof ChannelType && commandType instanceof StringType) {
+        if (channelType instanceof ChannelType && commandType instanceof OkType) {
             node.setType(new OkType());
         } else {
             node.setType(new ErrorType(node.getLine(), "Expected channel and string, got " + channelType + " and " + commandType));

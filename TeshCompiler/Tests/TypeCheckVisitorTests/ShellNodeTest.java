@@ -31,7 +31,7 @@ public class ShellNodeTest {
                 {new IntType(), new ErrorType()},
                 {new FloatType(), new ErrorType()},
                 {new CharType(), new ErrorType()},
-                {new StringType(), new StringType()},
+                {new StringType(), new OkType()},
                 {new BoolType(), new ErrorType()},
                 {new ArrayType(), new ErrorType()},
                 {new ChannelType(), new ErrorType()},
