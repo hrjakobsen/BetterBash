@@ -3,6 +3,8 @@ lexer grammar TeshTokens;
 
 LINE_COMMENT: '#' ~[\r\n]* -> skip;
 BLOCK_COMMENT: '#*' .*? '*#' -> skip;
+IMPORT: 'import';
+
 
 IN: 'in';
 IF: 'if';
@@ -72,3 +74,4 @@ SIMPLE_IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]*;
 
 WS: [ \r\t]+ -> skip; // skip spaces, tabs, newlines
 NEWLINE: [\n];
+

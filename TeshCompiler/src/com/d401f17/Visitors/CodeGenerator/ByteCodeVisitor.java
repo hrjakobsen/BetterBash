@@ -4,15 +4,12 @@ import com.d401f17.AST.Nodes.*;
 import com.d401f17.SymbolTable.*;
 import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.BaseVisitor;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
 import java.io.IOException;
-
-import java.lang.reflect.Method;
 import java.util.*;
 
 import static org.objectweb.asm.Opcodes.*;
@@ -65,14 +62,22 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(AdditionNode node) {
-        node.getLeft().accept(this);
-        node.getRight().accept(this);
         if (node.getType() instanceof IntType) {
+            node.getLeft().accept(this);
+            node.getRight().accept(this);
             mv.visitInsn(LADD);
         } else if (node.getType() instanceof FloatType) {
+            node.getLeft().accept(this);
+            node.getRight().accept(this);
             mv.visitInsn(DADD);
         } else {
-            //String operations
+            mv.visitTypeInsn(NEW, "java/lang/StringBuilder");
+            mv.visitInsn(DUP);
+            node.getLeft().accept(this);
+            mv.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "(Ljava/lang/String;)V", false);
+            node.getRight().accept(this);
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Object", "toString", "()Ljava/lang/String;", false);
         }
         return null;
     }
@@ -338,7 +343,6 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
             node.getLeft().accept(this);
             node.getRight().accept(this);
             mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "equals", "(Ljava/lang/Object;)Z", false);
-            //TODO: COMPARE STRINGS OR CHARS
         }
         return null;
     }
@@ -800,7 +804,57 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ShellToChannelNode node) {
+        Label read = new Label();
+        Label exit = new Label();
+
+        //Get the channel to write to
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitLdcInsn(node.getChannel().getName());
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "lookup", "(Ljava/lang/String;)Ljava/lang/Object;", false);
+        mv.visitTypeInsn(CHECKCAST, "java/util/ArrayDeque");
+        mv.visitVarInsn(ASTORE, 10);
+
+        //Execute the process
+        mv.visitMethodInsn(INVOKESTATIC, "java/lang/Runtime", "getRuntime", "()Ljava/lang/Runtime;", false);
+        node.getCommand().getCommand().accept(this);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Runtime", "exec", "(Ljava/lang/String;)Ljava/lang/Process;", false);
+        mv.visitInsn(DUP);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Process", "waitFor", "()I", false);
+        mv.visitInsn(POP);
+        mv.visitVarInsn(ASTORE, 9);
+
+        //Create a bufferedreader to read from the output of the command
+        mv.visitTypeInsn(NEW, "java/io/InputStreamReader");
+        mv.visitInsn(DUP);
+        mv.visitVarInsn(ALOAD, 9);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Process", "getInputStream", "()Ljava/io/InputStream;", false);
+        mv.visitMethodInsn(INVOKESPECIAL, "java/io/InputStreamReader", "<init>", "(Ljava/io/InputStream;)V", false);
+        mv.visitVarInsn(ASTORE, 9);
+
+        mv.visitTypeInsn(NEW, "java/io/BufferedReader");
+        mv.visitInsn(DUP);
+        mv.visitVarInsn(ALOAD, 9);
+        mv.visitMethodInsn(INVOKESPECIAL, "java/io/BufferedReader","<init>", "(Ljava/io/Reader;)V", false);
+
+        //Read all lines of output
+        mv.visitLabel(read);
+        mv.visitInsn(DUP);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/BufferedReader", "readLine", "()Ljava/lang/String;", false);
+        mv.visitInsn(DUP);
+        mv.visitJumpInsn(IFNULL, exit);
+        mv.visitVarInsn(ALOAD, 10);
+        mv.visitInsn(SWAP);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayDeque", "add", "(Ljava/lang/Object;)Z", false);
+        mv.visitInsn(POP);
+        mv.visitJumpInsn(GOTO, read);
+
+        //Clear stack
+        mv.visitLabel(exit);
+        mv.visitInsn(POP);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/BufferedReader", "close","()V", false);
+
         return null;
+
     }
 
     @Override
@@ -838,7 +892,6 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
     @Override
     public Void visit(VariableDeclarationNode node) {
         Symbol s = new Symbol(node.getTypeNode().getType(), null);
-        s.setAddress(getVariable());
 
         getDefaultValue(node.getTypeNode().getType());
 
@@ -886,8 +939,10 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
             mv.visitTypeInsn(NEW, "java/util/ArrayList");
             mv.visitInsn(DUP);
             mv.visitMethodInsn(INVOKESPECIAL, "java/util/ArrayList", "<init>", "()V", false);
-        } else {
-            System.out.println("Other type");
+        } else if (type instanceof ChannelType){
+            mv.visitTypeInsn(NEW, "java/util/ArrayDeque");
+            mv.visitInsn(DUP);
+            mv.visitMethodInsn(INVOKESPECIAL, "java/util/ArrayDeque", "<init>", "()V", false);
         }
     }
 
@@ -925,6 +980,25 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(ChannelNode node) {
+
+        if (node.getIdentifier().getType() instanceof ChannelType) {
+            //Write to channel
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitLdcInsn(node.getIdentifier().getName());
+            mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "lookup", "(Ljava/lang/String;)Ljava/lang/Object;", false);
+            mv.visitTypeInsn(CHECKCAST, "java/util/ArrayDeque");
+            node.getExpression().accept(this);
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayDeque", "add", "(Ljava/lang/Object;)Z", false);
+            mv.visitInsn(POP);
+        } else {
+            //Read from channel
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitLdcInsn(node.getIdentifier().getName());
+            node.getExpression().accept(this);
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayDeque", "poll", "()Ljava/lang/Object;", false);
+            mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "change", "(Ljava/lang/String;Ljava/lang/Object;)V", false);
+        }
+
         return null;
     }
 
@@ -947,24 +1021,6 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         mv.visitLabel(exit);
 
         return null;
-    }
-
-    private int getWideVariable() {
-        int address = nextAddress;
-        nextAddress += 2;
-        return address;
-    }
-
-    private int getVariable() {
-        int address = nextAddress;
-        nextAddress++;
-        return address;
-    }
-
-    public byte[] getBytes() {
-        mv.visitEnd();
-        cw.visitEnd();
-        return cw.toByteArray();
     }
 
     private void emitStore(String name, Type type, int address) {
@@ -1003,6 +1059,8 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
             mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I", false);
         } else if (type instanceof ArrayType) {
             mv.visitTypeInsn(CHECKCAST, "java/util/ArrayList");
+        } else if (type instanceof ChannelType) {
+            mv.visitTypeInsn(CHECKCAST, "java/util/ArrayDeque");
         }
     }
 
@@ -1014,20 +1072,6 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
         //Unboxing of primitive types
         unboxElement(type);
-    }
-
-    private String byteCodeSignature(FunctionType typeNode) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("(");
-
-        for (Type variable : typeNode.getArgs()) {
-            sb.append(toJavaType(variable));
-        }
-
-        sb.append(")");
-        Type t = typeNode.getReturnType();
-        sb.append(toJavaType(typeNode.getReturnType()));
-        return sb.toString();
     }
 
     private String toJavaType(Type variable) {
@@ -1080,25 +1124,5 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
             mv.visitInsn(NOP);
         }
         return;
-    }
-
-    private void comment(String s) {
-        mv.visitLdcInsn("COMMENT: " + s);
-        mv.visitInsn(POP);
-    }
-
-    private void print() {
-        mv.visitInsn(DUP);
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Object", "toString", "()Ljava/lang/String;", false);
-        mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-        mv.visitInsn(SWAP);
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
-    }
-
-    private void print(String s) {
-        mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-        mv.visitLdcInsn(s);
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
-        print();
     }
 }

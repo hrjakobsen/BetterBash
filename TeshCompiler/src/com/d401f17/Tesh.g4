@@ -2,7 +2,10 @@ grammar Tesh;
 import TeshTokens;
 
 compileUnit
-    : statement* EOF;
+    : imports statement* EOF;
+
+imports
+    : (NEWLINE* IMPORT STRING_LITERAL NEWLINE)*;
 
 statement
     : simpleStatement                                                                                                   #simpStatement

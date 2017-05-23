@@ -1,2 +1,24 @@
-binfile b
-print(b.path + "hej")
+func awayScript() void {
+    while true {
+        channel c
+        c << "4"
+        string timeInactive
+        timeInactive << c
+        #int FourMinutes = 240000
+        int FourMinutes = 240000
+
+        c << $"if [ " + timeInactive + " -gt " + intToStr(FourMinutes) + " ]; then echo true; else echo false; fi"
+
+        string isInactive
+        isInactive << c
+        if "true" == isInactive {
+            print("true")#change chat client status to away
+        } else {
+            print(isInactive)
+            #do nothing
+        }
+       # $"sleep 5"
+    }
+}
+
+fork awayScript()
