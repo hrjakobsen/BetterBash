@@ -794,7 +794,7 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         }
 
         if (commandType instanceof StringType) {
-            node.setType(commandType); //String
+            node.setType(new OkType());
         } else {
             node.setType(new ErrorType(node.getLine(), "Expected string, got " + commandType));
         }
