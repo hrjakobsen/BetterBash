@@ -723,10 +723,8 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         Label f = new Label();
         mv.visitJumpInsn(IFEQ, f);
         mv.visitInsn(ICONST_1);
-        mv.visitInsn(IRETURN);
         mv.visitLabel(f);
         mv.visitInsn(ICONST_0);
-        mv.visitInsn(IRETURN);
         return null;
     }
 
