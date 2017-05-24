@@ -18,5 +18,7 @@ public class StdFunc {
 			return 0;
 		}
 	}
-
+	public static long intVal(String str) {
+		return Long.parseLong(str);
+	}
 }
