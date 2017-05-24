@@ -353,6 +353,18 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
             node.getLeft().accept(this);
             node.getRight().accept(this);
             mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "equals", "(Ljava/lang/Object;)Z", false);
+        } else if (node.getLeft().getType() instanceof BoolType) {
+            Label t = new Label();
+            Label exit = new Label();
+            node.getLeft().accept(this);
+            node.getRight().accept(this);
+            mv.visitInsn(ISUB);
+            mv.visitJumpInsn(IFEQ, t);
+            mv.visitInsn(ICONST_0);
+            mv.visitJumpInsn(GOTO, exit);
+            mv.visitLabel(t);
+            mv.visitInsn(ICONST_1);
+            mv.visitLabel(exit);
         }
         return null;
     }
@@ -708,14 +720,44 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
     @Override
     public Void visit(NegationNode node) {
         node.getExpression().accept(this);
-        mv.visitInsn(ICONST_M1);
-        mv.visitInsn(IMUL);
+        Label f = new Label();
+        mv.visitJumpInsn(IFEQ, f);
+        mv.visitInsn(ICONST_1);
+        mv.visitInsn(IRETURN);
+        mv.visitLabel(f);
+        mv.visitInsn(ICONST_0);
+        mv.visitInsn(IRETURN);
         return null;
     }
 
     @Override
     public Void visit(NotEqualNode node) {
-        compareNumerals(IF_ICMPNE, node);
+        Label t = new Label();
+        Label exit = new Label();
+        if (node.getLeft().getType() instanceof FloatType) {
+            compareNumerals(IF_ICMPNE, node);
+            return null;
+        } else if (node.getLeft().getType() instanceof StringType){
+            node.getLeft().accept(this);
+            node.getRight().accept(this);
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "equals", "(Ljava/lang/Object;)Z", false);
+            mv.visitJumpInsn(IFEQ, t);
+            mv.visitInsn(ICONST_0);
+            mv.visitJumpInsn(GOTO, exit);
+            mv.visitLabel(t);
+            mv.visitInsn(ICONST_1);
+            mv.visitLabel(exit);
+        } else if (node.getLeft().getType() instanceof BoolType) {
+            node.getLeft().accept(this);
+            node.getRight().accept(this);
+            mv.visitInsn(ISUB);
+            mv.visitJumpInsn(IFEQ, t);
+            mv.visitInsn(ICONST_1);
+            mv.visitJumpInsn(GOTO, exit);
+            mv.visitLabel(t);
+            mv.visitInsn(ICONST_0);
+            mv.visitLabel(exit);
+        }
         return null;
     }
 
