@@ -223,13 +223,16 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         //Traverse list refs to get ref to innermost array
         for (int i = 0; i < node.getElement().getIndices().size()-1; i++) {
             node.getElement().getIndices().get(i).accept(this);//push index
+            mv.visitInsn(L2I);
             mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "get", "(I)Ljava/lang/Object;", false); //pop list ref; pop index; push list ref
         }
 
         //Invoke setter
         node.getElement().getIndices().get(node.getElement().getIndices().size()-1).accept(this); //push index
+        mv.visitInsn(L2I);
         node.getExpression().accept(this); //push value
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "set", "(I)Ljava/lang/Object;", false); //pop index; pop value; push null
+        boxElement(node.getExpression().getType());
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "set", "(ILjava/lang/Object;)Ljava/lang/Object;", false); //pop index; pop value; push null
         mv.visitInsn(POP); //pop null
 
         this.emitNops(4);
@@ -508,6 +511,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         for (int i = 0; i < arguments.size(); i++) {
             ArithmeticExpressionNode argument = arguments.get(i);
             argument.accept(this);
+            cloneIfReference(argument.getType());
             emitStore(f.getFormalArguments().get(i).getName().getName(), argument.getType(), 1);
         }
 
@@ -517,6 +521,16 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "closeScope", "()V", false);
 
         return null;
+    }
+
+    private void cloneIfReference(Type type) {
+        if (type instanceof ArrayType) {
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "clone", "()Ljava/lang/Object;", false);
+            mv.visitTypeInsn(CHECKCAST, "java/util/ArrayList");
+        } else if (type instanceof RecordType) {
+            RecordType t = (RecordType)type;
+            mv.visitMethodInsn(INVOKEVIRTUAL, t.getName(), "clone", "()L" + t.getName() + ";", false);
+        }
     }
 
     @Override
@@ -761,6 +775,25 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
         constructor.visitMaxs(0, 0);
         constructor.visitEnd();
+
+        MethodVisitor clone = record.visitMethod(ACC_PUBLIC, "clone","()L" + name + ";" , null, null);
+
+        clone.visitTypeInsn(NEW, name);
+        clone.visitInsn(DUP);
+        clone.visitMethodInsn(INVOKESPECIAL, name, "<init>", "()V", false);
+
+        for (VariableDeclarationNode variable : variables) {
+            clone.visitInsn(DUP);
+            clone.visitVarInsn(ALOAD, 0);
+            clone.visitFieldInsn(GETFIELD, name, variable.getName().getName(), toJavaType(variable.getTypeNode().getType()));
+            clone.visitFieldInsn(PUTFIELD, name, variable.getName().getName(), toJavaType(variable.getTypeNode().getType()));
+        }
+
+        clone.visitInsn(ARETURN);
+
+        clone.visitMaxs(0, 0);
+        clone.visitEnd();
+
         record.visitEnd();
 
         otherClasses.add(new ClassDescriptor(name, record));
@@ -1094,6 +1127,8 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
             mv.visitTypeInsn(CHECKCAST, "java/util/ArrayList");
         } else if (type instanceof ChannelType) {
             mv.visitTypeInsn(CHECKCAST, "java/util/ArrayDeque");
+        } else if (type instanceof RecordType) {
+            mv.visitTypeInsn(CHECKCAST, ((RecordType)type).getName());
         }
     }
 
