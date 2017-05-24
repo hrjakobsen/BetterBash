@@ -34,6 +34,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         standardFunctions.put("floatToStr", "(D)Ljava/lang/String;");
         standardFunctions.put("charToStr", "(Ljava/lang/String;)Ljava/lang/String;");
         standardFunctions.put("boolToStr", "(I)Ljava/lang/String;");
+        standardFunctions.put("empty","(Ljava/util/ArrayDeque;)I");
         //Set up main class
         cw.visit(52,
                 ACC_PUBLIC + ACC_STATIC,

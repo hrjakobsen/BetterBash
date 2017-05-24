@@ -1,0 +1,25 @@
+#!/bin/tesh
+
+channel chn
+
+func chatHandler() void {
+#    fork chn << $"./chat.sh"
+    
+    int p1Count = 0
+    int p2Count = 0
+    string line
+
+    while true {
+        if !empty(chn) {
+            line << chn
+            if line ?= "Person 1.*" {
+                p1Count = p1Count + 1
+            } else {
+                p2Count = p2Count + 1
+            }
+            print("Person 1: " + intToStr(p1Count) + "\nPerson 2: " + intToStr(p2Count) + "\n")
+        } else {}
+    }
+}
+
+fork chatHandler()

@@ -30,6 +30,7 @@ public final class StandardLib {
             table.insert("rnd", new FunctionSymbol(new FunctionType("rnd", new Type[] {}, new FloatType()), null, null));
             table.insert("ceil", new FunctionSymbol(new FunctionType("ceil", new Type[] {new FloatType()}, new IntType()), null, null));
             table.insert("floor", new FunctionSymbol(new FunctionType("floor", new Type[] {new FloatType()}, new IntType()), null, null));
+            table.insert("empty", new FunctionSymbol(new FunctionType("empty", new Type[] {new ChannelType()}, new BoolType()), null, null));
         } catch (VariableAlreadyDeclaredException e) {}
     }
 
