@@ -11,7 +11,7 @@ public class StdFunc {
 	public static String floatToStr(double d) {return Double.toString(d); }
 	public static String charToStr(String c) { return c; }
 	public static String boolToStr(int b) { if (b != 0) return "true"; else return "false"; }
-	public static int channelIsEmpty(ArrayDeque channel) {
+	public static int empty(ArrayDeque channel) {
 		if (channel.isEmpty()) {
 			return 1;
 		} else {

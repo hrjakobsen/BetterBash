@@ -928,15 +928,12 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         mv.visitMethodInsn(INVOKESTATIC, "java/lang/Runtime", "getRuntime", "()Ljava/lang/Runtime;", false);
         node.getCommand().getCommand().accept(this);
         mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Runtime", "exec", "(Ljava/lang/String;)Ljava/lang/Process;", false);
-        mv.visitInsn(DUP);
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Process", "waitFor", "()I", false);
-        mv.visitInsn(POP);
-        mv.visitVarInsn(ASTORE, 9);
+        mv.visitVarInsn(ASTORE, 11);
 
         //Create a bufferedreader to read from the output of the command
         mv.visitTypeInsn(NEW, "java/io/InputStreamReader");
         mv.visitInsn(DUP);
-        mv.visitVarInsn(ALOAD, 9);
+        mv.visitVarInsn(ALOAD, 11);
         mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Process", "getInputStream", "()Ljava/io/InputStream;", false);
         mv.visitMethodInsn(INVOKESPECIAL, "java/io/InputStreamReader", "<init>", "(Ljava/io/InputStream;)V", false);
         mv.visitVarInsn(ASTORE, 9);
@@ -957,6 +954,10 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayDeque", "add", "(Ljava/lang/Object;)Z", false);
         mv.visitInsn(POP);
         mv.visitJumpInsn(GOTO, read);
+
+        mv.visitVarInsn(ALOAD, 11);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Process", "waitFor", "()I", false);
+        mv.visitInsn(POP);
 
         //Clear stack
         mv.visitLabel(exit);
