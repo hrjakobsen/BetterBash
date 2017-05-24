@@ -721,10 +721,13 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
     public Void visit(NegationNode node) {
         node.getExpression().accept(this);
         Label f = new Label();
+        Label exit = new Label();
         mv.visitJumpInsn(IFEQ, f);
         mv.visitInsn(ICONST_1);
+        mv.visitJumpInsn(GOTO, exit);
         mv.visitLabel(f);
         mv.visitInsn(ICONST_0);
+        mv.visitLabel(exit);
         return null;
     }
 
