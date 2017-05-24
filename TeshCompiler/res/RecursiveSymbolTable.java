@@ -59,12 +59,10 @@ public class RecursiveSymbolTable {
     }
 
     public void change(String name, Object s) {
-        System.out.println("Changing " + name + " to " + s.toString());
         //System.out.println("E (" + name + " → " + s.toString() + ") (" + currentTable + ")" );
         if (!currentTable.recursiveChange(name, s)) {
             currentTable.entries.put(name, s);
         }
-        System.out.println("Changing done");
     }
 
     private boolean recursiveChange(String name, Object s) {

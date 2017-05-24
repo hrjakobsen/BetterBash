@@ -14,7 +14,7 @@ func range(int start, int end) int[] {
     return a
 }
 
-int[] a = range(0,20000)
+int[] a = range(0,64)
 
 for x in a {
     for y in a {
