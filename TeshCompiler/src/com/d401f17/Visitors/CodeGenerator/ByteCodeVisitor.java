@@ -707,6 +707,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(NegationNode node) {
+        node.getExpression().accept(this);
         mv.visitInsn(ICONST_M1);
         mv.visitInsn(IMUL);
         return null;
