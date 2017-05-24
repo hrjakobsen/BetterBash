@@ -459,7 +459,6 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
         String funcName = node.getName().getName();
 
-
         if (standardFunctions.containsKey(funcName)) {
             for (ArithmeticExpressionNode arg : node.getArguments()) {
                 arg.accept(this);
@@ -545,6 +544,14 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         //Use the snapshot in the function to determine bindings
         SymbolTable old = symtab;
         symtab = functionTable;
+
+        for (VariableDeclarationNode decl : node.getFormalArguments()) {
+            try {
+                symtab.insert(decl.getName().getName(), new Symbol(decl.getTypeNode().getType(), decl));
+            } catch (VariableAlreadyDeclaredException e) {
+                e.printStackTrace();
+            }
+        }
 
         Type funcType = node.getType();
 
@@ -1093,7 +1100,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         } else if (variable instanceof StringType || variable instanceof CharType) {
             return "Ljava/lang/String;";
         } else if (variable instanceof ArrayType) {
-            return "java/util/ArrayList";
+            return "Ljava/util/ArrayList;";
         } else if (variable instanceof VoidType || variable instanceof OkType) {
             return "V";
         } else if (variable instanceof BoolType) {

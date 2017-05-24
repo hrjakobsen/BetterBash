@@ -1,16 +1,20 @@
-func main() void {
-    func local() void {
-        print("main.local")
+func range(int start, int end) int[] {
+    int[] a = []
+    if start < end {
+        while (start < end) {
+            a ::= start
+            start += 1
+        }
+    } else {
+        while (start > end) {
+            a ::= start
+            start -= 1
+        }
     }
-    local()
+    return a
 }
 
-func other() void {
-    func local() void {
-        print("other.local")
-    }
-    local()
-}
 
-main()
-other()
+for x in range(0, 100) {
+    print(intToStr(x))
+}
