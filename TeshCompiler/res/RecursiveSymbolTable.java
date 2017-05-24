@@ -24,7 +24,7 @@ public class RecursiveSymbolTable {
     }
     
     public void openScope() {
-        currentTable = new RecursiveSymbolTable(this);
+        currentTable = new RecursiveSymbolTable(currentTable);
     }
     
     public void closeScope() {
@@ -32,7 +32,8 @@ public class RecursiveSymbolTable {
     }
     
     public void insert(String id, Object s) {
-        //System.out.println("inserting: " + id);
+
+        //System.out.println("inserting: " + this);
 
         //System.out.print("I " + s + " → " + Arrays.asList(entries) + " → ");
         currentTable.entries.put(id, s);
@@ -58,10 +59,12 @@ public class RecursiveSymbolTable {
     }
 
     public void change(String name, Object s) {
+        System.out.println("Changing " + name + " to " + s.toString());
         //System.out.println("E (" + name + " → " + s.toString() + ") (" + currentTable + ")" );
         if (!currentTable.recursiveChange(name, s)) {
             currentTable.entries.put(name, s);
         }
+        System.out.println("Changing done");
     }
 
     private boolean recursiveChange(String name, Object s) {

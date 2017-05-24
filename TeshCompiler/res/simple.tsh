@@ -14,7 +14,8 @@ func range(int start, int end) int[] {
     return a
 }
 
+int[] a = range(0,20000)
 
-for x in range(0, 100) {
+for x in a {
     print(intToStr(x))
 }

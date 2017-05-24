@@ -407,7 +407,10 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
     @Override
     public Void visit(ForNode node) {
         //Push array ref to top of stack
+        print("getting array");
         node.getArray().accept(this);
+        print("have got it");
+
         mv.visitVarInsn(ASTORE, 3);
 
         Label evaluate = new Label();
@@ -420,6 +423,9 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         //Begin while loop
         mv.visitJumpInsn(GOTO, evaluate);
         mv.visitLabel(execute);
+
+        print("Executing");
+
 
         //Get symbol table of function
         mv.visitVarInsn(ALOAD, 0);
@@ -435,7 +441,15 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
         mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "insert", "(Ljava/lang/String;Ljava/lang/Object;)V", false);
 
+        //Save variables on stack
+        mv.visitVarInsn(ALOAD, 3);
+        mv.visitVarInsn(ILOAD, 4);
+
         node.getStatements().accept(this);
+
+        //Restore variables from stack
+        mv.visitVarInsn(ISTORE, 4);
+        mv.visitVarInsn(ASTORE, 3);
 
         mv.visitVarInsn(ALOAD, 0);
         mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "closeScope", "()V", false);
@@ -1128,6 +1142,20 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
             System.out.println("Invalid type conversion");
         }
         return 0;
+    }
+
+    private void print() {
+        mv.visitInsn(DUP);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Object", "toString", "()Ljava/lang/String;", false);
+        mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+        mv.visitInsn(SWAP);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+    }
+
+    private void print(String s) {
+        mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+        mv.visitLdcInsn(s);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
     }
 
     public void End() {
