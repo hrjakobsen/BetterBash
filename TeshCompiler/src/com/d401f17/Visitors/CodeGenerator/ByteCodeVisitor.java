@@ -407,9 +407,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
     @Override
     public Void visit(ForNode node) {
         //Push array ref to top of stack
-        print("getting array");
         node.getArray().accept(this);
-        print("have got it");
 
         mv.visitVarInsn(ASTORE, 3);
 
@@ -424,7 +422,6 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         mv.visitJumpInsn(GOTO, evaluate);
         mv.visitLabel(execute);
 
-        print("Executing");
 
 
         //Get symbol table of function

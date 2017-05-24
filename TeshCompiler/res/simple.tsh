@@ -17,5 +17,7 @@ func range(int start, int end) int[] {
 int[] a = range(0,20000)
 
 for x in a {
-    print(intToStr(x))
+    for y in a {
+        print("(" + intToStr(x) + "," + intToStr(y) + ")")
+    }
 }

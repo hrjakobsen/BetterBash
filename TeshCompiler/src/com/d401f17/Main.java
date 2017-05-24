@@ -97,20 +97,17 @@ public class Main {
                         Files.copy(stream, p);
                     }
 
-                    Runtime r = Runtime.getRuntime();
-                    Process p = r.exec("java -cp " + tempDir.toString() + " Main");
-                    p.waitFor();
-                    BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                    BufferedReader berr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-                    String line;
+                    ProcessBuilder builder = new ProcessBuilder("java", "-cp", tempDir.toString(), "Main");
+                    builder.redirectErrorStream(true);
 
+                    Process p = builder.start();
+                    BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                    String line;
                     while ((line = b.readLine()) != null) {
                         System.out.println(line);
                     }
 
-                    while ((line = berr.readLine()) != null) {
-                        System.err.println(line);
-                    }
+                    p.waitFor();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -203,20 +200,18 @@ public class Main {
                 Files.copy(stream, p);
             }
 
-            Runtime r = Runtime.getRuntime();
-            Process p = r.exec("java -cp " + tempDir.toString() + " Main");
-            p.waitFor();
-            BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            BufferedReader berr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-            String line;
+            ProcessBuilder builder = new ProcessBuilder("java", "-cp", tempDir.toString(), "Main");
+            builder.redirectErrorStream(true);
 
+            Process p = builder.start();
+            BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line;
             while ((line = b.readLine()) != null) {
                 System.out.println(line);
             }
 
-            while ((line = berr.readLine()) != null) {
-                System.err.println(line);
-            }
+            p.waitFor();
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
