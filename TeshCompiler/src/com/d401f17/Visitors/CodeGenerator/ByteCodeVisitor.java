@@ -33,7 +33,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         standardFunctions.put("intToStr", "(J)Ljava/lang/String;");
         standardFunctions.put("floatToStr", "(D)Ljava/lang/String;");
         standardFunctions.put("charToStr", "(Ljava/lang/String;)Ljava/lang/String;");
-        standardFunctions.put("boolToStr", "(B)Ljava/lang/String;");
+        standardFunctions.put("boolToStr", "(I)Ljava/lang/String;");
         //Set up main class
         cw.visit(52,
                 ACC_PUBLIC + ACC_STATIC,
@@ -1121,7 +1121,10 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         } else if (type instanceof StringType) {
             mv.visitTypeInsn(CHECKCAST, "java/lang/String");
         } else if (type instanceof CharType) {
+            mv.visitTypeInsn(CHECKCAST, "java/lang/String");
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "java/lang/String", "()java/lang/String", false);
         } else if (type instanceof BoolType) {
+            mv.visitTypeInsn(CHECKCAST, "java/lang/Integer");
             mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I", false);
         } else if (type instanceof ArrayType) {
             mv.visitTypeInsn(CHECKCAST, "java/util/ArrayList");
