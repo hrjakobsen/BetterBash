@@ -9,6 +9,15 @@ import com.d401f17.TypeSystem.Type;
 public class FunctionSymbol extends Symbol {
 
     private SymbolTable symbolTable;
+    private String methodName;
+
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
 
     public FunctionSymbol(Type type, AST declarationNode, SymbolTable symbolTable) {
         super(type, declarationNode);

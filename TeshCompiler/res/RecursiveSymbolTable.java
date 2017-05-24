@@ -32,6 +32,7 @@ public class RecursiveSymbolTable {
     }
     
     public void insert(String id, Object s) {
+        //System.out.println("inserting: " + id);
 
         //System.out.print("I " + s + " → " + Arrays.asList(entries) + " → ");
         currentTable.entries.put(id, s);
@@ -40,6 +41,7 @@ public class RecursiveSymbolTable {
     }
     
     public Object lookup(String id) {
+        //System.out.println("looking for: " + id);
         //System.out.print("L "+ "(" + currentTable + ")" + id  + " → ");
         Object a =  currentTable.recursiveLookup(id);
         //System.out.print(a.toString() + " ) " + "\n");

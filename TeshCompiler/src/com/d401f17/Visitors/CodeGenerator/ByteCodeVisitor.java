@@ -19,6 +19,9 @@ import static org.objectweb.asm.Opcodes.*;
  */
 
 public class ByteCodeVisitor extends BaseVisitor<Void> {
+
+    private static int id = 0;
+
     private List<ClassDescriptor> otherClasses = new ArrayList<>();
     private HashMap<String, String> standardFunctions= new HashMap<>();
     private ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES + ClassWriter.COMPUTE_MAXS);
@@ -354,7 +357,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         cw = innerClass;
         MethodVisitor mainMethod = mv;
 
-        String className = "fork";
+        String className = "fork" + id++;
 
         innerClass.visit(52, ACC_PUBLIC, className, null, "java/lang/Thread", null);
 
@@ -375,6 +378,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         mv = innerClass.visitMethod(ACC_PUBLIC, "run", "()V", null, null);
         mv.visitVarInsn(ALOAD, 0);
         mv.visitFieldInsn(GETFIELD, className, "table", "LRecursiveSymbolTable;");
+        mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "clone", "()LRecursiveSymbolTable;", false);
         mv.visitVarInsn(ASTORE, 0);
 
         node.getChild().accept(this);
@@ -452,6 +456,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(FunctionCallNode node) {
+
         String funcName = node.getName().getName();
 
 
@@ -463,6 +468,17 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
             return null;
         }
 
+        FunctionNode f = null;
+        String methodname = "";
+
+        try {
+            FunctionSymbol fs = (FunctionSymbol) symtab.lookup(funcName);
+            f = (FunctionNode) fs.getDeclarationNode();
+            methodname = fs.getMethodName();
+        } catch (VariableNotDeclaredException e) {
+            e.printStackTrace();
+        }
+
         mv.visitVarInsn(ALOAD, 0);
         mv.visitLdcInsn(funcName);
         mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "lookup", "(Ljava/lang/String;)Ljava/lang/Object;", false);
@@ -472,12 +488,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "openScope", "()V", false);
         mv.visitVarInsn(ASTORE, 1);
 
-        FunctionNode f = null;
-        try {
-            f = (FunctionNode) (symtab.lookup(funcName)).getDeclarationNode();
-        } catch (VariableNotDeclaredException e) {
-            e.printStackTrace();
-        }
+
 
         //We want to visit the node using this functions symbol table, but bind them in the new functions symbol table
         List<ArithmeticExpressionNode> arguments = node.getArguments();
@@ -488,18 +499,18 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         }
 
         mv.visitVarInsn(ALOAD, 1);
-        mv.visitMethodInsn(INVOKESTATIC, "Main", node.getName().getName(), "(LRecursiveSymbolTable;)" + toJavaType(node.getType()), false);
-        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKESTATIC, "Main", methodname, "(LRecursiveSymbolTable;)" + toJavaType(node.getType()), false);
+        mv.visitVarInsn(ALOAD, 1);
         mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "closeScope", "()V", false);
 
-        //Restore the old symtab pointer
-        mv.visitVarInsn(ALOAD, 1);
-        mv.visitVarInsn(ASTORE, 0);
         return null;
     }
 
     @Override
     public Void visit(FunctionNode node) {
+        String methodname = node.getName().getName() + "$" + id++;
+        String funcName = node.getName().getName();
+
         //Get the current symbol table
         mv.visitVarInsn(ALOAD, 0);
 
@@ -509,7 +520,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         //Order the stack: {'REC', 'func name', 'REC', 'REC', }
         mv.visitInsn(DUP);
         mv.visitInsn(DUP);
-        mv.visitLdcInsn(node.getName().getName());
+        mv.visitLdcInsn(funcName);
         mv.visitInsn(SWAP);
 
         //Insert the new table into itself
@@ -519,7 +530,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         //Load the original table
         mv.visitVarInsn(ALOAD, 0);
         mv.visitInsn(SWAP);
-        mv.visitLdcInsn(node.getName().getName());
+        mv.visitLdcInsn(funcName);
         mv.visitInsn(SWAP);
 
         //Stack is now: {'REC', "func name', 'OLD'}
@@ -535,7 +546,6 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         SymbolTable old = symtab;
         symtab = functionTable;
 
-        String funcName = node.getName().getName();
         Type funcType = node.getType();
 
         FunctionType function = new FunctionType(funcName, null, funcType);
@@ -543,6 +553,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         try {
             //Insert the function into the old symbol table
             FunctionSymbol f = new FunctionSymbol(function, node, new SymbolTable(functionTable));
+            f.setMethodName(methodname);
             f.getSymbolTable().insert(funcName, f);
             old.insert(funcName, f);
         } catch (VariableAlreadyDeclaredException e) {
@@ -551,7 +562,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
         //Create the new static method
         MethodVisitor oldMv = mv;
-        mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, node.getName().getName(), "(LRecursiveSymbolTable;)" + toJavaType(node.getStatements().getType()), null, null);
+        mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, methodname, "(LRecursiveSymbolTable;)" + toJavaType(node.getStatements().getType()), null, null);
 
         //Generate the method itself
         node.getStatements().accept(this);
