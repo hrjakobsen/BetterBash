@@ -990,7 +990,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
             mv.visitInsn(DUP);
             mv.visitLdcInsn(0);
             mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Integer", "<init>", "(I)V", false);
-        } else if (type instanceof StringType) {
+        } else if (type instanceof StringType || type instanceof CharType) {
             mv.visitTypeInsn(NEW, "java/lang/String");
             mv.visitInsn(DUP);
             mv.visitMethodInsn(INVOKESPECIAL, "java/lang/String", "<init>", "()V", false);
@@ -1122,7 +1122,6 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
             mv.visitTypeInsn(CHECKCAST, "java/lang/String");
         } else if (type instanceof CharType) {
             mv.visitTypeInsn(CHECKCAST, "java/lang/String");
-            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String", "java/lang/String", "()java/lang/String", false);
         } else if (type instanceof BoolType) {
             mv.visitTypeInsn(CHECKCAST, "java/lang/Integer");
             mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I", false);
