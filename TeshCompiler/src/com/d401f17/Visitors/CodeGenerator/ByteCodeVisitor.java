@@ -37,6 +37,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         standardFunctions.put("boolToStr", "(I)Ljava/lang/String;");
         standardFunctions.put("empty","(Ljava/util/ArrayDeque;)I");
         standardFunctions.put("getFilesFromDir","(Ljava/lang/String;)Ljava/util/ArrayList;");
+        standardFunctions.put("intVal", "(Ljava/lang/String;)J");
         //Set up main class
         cw.visit(52,
                 ACC_PUBLIC + ACC_STATIC,
@@ -121,12 +122,16 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         this.emitLoad(node.getArray().getName(), node.getArray().getType());//Push array ref
 
         //Get ref to innermost array
+        ArrayType arrayType = (ArrayType) node.getArray().getType();
         for (int i = 0; i < node.getIndices().size(); i++) {
             node.getIndices().get(i).accept(this); //push index
             mv.visitInsn(L2I); //Truncate to 32 bit
             mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "get", "(I)Ljava/lang/Object;", false); //pop ref; pop index; push value
+            unboxElement(arrayType.getChildType());
+            if (arrayType.getChildType() instanceof ArrayType) {
+                arrayType = (ArrayType) arrayType.getChildType();
+            }
         }
-        unboxElement(((ArrayType)node.getArray().getType()).getInnerMostType());
         return null;
     }
 

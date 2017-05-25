@@ -1,0 +1,8 @@
+#myArray is set to [1, 2, 3]
+int[] myArray = [1, 2, 3] 
+
+#myArray is set to [1, 2, 3, 9]
+myArray ::= 9
+for i in myArray {
+    print(intToStr(i))
+}

@@ -35,4 +35,7 @@ public class StdFunc {
 		return files;
 	}
 
+	public static long intVal(String str) {
+		return Long.parseLong(str);
+	}
 }

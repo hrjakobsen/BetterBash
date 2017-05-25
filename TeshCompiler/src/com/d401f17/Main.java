@@ -140,7 +140,7 @@ public class Main {
             return;
         }
 
-        InputStream is = Main.class.getResourceAsStream("/1chat.tsh");
+        InputStream is = Main.class.getResourceAsStream("/anotherTest.tsh");
         CharStream input = CharStreams.fromStream(is);
 
         //Lex the input file to convert it to tokens
