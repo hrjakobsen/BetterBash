@@ -1,6 +1,6 @@
 public class textfile {
     public String name;
-    public int error;
+    public long error;
     public String directory;
 
     public textfile() {

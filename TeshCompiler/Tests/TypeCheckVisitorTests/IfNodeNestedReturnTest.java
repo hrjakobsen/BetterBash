@@ -13,9 +13,6 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 import java.util.Collection;
 
-/**
- * Created by hense on 4/12/17.
- */
 @RunWith(value = Parameterized.class)
 public class IfNodeNestedReturnTest {
     @Parameterized.Parameter(value = 0)
