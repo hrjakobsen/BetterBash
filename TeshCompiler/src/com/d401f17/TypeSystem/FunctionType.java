@@ -35,12 +35,29 @@ public class FunctionType extends Type {
             Type arg = args.get(i);
             Type argOther = other.args.get(i);
 
+            if (arg instanceof ArrayType && argOther instanceof ArrayType) {
+                if (!matchingArrayTypes((ArrayType)arg, (ArrayType)argOther)) {
+                    valid = false;
+                    break;
+                }
+            }
+
             if (!argOther.getClass().isInstance(arg)) {
                 valid = false;
                 break;
             }
         }
         return valid;
+    }
+
+    private boolean matchingArrayTypes(ArrayType a1, ArrayType a2) {
+        if (a1.getChildType().getClass() == a2.getChildType().getClass()) {
+            if (a1.getChildType() instanceof ArrayType) {
+                return matchingArrayTypes((ArrayType)a1.getChildType(), (ArrayType)a2.getChildType());
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override
