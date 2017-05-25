@@ -242,7 +242,7 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
         if (node.getType() instanceof IntType) {
             return new IntLiteralNode((long)a1.getValue() / (long)a2.getValue());
         } else {
-            return new FloatLiteralNode(ToFloat(a2.getValue()) / ToFloat(a2.getValue()));
+            return new FloatLiteralNode(ToFloat(a1.getValue()) / ToFloat(a2.getValue()));
         }
     }
 

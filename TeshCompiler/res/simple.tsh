@@ -14,10 +14,22 @@ func range(int start, int end) int[] {
     return a
 }
 
-int[] a = range(0,64)
+int[] a = range(0, 1000)
 
-for x in a {
-    for y in a {
-        print("(" + intToStr(x) + "," + intToStr(y) + ")")
+if true {
+    for x in a {
+        for y in a {
+            int dist = x * x + y * y
+            string distStr = intToStr(dist)
+        }
     }
+} else {#*
+    for x in a {
+        for y in a {
+            float dist = x * x + y * y
+            string distStr = floatToStr(dist)
+        }
+    }
+    *#
 }
+
