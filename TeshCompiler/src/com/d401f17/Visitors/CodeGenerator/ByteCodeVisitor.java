@@ -30,6 +30,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
     private int nextAddress = 0;
     public ByteCodeVisitor() throws IOException {
         standardFunctions.put("print", "(Ljava/lang/String;)V");
+        standardFunctions.put("read", "()Ljava/lang/String;");
         standardFunctions.put("intToStr", "(J)Ljava/lang/String;");
         standardFunctions.put("floatToStr", "(D)Ljava/lang/String;");
         standardFunctions.put("charToStr", "(Ljava/lang/String;)Ljava/lang/String;");
@@ -37,6 +38,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         standardFunctions.put("empty","(Ljava/util/ArrayDeque;)I");
         standardFunctions.put("getFilesFromDir","(Ljava/lang/String;)Ljava/util/ArrayList;");
         standardFunctions.put("intVal", "(Ljava/lang/String;)J");
+        standardFunctions.put("floatVal", "(Ljava/lang/String;)D");
         //Set up main class
         cw.visit(52,
                 ACC_PUBLIC + ACC_STATIC,

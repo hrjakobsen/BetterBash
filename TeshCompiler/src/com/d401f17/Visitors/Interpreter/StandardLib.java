@@ -44,6 +44,7 @@ public final class StandardLib {
 
     public static void InsertFunctions (HashMap<String, Function<LiteralNode[], LiteralNode>> table) {
         table.put("intToStr", StandardLib::LiteralToString);
+        table.put("floatToStr", StandardLib::LiteralToString);
         table.put("charToStr", StandardLib::LiteralToString);
         table.put("boolToStr", StandardLib::LiteralToString);
         table.put("floatToStr", StandardLib::LiteralToString);
@@ -88,7 +89,7 @@ public final class StandardLib {
     public static StringLiteralNode Read(LiteralNode[] nodes) {
         Scanner scanner = new Scanner(System.in);
         StringLiteralNode s = new StringLiteralNode(scanner.next());
-        scanner.close();
+        //scanner.close();
         return s;
     }
 

@@ -21,15 +21,12 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        boolean debug = true;
-        if (!debug) {
+        String debugFile = "bmi.tsh";
+        boolean bc = true;
+
+        if (debugFile.isEmpty()) {
             if (args.length == 0) {
                 System.err.println("You must specify an input file");
-                return;
-            }
-
-            if (!args[0].endsWith(".tsh")) {
-                System.err.println("The input file must be a tesh-file");
                 return;
             }
 
@@ -84,7 +81,6 @@ public class Main {
 
                 try {
                     Path tempDir = Files.createTempDirectory("teshsource");
-                    System.out.println("Executing in: " + tempDir);
                     for (ClassDescriptor c : classes) {
                         FileOutputStream fos = new FileOutputStream(tempDir.toString() + "/" + c.getName() + ".class");
                         fos.write(c.getWriter().toByteArray());
@@ -134,88 +130,116 @@ public class Main {
                     fos.close();
                 }
             }
-        }
+        } else {
+            InputStream is = Main.class.getResourceAsStream("/" + debugFile);
+            CharStream input = CharStreams.fromStream(is);
 
-        if (!debug) {
-            return;
-        }
+            long totalTime = 0;
+            long bcTime = 0;
+            long intTime = 0;
 
-        InputStream is = Main.class.getResourceAsStream("/simple.tsh");
-        CharStream input = CharStreams.fromStream(is);
+            long startTime = System.nanoTime();
+            TeshLexer lexer = new TeshLexer(input);
+            CommonTokenStream tokenStream = new CommonTokenStream(lexer);
+            long temp = (System.nanoTime() - startTime) / 1000000;
+            totalTime += temp;
+            System.out.println("Lexing took      \t\t\t" + temp + "ms");
 
-        //Lex the input file to convert it to tokens
-        TeshLexer lexer = new TeshLexer(input);
-        CommonTokenStream tokenStream = new CommonTokenStream(lexer);
+            startTime = System.nanoTime();
+            TeshParser parser = new TeshParser(tokenStream);
+            TeshParser.CompileUnitContext unit = parser.compileUnit();
+            temp = (System.nanoTime() - startTime) / 1000000;
+            totalTime += temp;
+            System.out.println("Parsing took     \t\t\t" + temp + "ms");
 
-        //Parse the token stream
-        TeshParser parser = new TeshParser(tokenStream);
-        TeshParser.CompileUnitContext unit = parser.compileUnit();
-
-        if (parser.getNumberOfSyntaxErrors() > 0) {
-            return;
-        }
-
-        //Build Abstract Syntax Tree (AST)
-        TeshBaseVisitor<AST> ASTBuilder = new BuildAstVisitor();
-        AST ast = ASTBuilder.visitCompileUnit(unit);
-
-        //Create a symbol table containing standard library of functions
-        SymTab symbolTable = new SymbolTable();
-        SymTab recordTable = SymbolTable.TableWithDefaultRecords();
-
-        //Type check the AST
-        TypeCheckVisitor typeCheck = new TypeCheckVisitor(symbolTable, recordTable);
-        ast.accept(typeCheck);
-
-        for (String s : typeCheck.getErrors()) {
-            System.out.println(s);
-        }
-
-        if (typeCheck.getErrors().size() > 0) {
-            return;
-        }
-
-        //InterpretVisitor run = new InterpretVisitor(recordTable);
-        //ast.accept(run);
-        ByteCodeVisitor run = new ByteCodeVisitor();
-
-        ast.accept(run);
-        run.End();
-
-        List<ClassDescriptor> classes = run.getOtherClasses();
-        classes.add(0, new ClassDescriptor("Main", run.getCw()));
-
-        try {
-            Path tempDir = Files.createTempDirectory("teshsource");
-            System.out.println("Executing in: " + tempDir);
-            for (ClassDescriptor c : classes) {
-                FileOutputStream fos = new FileOutputStream(tempDir.toString() + "/" + c.getName() + ".class");
-                fos.write(c.getWriter().toByteArray());
-                fos.close();
-            }
-            String[] Libraries = {"RecursiveSymbolTable.class", "StdFunc.class", "binfile.class"};
-            for (String lib : Libraries) {
-                InputStream stream = Main.class.getResourceAsStream("/" + lib);
-                Path p = Paths.get(tempDir.toString(), lib);
-                Files.copy(stream, p);
+            if (parser.getNumberOfSyntaxErrors() > 0) {
+                return;
             }
 
-            ProcessBuilder builder = new ProcessBuilder("java", "-cp", tempDir.toString(), "Main");
-            builder.redirectErrorStream(true);
+            startTime = System.nanoTime();
+            TeshBaseVisitor<AST> ASTBuilder = new BuildAstVisitor();
+            AST ast = ASTBuilder.visitCompileUnit(unit);
+            temp = (System.nanoTime() - startTime) / 1000000;
+            totalTime += temp;
+            System.out.println("AST building took\t\t\t" + temp + "ms");
 
-            Process p = builder.start();
-            BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String line;
-            while ((line = b.readLine()) != null) {
-                System.out.println(line);
+
+            SymTab symbolTable = new SymbolTable();
+            SymTab recordTable = SymbolTable.TableWithDefaultRecords();
+
+            startTime = System.nanoTime();
+            TypeCheckVisitor typeCheck = new TypeCheckVisitor(symbolTable, recordTable);
+            ast.accept(typeCheck);
+            temp = (System.nanoTime() - startTime) / 1000000;
+            totalTime += temp;
+            System.out.println("Type-check took  \t\t\t" + temp + "ms");
+
+
+            for (String s : typeCheck.getErrors()) {
+                System.out.println(s);
             }
 
-            p.waitFor();
+            if (typeCheck.getErrors().size() > 0) {
+                return;
+            }
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            startTime = System.nanoTime();
+            ByteCodeVisitor run = new ByteCodeVisitor();
+            ast.accept(run);
+            run.End();
+
+            List<ClassDescriptor> classes = run.getOtherClasses();
+            classes.add(0, new ClassDescriptor("Main", run.getCw()));
+
+
+            try {
+                Path tempDir = Files.createTempDirectory("teshsource");
+                //System.out.println("Executing in: " + tempDir);
+                for (ClassDescriptor c : classes) {
+                    FileOutputStream fos = new FileOutputStream(tempDir.toString() + "/" + c.getName() + ".class");
+                    fos.write(c.getWriter().toByteArray());
+                    fos.close();
+                }
+                String[] Libraries = {"RecursiveSymbolTable.class", "StdFunc.class", "binfile.class"};
+                for (String lib : Libraries) {
+                    InputStream stream = Main.class.getResourceAsStream("/" + lib);
+                    Path p = Paths.get(tempDir.toString(), lib);
+                    Files.copy(stream, p);
+                }
+
+                ProcessBuilder builder = new ProcessBuilder("java", "-cp", tempDir.toString(), "Main");
+                builder.redirectErrorStream(true);
+                bcTime = (System.nanoTime() - startTime) / 1000000;
+                System.out.println("Bytecode gen took\t\t\t" + bcTime + "ms");
+
+                startTime = System.nanoTime();
+                Process p = builder.start();
+                BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                String line;
+                while ((line = b.readLine()) != null) {
+                    System.out.println(line);
+                }
+
+                p.waitFor();
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            temp = (System.nanoTime() - startTime) / 1000000;
+            bcTime += temp;
+            System.out.println("Bytecode run took\t\t\t" + temp + "ms");
+
+/*
+            startTime = System.nanoTime();
+            InterpretVisitor intVisit = new InterpretVisitor(recordTable);
+            ast.accept(intVisit);
+            intTime = (System.nanoTime() - startTime) / 1000000;
+            System.out.println("Interpreting took\t\t\t" + intTime + "ms");
+*/
+            System.out.println("\nBytecode total took    \t\t" + (bcTime + totalTime) + "ms");
+            System.out.println("Interpreting total took\t\t" + (intTime + totalTime) + "ms");
         }
     }
 }

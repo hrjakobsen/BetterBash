@@ -5,6 +5,12 @@ public class StdFunc {
 	public static void print(String s) {
 		System.out.println(s);
 	}
+	public static String read() {
+		Scanner scn = new Scanner(System.in);
+		String result = scn.next();
+		scn.close();
+		return result;
+	}
 
 	public static String intToStr(long i) {
 		return Long.toString(i);
@@ -37,5 +43,8 @@ public class StdFunc {
 
 	public static long intVal(String str) {
 		return Long.parseLong(str);
+	}
+	public static double floatVal(String str) {
+		return Double.parseDouble(str);
 	}
 }

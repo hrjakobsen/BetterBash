@@ -4,10 +4,9 @@ func takesInt(int a) int {
 
 int[][] intArrayArray = [[1, 2, 3], [4, 5, 6]]
 
-int b = intArrayArray[0][0] + 10
 
 int a = 10
-
-#int c = 10 + takesInt(10 + 10 + b)
-int c = 10 + takesInt(a)
-#int d = 10 + takesInt(intArrayArray[0][0] + b)
+int b = intArrayArray[0][0] + 10
+int c = 10 + takesInt(10 + 10 + b)
+int d = 10 + takesInt(a)
+int e = 10 + takesInt(intArrayArray[0][0] + b)
