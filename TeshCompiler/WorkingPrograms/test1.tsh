@@ -1,0 +1,6 @@
+#!/bin/tesh
+
+float a = 2.0
+int b = 2
+
+print(floatToStr(a + b) + " is the result of " + floatToStr(a) + " + " + intToStr(b))

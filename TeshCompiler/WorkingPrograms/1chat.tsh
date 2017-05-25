@@ -1,0 +1,5 @@
+binfile[] files = getFilesFromDir("/home/mathias/Desktop")
+
+for x in [y in files | y.name ?= ".*java"] {
+    print(x.name)
+}
