@@ -1,13 +1,5 @@
-func printArr(int[] input) void {
-    for el in input {
-        print(intToStr(el))
-    }
-}
+textfile f = openTextfile("/home/mathias/Desktop/testfile.txt")
+writeText(f, "hej2")
 
-int[] a = [1, 2]
-
-int[][] intArray = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10]]
-
-int[][] a2 = [x in intArray | true]
-
-printArr(a2[1])
+binfile b = openBinfile("/home/mathias/Desktop/bintest.dat")
+writeData(b, [1, 2, 3])
