@@ -175,7 +175,7 @@ public class Main {
             if (typeCheck.getErrors().size() > 0) {
                 return;
             }
-
+/*
             startTime = System.nanoTime();
             ByteCodeVisitor run = new ByteCodeVisitor();
             ast.accept(run);
@@ -223,14 +223,14 @@ public class Main {
             temp = (System.nanoTime() - startTime) / 1000000;
             bcTime += temp;
             System.out.println("Bytecode run took\t\t\t" + temp + "ms");
+*/
 
-/*
             startTime = System.nanoTime();
             InterpretVisitor intVisit = new InterpretVisitor(recordTable);
             ast.accept(intVisit);
             intTime = (System.nanoTime() - startTime) / 1000000;
             System.out.println("Interpreting took\t\t\t" + intTime + "ms");
-*/
+
             System.out.println("\nBytecode total took    \t\t" + (bcTime + totalTime) + "ms");
             System.out.println("Interpreting total took\t\t" + (intTime + totalTime) + "ms");
         }
