@@ -151,6 +151,13 @@ public final class StandardLib {
         file.getValue().put("directory", new StringLiteralNode(path));
         file.getValue().put("error", new IntLiteralNode(0));
         file.getValue().put("name", new StringLiteralNode(f.getName()));
+        if (!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                file.getValue().put("error", new IntLiteralNode(1));
+            }
+        }
         return file;
     }
 

@@ -40,7 +40,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         standardFunctions.put("intVal", "(Ljava/lang/String;)J");
         standardFunctions.put("floatVal", "(Ljava/lang/String;)D");
         standardFunctions.put("openTextfile", "(Ljava/lang/String;)Ltextfile;");
-        standardFunctions.put("WriteText", "(Ltextfile;Ljava/lang/String;)I");
+        standardFunctions.put("writeText", "(Ltextfile;Ljava/lang/String;)I");
         standardFunctions.put("openBinfile", "(Ljava/lang/String;)Lbinfile;");
         standardFunctions.put("writeData", "(Lbinfile;Ljava/util/ArrayList;)I");
         //Set up main class
