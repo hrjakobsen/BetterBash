@@ -18,14 +18,6 @@ func range(int start, int end) int[] {
     return result
 }
 
-func sizeInt(int[] input) int {
-    int size = 0
-    for x in input {
-        size += 1
-    }
-    return size
-}
-
 func sizeStr(string[] input) int {
     int size = 0
     for x in input {
@@ -38,13 +30,9 @@ func random(float max) int {
     return floor(rnd() * max)
 }
 
-int size = 10
-#string[] trees = [":herb:", ":tulip:", ":seedling:", ":seedling:", ":sunflower:", ":hibiscus:", ":rose:", ":tulip:", ":blossom:", ":cherry_blossom:"]
-#string[] trees = [":herb:", ":herb:", ":herb:", ":herb:", ":sunflower:", ":sunflower:", ":seedling:", ":seedling:", ":ear_of_rice:", ":ear_of_rice:"]
-string[] trees = [":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":cop:", ":man::skin-tone-5:"]
-
+int size = 12
+string[] trees = ["🌳", "🌳", "🌳", "🌳", "🌳", "🌳", "🌳", "🌳", "🌲", "🌲", "🌲", "🌱"]
 string result = ""
-print(intToStr(random(10)))
 
 for y in range(-size, size) {
     for x in range(-size, size) {
@@ -53,7 +41,7 @@ for y in range(-size, size) {
         if chance < 1 {
             result += trees[random(sizeStr(trees))]
         } else {
-            for i in range(0, random(dist)) {
+            for i in range(0, floor(dist)) {
                 result += " "
             }
         }

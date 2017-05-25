@@ -49,6 +49,23 @@ public class StdFunc {
 		return Double.parseDouble(str);
 	}
 
+	public static double sqrt(double input) {
+		return Math.sqrt(input);
+	}
+
+	public static double rnd() {
+		Random rnd = new Random();
+		return rnd.nextDouble();
+	}
+
+	public static long ceil(double input) {
+		return (long)Math.ceil(input);
+	}
+
+	public static long floor(double input) {
+		return (long) Math.floor(input);
+	}
+
 	public static textfile openTextfile(String str) {
 		textfile t = new textfile();
 		File f = new File(str);

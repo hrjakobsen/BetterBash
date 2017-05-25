@@ -36,10 +36,15 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         standardFunctions.put("getFilesFromDir","(Ljava/lang/String;)Ljava/util/ArrayList;");
         standardFunctions.put("intVal", "(Ljava/lang/String;)J");
         standardFunctions.put("floatVal", "(Ljava/lang/String;)D");
+        standardFunctions.put("sqrt", "(D)D");
+        standardFunctions.put("rnd", "()D");
+        standardFunctions.put("ceil", "(D)J");
+        standardFunctions.put("floor", "(D)J");
         standardFunctions.put("openTextfile", "(Ljava/lang/String;)Ltextfile;");
-        standardFunctions.put("WriteText", "(Ltextfile;Ljava/lang/String;)I");
+        standardFunctions.put("writeText", "(Ltextfile;Ljava/lang/String;)I");
         standardFunctions.put("openBinfile", "(Ljava/lang/String;)Lbinfile;");
         standardFunctions.put("writeData", "(Lbinfile;Ljava/util/ArrayList;)I");
+
         //Set up main class
         cw.visit(52,
                 ACC_PUBLIC + ACC_STATIC,
