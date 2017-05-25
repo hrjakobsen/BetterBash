@@ -1,10 +1,5 @@
 package com.d401f17.AST.Nodes;
 
-import com.d401f17.Visitors.ASTVisitor;
-
-/**
- * Created by mathias on 3/15/17.
- */
 public abstract class InfixExpressionNode extends ArithmeticExpressionNode {
     private ArithmeticExpressionNode left;
     private ArithmeticExpressionNode right;

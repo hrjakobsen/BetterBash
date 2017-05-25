@@ -2,9 +2,6 @@ package com.d401f17.AST.Nodes;
 
 import com.d401f17.Visitors.ASTVisitor;
 
-/**
- * Created by Henrik on 13-04-2017.
- */
 public class FunctionIdentifierNode extends IdentifierNode {
     private String name;
 

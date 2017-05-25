@@ -4,9 +4,6 @@ import com.d401f17.SymbolTable.MemberNotFoundException;
 
 import java.util.HashMap;
 
-/**
- * Created by Henrik on 17-04-2017.
- */
 public class RecordType extends Type {
     private String name;
     private HashMap<String, Type> members = new HashMap<>();

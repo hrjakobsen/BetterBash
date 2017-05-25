@@ -1,8 +1,5 @@
 package com.d401f17.TypeSystem;
 
-/**
- * Created by hense on 4/5/17.
- */
 public abstract class Type implements Comparable<Type> {
     private int lineNum;
     private String errorMessage;

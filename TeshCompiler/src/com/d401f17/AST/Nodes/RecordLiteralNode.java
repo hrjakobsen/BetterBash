@@ -6,9 +6,6 @@ import com.d401f17.Visitors.ASTVisitor;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * Created by mathias on 4/20/17.
- */
 public class RecordLiteralNode extends LiteralNode {
     public RecordLiteralNode(HashMap<String, LiteralNode> value, Type primitiveType) {
         super(value, primitiveType);

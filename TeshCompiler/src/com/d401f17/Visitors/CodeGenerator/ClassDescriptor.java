@@ -2,9 +2,6 @@ package com.d401f17.Visitors.CodeGenerator;
 
 import org.objectweb.asm.ClassWriter;
 
-/**
- * Created by mathias on 5/18/17.
- */
 public class ClassDescriptor {
     String name;
     ClassWriter writer;

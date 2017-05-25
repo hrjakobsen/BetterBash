@@ -3,9 +3,6 @@ package com.d401f17.AST.Nodes;
 import com.d401f17.TypeSystem.BoolType;
 import com.d401f17.Visitors.ASTVisitor;
 
-/**
- * Created by mathias on 4/19/17.
- */
 public class BoolLiteralNode extends LiteralNode {
     public BoolLiteralNode(boolean value) {
         super(value, new BoolType());

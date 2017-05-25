@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by mathias on 3/15/17.
- */
 public class StatementsNode extends StatementNode {
     private List<StatementNode> children;
 

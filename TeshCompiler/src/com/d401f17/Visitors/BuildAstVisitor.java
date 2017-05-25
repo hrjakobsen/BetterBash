@@ -14,9 +14,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-/**
- * Created by mathias on 3/15/17.
- */
 public class BuildAstVisitor extends TeshBaseVisitor<AST>{
     @Override
     public AST visitCompileUnit(TeshParser.CompileUnitContext ctx) {

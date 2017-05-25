@@ -5,9 +5,6 @@ import com.d401f17.Visitors.ASTVisitor;
 
 import java.util.List;
 
-/**
- * Created by mathias on 4/27/17.
- */
 public class ValueArrayLiteralNode extends LiteralNode {
     public ValueArrayLiteralNode(List<LiteralNode> value, int lineNum) {
         super(value, new ArrayType(), lineNum);

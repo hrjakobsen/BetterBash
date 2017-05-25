@@ -11,9 +11,6 @@ import java.io.InputStreamReader;
 import java.util.*;
 import java.util.function.Function;
 
-/**
- * Created by mathias on 4/27/17.
- */
 public class InterpretVisitor extends BaseVisitor<LiteralNode> {
     private HashMap<String, Function<LiteralNode[], LiteralNode>> standardFunctions= new HashMap<>();
 

@@ -2,9 +2,6 @@ package com.d401f17.Visitors;
 
 import com.d401f17.AST.Nodes.*;
 
-/**
- * Created by mathias on 4/4/17.
- */
 public interface ASTVisitor<T> {
     T visit(AdditionNode node);
     T visit(AndNode node);
