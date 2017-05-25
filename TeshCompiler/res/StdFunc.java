@@ -1,4 +1,5 @@
-import java.util.ArrayDeque;
+import java.util.*;
+import java.io.*;
 
 public class StdFunc {
 	public static void print(String s) {
@@ -18,6 +19,22 @@ public class StdFunc {
 			return 0;
 		}
 	}
+
+	public static ArrayList getFilesFromDir(String s) {
+		File folder = new File(s);
+		File[] listOfFiles = folder.listFiles();
+		ArrayList files = new ArrayList();
+
+		for (File file : listOfFiles) {
+			binfile b = new binfile();
+			b.directory = file.getAbsolutePath();
+			b.name = file.getName();
+			files.add(b);
+		}
+
+		return files;
+	}
+
 	public static long intVal(String str) {
 		return Long.parseLong(str);
 	}

@@ -10,6 +10,7 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.*;
 
 import static org.objectweb.asm.Opcodes.*;
@@ -35,6 +36,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         standardFunctions.put("charToStr", "(Ljava/lang/String;)Ljava/lang/String;");
         standardFunctions.put("boolToStr", "(I)Ljava/lang/String;");
         standardFunctions.put("empty","(Ljava/util/ArrayDeque;)I");
+        standardFunctions.put("getFilesFromDir","(Ljava/lang/String;)Ljava/util/ArrayList;");
         standardFunctions.put("intVal", "(Ljava/lang/String;)J");
         //Set up main class
         cw.visit(52,
@@ -120,12 +122,16 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         this.emitLoad(node.getArray().getName(), node.getArray().getType());//Push array ref
 
         //Get ref to innermost array
+        ArrayType arrayType = (ArrayType) node.getArray().getType();
         for (int i = 0; i < node.getIndices().size(); i++) {
             node.getIndices().get(i).accept(this); //push index
             mv.visitInsn(L2I); //Truncate to 32 bit
             mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/ArrayList", "get", "(I)Ljava/lang/Object;", false); //pop ref; pop index; push value
+            unboxElement(arrayType.getChildType());
+            if (arrayType.getChildType() instanceof ArrayType) {
+                arrayType = (ArrayType) arrayType.getChildType();
+            }
         }
-        unboxElement(((ArrayType)node.getArray().getType()).getInnerMostType());
         return null;
     }
 
@@ -173,7 +179,16 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
         mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "insert", "(Ljava/lang/String;Ljava/lang/Object;)V", false);
 
+        symtab.openScope();
+        try {
+            symtab.insert(node.getVariable().getName(), new Symbol(((ArrayType)node.getArray().getType()).getChildType(), null));
+        } catch (VariableAlreadyDeclaredException e) {
+            e.printStackTrace();
+        }
+
         node.getExpression().accept(this);
+
+        symtab.closeScope();
 
         mv.visitVarInsn(ALOAD, 0);
         mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "closeScope", "()V", false);
@@ -462,7 +477,16 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         mv.visitVarInsn(ALOAD, 3);
         mv.visitVarInsn(ILOAD, 4);
 
+        symtab.openScope();
+
+        try {
+            symtab.insert(node.getVariable().getName(), new Symbol(((ArrayType)node.getArray().getType()).getChildType(), null));
+        } catch (VariableAlreadyDeclaredException e) {
+            e.printStackTrace();
+        }
+
         node.getStatements().accept(this);
+        symtab.closeScope();
 
         //Restore variables from stack
         mv.visitVarInsn(ISTORE, 4);

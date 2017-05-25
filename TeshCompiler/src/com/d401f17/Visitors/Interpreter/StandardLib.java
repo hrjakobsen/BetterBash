@@ -32,6 +32,7 @@ public final class StandardLib {
             table.insert("ceil", new FunctionSymbol(new FunctionType("ceil", new Type[] {new FloatType()}, new IntType()), null, null));
             table.insert("floor", new FunctionSymbol(new FunctionType("floor", new Type[] {new FloatType()}, new IntType()), null, null));
             table.insert("empty", new FunctionSymbol(new FunctionType("empty", new Type[] {new ChannelType()}, new BoolType()), null, null));
+            table.insert("getFilesFromDir", new FunctionSymbol(new FunctionType("getFilesFromDir", new Type[] {new StringType()}, new ArrayType(new RecordType("binfile", new String[]{"error", "directory", "name"}, new Type[]{new IntType(),new StringType(), new StringType()}))), null, null));
         } catch (VariableAlreadyDeclaredException e) {}
     }
 
