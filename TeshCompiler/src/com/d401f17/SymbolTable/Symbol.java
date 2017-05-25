@@ -3,9 +3,6 @@ package com.d401f17.SymbolTable;
 import com.d401f17.AST.Nodes.AST;
 import com.d401f17.TypeSystem.Type;
 
-/**
- * Created by Henrik on 05-04-2017.
- */
 public class Symbol {
     private Type type;
     private AST declarationNode;

@@ -3,9 +3,6 @@ package com.d401f17.AST.Nodes;
 import com.d401f17.Visitors.ASTVisitor;
 import com.d401f17.TypeSystem.FloatType;
 
-/**
- * Created by mathias on 4/19/17.
- */
 public class FloatLiteralNode extends LiteralNode {
 
     public FloatLiteralNode(double value) {

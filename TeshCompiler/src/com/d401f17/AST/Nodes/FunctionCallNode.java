@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by mathias on 3/31/17.
- */
 public class FunctionCallNode extends ArithmeticExpressionNode {
     private IdentifierNode name;
     private List<ArithmeticExpressionNode> arguments;

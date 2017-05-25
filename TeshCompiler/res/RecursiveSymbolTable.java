@@ -2,9 +2,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.*;
-/**
- * Created by mathias on 4/28/17.
- */
+
+
 public class RecursiveSymbolTable {
     private RecursiveSymbolTable parent = null;
     private RecursiveSymbolTable currentTable = this;
@@ -45,7 +44,6 @@ public class RecursiveSymbolTable {
         if (entries.containsKey(id)) {
             return entries.get(id);
         }
-        if (parent == null) System.out.println("couldnt find " + id);
         return parent.recursiveLookup(id);
     }
 

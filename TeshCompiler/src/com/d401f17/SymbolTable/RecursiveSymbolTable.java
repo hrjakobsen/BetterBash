@@ -2,9 +2,6 @@ package com.d401f17.SymbolTable;
 
 import java.util.HashMap;
 
-/**
- * Created by mathias on 4/28/17.
- */
 public class RecursiveSymbolTable<T> {
     private RecursiveSymbolTable<T> parent = null;
     private RecursiveSymbolTable<T> currentTable = this;

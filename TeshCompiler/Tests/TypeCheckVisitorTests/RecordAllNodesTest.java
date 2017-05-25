@@ -18,9 +18,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 
-/**
- * Created by hu on 4/27/17.
- */
 @RunWith(value = Parameterized.class)
 public class RecordAllNodesTest {
 

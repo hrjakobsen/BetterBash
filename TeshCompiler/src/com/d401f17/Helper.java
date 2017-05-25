@@ -1,8 +1,5 @@
 package com.d401f17;
 
-/**
- * Created by hense on 4/25/17.
- */
 public final class Helper {
 
     //http://stackoverflow.com/a/6810409

@@ -2,9 +2,6 @@ package com.d401f17.AST.Nodes;
 
 import com.d401f17.Visitors.ASTVisitor;
 
-/**
- * Created by mathias on 3/31/17.
- */
 public class VariableDeclarationNode extends StatementNode {
     private SimpleIdentifierNode name;
     private TypeNode typeNode;

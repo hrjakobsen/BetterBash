@@ -2,9 +2,6 @@ package com.d401f17.AST.Nodes;
 
 import com.d401f17.Visitors.ASTVisitor;
 
-/**
- * Created by mathias on 4/4/17.
- */
 public class ShellToChannelNode extends StatementNode {
     private IdentifierNode channel;
     private ShellNode command;

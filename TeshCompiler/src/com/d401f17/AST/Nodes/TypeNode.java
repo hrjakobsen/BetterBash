@@ -3,9 +3,6 @@ package com.d401f17.AST.Nodes;
 import com.d401f17.TypeSystem.*;
 import com.d401f17.Visitors.ASTVisitor;
 
-/**
- * Created by mathias on 3/31/17.
- */
 public class TypeNode extends AST {
     public TypeNode(String primitiveType) {
         this(primitiveType, 0);

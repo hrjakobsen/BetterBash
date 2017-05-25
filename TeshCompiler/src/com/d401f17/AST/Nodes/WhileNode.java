@@ -2,9 +2,6 @@ package com.d401f17.AST.Nodes;
 
 import com.d401f17.Visitors.ASTVisitor;
 
-/**
- * Created by mathias on 3/16/17.
- */
 public class WhileNode extends StatementNode {
     private AST predicate;
     private AST statements;

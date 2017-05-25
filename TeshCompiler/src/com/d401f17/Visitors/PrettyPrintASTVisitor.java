@@ -5,9 +5,6 @@ import com.d401f17.AST.Nodes.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by mathias on 4/4/17.
- */
 public class PrettyPrintASTVisitor extends BaseVisitor<Void> {
     int runningID = 0;
     StringBuilder sb = new StringBuilder();

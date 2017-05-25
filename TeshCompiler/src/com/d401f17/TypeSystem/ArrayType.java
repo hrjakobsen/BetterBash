@@ -1,8 +1,5 @@
 package com.d401f17.TypeSystem;
 
-/**
- * Created by mathias on 4/19/17.
- */
 public class ArrayType extends Type {
     private Type childType;
 

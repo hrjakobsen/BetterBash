@@ -18,9 +18,6 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 import java.util.Collection;
 
-/**
- * Created by tessa on 4/20/17.
- */
 @RunWith(value = Parameterized.class)
 public class SimpleIdentifierNodeTest {
 

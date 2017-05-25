@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by mathias on 4/4/17.
- */
 public class ProcedureCallNode extends StatementNode {
     private IdentifierNode name;
     private List<ArithmeticExpressionNode> arguments;

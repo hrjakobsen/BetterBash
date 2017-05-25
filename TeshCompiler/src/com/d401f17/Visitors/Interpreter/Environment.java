@@ -3,9 +3,6 @@ package com.d401f17.Visitors.Interpreter;
 
 import com.d401f17.SymbolTable.SymbolTable;
 
-/**
- * Created by mathias on 4/27/17.
- */
 public class Environment {
     private SymbolTable variableTable;
     private SymbolTable recordTable;

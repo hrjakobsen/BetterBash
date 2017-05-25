@@ -5,9 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-/**
- * Created by mathias on 4/27/17.
- */
 public class Store {
     private List<Object> elements = new ArrayList<>();
     private Queue<Integer> freeList = new LinkedList<>();

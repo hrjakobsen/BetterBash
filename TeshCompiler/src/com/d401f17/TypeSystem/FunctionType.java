@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by hense on 4/7/17.
- */
 public class FunctionType extends Type {
     private String signature;
     private List<Type> args = new ArrayList<>();

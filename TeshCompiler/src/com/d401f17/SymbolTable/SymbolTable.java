@@ -8,9 +8,6 @@ import com.d401f17.TypeSystem.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/**
- * Created by Henrik on 05-04-2017.
- */
 public class SymbolTable implements SymTab {
     private ArrayList<HashMap<String, Symbol>> tables = new ArrayList<>();
     private int scopeLevel = 0;

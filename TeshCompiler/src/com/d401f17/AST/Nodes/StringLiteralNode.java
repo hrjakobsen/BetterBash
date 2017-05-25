@@ -3,9 +3,6 @@ package com.d401f17.AST.Nodes;
 import com.d401f17.TypeSystem.StringType;
 import com.d401f17.Visitors.ASTVisitor;
 
-/**
- * Created by mathias on 4/19/17.
- */
 public class StringLiteralNode extends LiteralNode {
     public StringLiteralNode(String value) {
         super(value, new StringType());

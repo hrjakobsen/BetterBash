@@ -5,9 +5,6 @@ import com.d401f17.Visitors.ASTVisitor;
 
 import java.util.List;
 
-/**
- * Created by mathias on 4/19/17.
- */
 public class ArrayLiteralNode extends LiteralNode {
     public ArrayLiteralNode(List<ArithmeticExpressionNode> value, int lineNum) {
         super(value, new ArrayType(), lineNum);

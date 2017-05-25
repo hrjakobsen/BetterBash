@@ -10,9 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by hense on 4/5/17.
- */
 public class TypeCheckVisitor extends BaseVisitor<Void> {
     private List<Type> errorNodes = new ArrayList<>();
     private SymTab st;

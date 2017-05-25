@@ -13,9 +13,6 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 import java.util.Collection;
 
-/**
- * Created by hu on 4/25/17.
- */
 @RunWith(value = Parameterized.class)
 public class PatternMatchNodeTest {
 

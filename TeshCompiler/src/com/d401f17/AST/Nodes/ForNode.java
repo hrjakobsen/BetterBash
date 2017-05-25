@@ -2,9 +2,6 @@ package com.d401f17.AST.Nodes;
 
 import com.d401f17.Visitors.ASTVisitor;
 
-/**
- * Created by mathias on 3/16/17.
- */
 public class ForNode extends StatementNode {
     private SimpleIdentifierNode variable;
     private ArithmeticExpressionNode array;

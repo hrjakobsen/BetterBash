@@ -4,9 +4,6 @@ import com.d401f17.Visitors.ASTVisitor;
 
 import java.util.List;
 
-/**
- * Created by mathias on 3/31/17.
- */
 public class FunctionNode extends StatementNode {
     private SimpleIdentifierNode name;
     private List<VariableDeclarationNode> formalArguments;

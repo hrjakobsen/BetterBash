@@ -2,9 +2,6 @@ package com.d401f17.AST.Nodes;
 
 import com.d401f17.Visitors.ASTVisitor;
 
-/**
- * Created by mathias on 4/4/17.
- */
 public class ArrayBuilderNode extends ArithmeticExpressionNode {
     public SimpleIdentifierNode variable;
     public ArithmeticExpressionNode expression;

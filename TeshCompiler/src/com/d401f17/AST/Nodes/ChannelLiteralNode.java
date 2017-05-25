@@ -6,9 +6,6 @@ import com.d401f17.TypeSystem.Type;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
-/**
- * Created by mathias on 5/2/17.
- */
 public class ChannelLiteralNode extends LiteralNode {
     public ChannelLiteralNode(Queue<String> value) {
         super(value, new ChannelType());

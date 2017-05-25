@@ -3,9 +3,6 @@ package com.d401f17.AST.Nodes;
 import com.d401f17.TypeSystem.IntType;
 import com.d401f17.Visitors.ASTVisitor;
 
-/**
- * Created by mathias on 4/19/17.
- */
 public class IntLiteralNode extends LiteralNode {
 
     public IntLiteralNode(long value) {

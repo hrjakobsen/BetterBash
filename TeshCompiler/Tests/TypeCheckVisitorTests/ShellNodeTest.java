@@ -13,9 +13,6 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 import java.util.Collection;
 
-/**
- * Created by tessa on 4/19/17.
- */
 @RunWith(value = Parameterized.class)
 public class ShellNodeTest {
 

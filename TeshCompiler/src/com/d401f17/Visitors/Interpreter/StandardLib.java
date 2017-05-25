@@ -17,9 +17,6 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.function.Function;
 
-/**
- * Created by mathias on 4/27/17.
- */
 public final class StandardLib {
     public static void InsertFunctionNames (SymTab table) {
         try {

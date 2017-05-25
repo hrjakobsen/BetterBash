@@ -14,9 +14,6 @@ import java.util.*;
 
 import static org.objectweb.asm.Opcodes.*;
 
-/**
- * Created by mathias on 5/5/17.
- */
 
 public class ByteCodeVisitor extends BaseVisitor<Void> {
 
@@ -39,10 +36,15 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         standardFunctions.put("getFilesFromDir","(Ljava/lang/String;)Ljava/util/ArrayList;");
         standardFunctions.put("intVal", "(Ljava/lang/String;)J");
         standardFunctions.put("floatVal", "(Ljava/lang/String;)D");
+        standardFunctions.put("sqrt", "(D)D");
+        standardFunctions.put("rnd", "()D");
+        standardFunctions.put("ceil", "(D)J");
+        standardFunctions.put("floor", "(D)J");
         standardFunctions.put("openTextfile", "(Ljava/lang/String;)Ltextfile;");
         standardFunctions.put("writeText", "(Ltextfile;Ljava/lang/String;)I");
         standardFunctions.put("openBinfile", "(Ljava/lang/String;)Lbinfile;");
         standardFunctions.put("writeData", "(Lbinfile;Ljava/util/ArrayList;)I");
+
         //Set up main class
         cw.visit(52,
                 ACC_PUBLIC + ACC_STATIC,
@@ -573,6 +575,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         //We want to visit the node using this functions symbol table, but bind them in the new functions symbol table
         List<ArithmeticExpressionNode> arguments = node.getArguments();
         for (int i = 0; i < arguments.size(); i++) {
+            mv.visitVarInsn(ALOAD, 1);
             ArithmeticExpressionNode argument = arguments.get(i);
             if (isFloatExactly(f.getFormalArguments().get(i).getTypeNode().getType())) {
                 ensureFloat(argument);
@@ -581,6 +584,10 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
                 argument.accept(this);
                 cloneIfReference(argument.getType());
             }
+            boxElement(argument.getType());
+            mv.visitInsn(SWAP);
+            mv.visitVarInsn(ASTORE, 1);
+            unboxElement(argument.getType());
             emitStore(f.getFormalArguments().get(i).getName().getName(), argument.getType(), 1);
         }
 
