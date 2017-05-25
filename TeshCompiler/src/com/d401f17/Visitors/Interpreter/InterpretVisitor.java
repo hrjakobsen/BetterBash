@@ -532,6 +532,29 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
 
     @Override
     public LiteralNode visit(ShellToChannelNode node) {
+        LiteralNode command = (LiteralNode)node.getCommand().getCommand().accept(this);
+
+        ProcessBuilder builder = new ProcessBuilder(command.getValue().toString().split(" "));
+        builder.redirectErrorStream(true);
+
+        try {
+            Process p = builder.start();
+            BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line;
+
+
+            try {
+                Symbol channel = symbolTable.lookup(node.getChannel().getName());
+                ChannelLiteralNode chnLitNode = (ChannelLiteralNode)(store.getElement(channel.getAddress()));
+                while ((line = b.readLine()) != null) {
+                    chnLitNode.write(line);
+                }
+                p.waitFor();
+            } catch (Exception e) { }
+        }
+        catch (IOException a) {
+            a.printStackTrace();
+        }
         return null;
     }
 
@@ -582,7 +605,7 @@ public class InterpretVisitor extends BaseVisitor<LiteralNode> {
     @Override
     public LiteralNode visit(VariableDeclarationNode node) {
         try {
-            Symbol entry = new Symbol(node.getName().getType(), node);
+            Symbol entry = new Symbol(node.getTypeNode().getType(), node);
             entry.setAddress(store.getNext());
             if (node.getTypeNode().getType() instanceof RecordType) {
                 store.setElement(entry.getAddress(), createRecord(((RecordType)node.getTypeNode().getType()).getName()));

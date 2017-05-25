@@ -17,7 +17,7 @@ public final class BytecodeStandardLib {
     }
 
     public static void CharToString(MethodVisitor mv) {
-
+        //mv.visitMethodInsn(INVOKESTATIC, "java/lang/String", "valueOf", "(C)Ljava/lang/String", false);
     }
 
     public static void FloatToString(MethodVisitor mv) {
