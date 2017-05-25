@@ -21,15 +21,12 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        boolean debug = true;
-        if (!debug) {
+        String debugFile = "simple.tsh";
+        boolean bc = true;
+
+        if (debugFile.isEmpty()) {
             if (args.length == 0) {
                 System.err.println("You must specify an input file");
-                return;
-            }
-
-            if (!args[0].endsWith(".tsh")) {
-                System.err.println("The input file must be a tesh-file");
                 return;
             }
 
@@ -134,88 +131,81 @@ public class Main {
                     fos.close();
                 }
             }
-        }
+        } else {
+            InputStream is = Main.class.getResourceAsStream(debugFile);
+            CharStream input = CharStreams.fromStream(is);
 
-        if (!debug) {
-            return;
-        }
+            TeshLexer lexer = new TeshLexer(input);
+            CommonTokenStream tokenStream = new CommonTokenStream(lexer);
 
-        InputStream is = Main.class.getResourceAsStream("/1chat.tsh");
-        CharStream input = CharStreams.fromStream(is);
+            TeshParser parser = new TeshParser(tokenStream);
+            TeshParser.CompileUnitContext unit = parser.compileUnit();
 
-        //Lex the input file to convert it to tokens
-        TeshLexer lexer = new TeshLexer(input);
-        CommonTokenStream tokenStream = new CommonTokenStream(lexer);
-
-        //Parse the token stream
-        TeshParser parser = new TeshParser(tokenStream);
-        TeshParser.CompileUnitContext unit = parser.compileUnit();
-
-        if (parser.getNumberOfSyntaxErrors() > 0) {
-            return;
-        }
-
-        //Build Abstract Syntax Tree (AST)
-        TeshBaseVisitor<AST> ASTBuilder = new BuildAstVisitor();
-        AST ast = ASTBuilder.visitCompileUnit(unit);
-
-        //Create a symbol table containing standard library of functions
-        SymTab symbolTable = new SymbolTable();
-        SymTab recordTable = SymbolTable.TableWithDefaultRecords();
-
-        //Type check the AST
-        TypeCheckVisitor typeCheck = new TypeCheckVisitor(symbolTable, recordTable);
-        ast.accept(typeCheck);
-
-        for (String s : typeCheck.getErrors()) {
-            System.out.println(s);
-        }
-
-        if (typeCheck.getErrors().size() > 0) {
-            return;
-        }
-
-        //InterpretVisitor run = new InterpretVisitor(recordTable);
-        //ast.accept(run);
-        ByteCodeVisitor run = new ByteCodeVisitor();
-
-        ast.accept(run);
-        run.End();
-
-        List<ClassDescriptor> classes = run.getOtherClasses();
-        classes.add(0, new ClassDescriptor("Main", run.getCw()));
-
-        try {
-            Path tempDir = Files.createTempDirectory("teshsource");
-            System.out.println("Executing in: " + tempDir);
-            for (ClassDescriptor c : classes) {
-                FileOutputStream fos = new FileOutputStream(tempDir.toString() + "/" + c.getName() + ".class");
-                fos.write(c.getWriter().toByteArray());
-                fos.close();
-            }
-            String[] Libraries = {"RecursiveSymbolTable.class", "StdFunc.class", "binfile.class"};
-            for (String lib : Libraries) {
-                InputStream stream = Main.class.getResourceAsStream("/" + lib);
-                Path p = Paths.get(tempDir.toString(), lib);
-                Files.copy(stream, p);
+            if (parser.getNumberOfSyntaxErrors() > 0) {
+                return;
             }
 
-            ProcessBuilder builder = new ProcessBuilder("java", "-cp", tempDir.toString(), "Main");
-            builder.redirectErrorStream(true);
+            TeshBaseVisitor<AST> ASTBuilder = new BuildAstVisitor();
+            AST ast = ASTBuilder.visitCompileUnit(unit);
 
-            Process p = builder.start();
-            BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String line;
-            while ((line = b.readLine()) != null) {
-                System.out.println(line);
+            SymTab symbolTable = new SymbolTable();
+            SymTab recordTable = SymbolTable.TableWithDefaultRecords();
+
+            TypeCheckVisitor typeCheck = new TypeCheckVisitor(symbolTable, recordTable);
+            ast.accept(typeCheck);
+
+            for (String s : typeCheck.getErrors()) {
+                System.out.println(s);
             }
 
-            p.waitFor();
+            if (typeCheck.getErrors().size() > 0) {
+                return;
+            }
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            if (bc) {
+                ByteCodeVisitor run = new ByteCodeVisitor();
+                ast.accept(run);
+                run.End();
+
+                List<ClassDescriptor> classes = run.getOtherClasses();
+                classes.add(0, new ClassDescriptor("Main", run.getCw()));
+
+                try {
+                    Path tempDir = Files.createTempDirectory("teshsource");
+                    System.out.println("Executing in: " + tempDir);
+                    for (ClassDescriptor c : classes) {
+                        FileOutputStream fos = new FileOutputStream(tempDir.toString() + "/" + c.getName() + ".class");
+                        fos.write(c.getWriter().toByteArray());
+                        fos.close();
+                    }
+                    String[] Libraries = {"RecursiveSymbolTable.class", "StdFunc.class", "binfile.class"};
+                    for (String lib : Libraries) {
+                        InputStream stream = Main.class.getResourceAsStream("/" + lib);
+                        Path p = Paths.get(tempDir.toString(), lib);
+                        Files.copy(stream, p);
+                    }
+
+                    ProcessBuilder builder = new ProcessBuilder("java", "-cp", tempDir.toString(), "Main");
+                    builder.redirectErrorStream(true);
+
+                    Process p = builder.start();
+                    BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                    String line;
+                    while ((line = b.readLine()) != null) {
+                        System.out.println(line);
+                    }
+
+                    p.waitFor();
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                InterpretVisitor run = new InterpretVisitor(recordTable);
+                ast.accept(run);
+            }
         }
     }
 }

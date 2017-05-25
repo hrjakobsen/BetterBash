@@ -17,7 +17,6 @@ simpleStatement
     : FORK simpleStatement                                                                                              #forkSimpleStatement
     | identifier ASSIGN expression                                                                                      #assignmentStatement
     | arrayAccess ASSIGN expression                                                                                     #arrayElementAssignmentStatement
-    //| identifier CHANNEL_OP SIMPLE_IDENTIFIER                                                                           #readFromChannelStatementToVariable
     | arrayAccess CHANNEL_OP expression                                                                                 #readFromChannelStatementToArray
     | SIMPLE_IDENTIFIER CHANNEL_OP expression                                                                           #channelStatement
     | functionCall                                                                                                      #functionCallStatement
