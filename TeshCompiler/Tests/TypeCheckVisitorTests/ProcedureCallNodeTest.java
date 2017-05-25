@@ -1,6 +1,4 @@
-package TypeCheckVisitorTests; /**
- * Created by hu on 4/25/17.
- */
+package TypeCheckVisitorTests;
 
 import com.d401f17.AST.Nodes.*;
 import com.d401f17.SymbolTable.SymTab;
