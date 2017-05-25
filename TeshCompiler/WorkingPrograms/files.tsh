@@ -1,0 +1,20 @@
+#!/bin/tesh
+
+#binfile[] files = getFilesFromDir("/home/hu/Music/test")
+
+#for f in [x in files | x.directory ?= ".*txt"] {
+#    writeData(f, [0])
+#}
+
+#binfile b = openBinfile("/home/hu/Music/test/something.bin")
+#writeData(b, [0])
+
+textfile t = openTextfile("/home/hu/Music/test/something.txt")
+writeText(t, "string")
+
+textfile te = openTextfile("/home/hu/Music/test/somethingIllegal.txt")
+if(te.error == 0) {
+    print("legal")
+} else {
+    print("illegal")
+}

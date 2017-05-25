@@ -1,6 +1,6 @@
 public class binfile {
     public String name;
-    public int error;
+    public long error;
     public String directory;
 
     public binfile() {

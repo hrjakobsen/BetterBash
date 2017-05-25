@@ -52,19 +52,15 @@ public class StdFunc {
 	public static textfile openTextfile(String str) {
 		textfile t = new textfile();
 		File f = new File(str);
-		if (f.exists()) {
-			t.directory = f.getPath();
-			t.name = f.getName();
-			t.error = 0;
-		} else {
+		t.directory = f.getPath();
+		t.name = f.getName();
+		t.error = 0;
+		if (!f.exists()) {
 			try {
 				f.createNewFile();
 			} catch (IOException error) {
 				t.error = 1;
 			}
-			t.directory = f.getPath();
-			t.name = f.getName();
-			t.error = 0;
 		}
 		return t;
 	}
@@ -72,19 +68,15 @@ public class StdFunc {
 	public static binfile openBinfile(String str) {
 		binfile b = new binfile();
 		File f = new File(str);
-		if (f.exists()) {
-			b.directory = f.getPath();
-			b.name = f.getName();
-			b.error = 0;
-		} else {
+		b.directory = f.getPath();
+		b.name = f.getName();
+		b.error = 0;
+		if (!f.exists()) {
 			try {
 				f.createNewFile();
 			} catch (IOException error) {
 				b.error = 1;
 			}
-			b.directory = f.getPath();
-			b.name = f.getName();
-			b.error = 0;
 		}
 		return b;
 	}
