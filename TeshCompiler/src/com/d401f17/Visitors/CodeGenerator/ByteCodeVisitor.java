@@ -10,7 +10,6 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 
 import static org.objectweb.asm.Opcodes.*;
@@ -46,8 +45,8 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
                 "Main",
                 null,
                 "java/lang/Object",
-                null);
-
+                null
+        );
 
         //Set up main method
         mv = cw.visitMethod(
@@ -79,9 +78,11 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
             node.getRight().accept(this);
             mv.visitInsn(LADD);
         } else if (node.getType() instanceof FloatType) {
-            node.getLeft().accept(this);
-            node.getRight().accept(this);
+            ensureFloat(node.getLeft());
+            ensureFloat(node.getRight());
             mv.visitInsn(DADD);
+        } else if (node.getLeft().getType() instanceof CharType || node.getRight().getType() instanceof CharType) {
+
         } else {
             mv.visitTypeInsn(NEW, "java/lang/StringBuilder");
             mv.visitInsn(DUP);
@@ -353,11 +354,13 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(DivisionNode node) {
-        node.getLeft().accept(this);
-        node.getRight().accept(this);
         if (node.getType() instanceof IntType) {
+            node.getLeft().accept(this);
+            node.getRight().accept(this);
             mv.visitInsn(LDIV);
         } else {
+            ensureFloat(node.getLeft());
+            ensureFloat(node.getRight());
             mv.visitInsn(DDIV);
         }
         return null;
@@ -517,8 +520,15 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         String funcName = node.getName().getName();
 
         if (standardFunctions.containsKey(funcName)) {
-            for (ArithmeticExpressionNode arg : node.getArguments()) {
-                arg.accept(this);
+            List<Type> types = getFloatAndIntTypes(standardFunctions.get(funcName));
+            List<ArithmeticExpressionNode> arguments = node.getArguments();
+            for (int i = 0; i < arguments.size(); i++) {
+                ArithmeticExpressionNode arg = arguments.get(i);
+                if (isFloatExactly(types.get(i))) {
+                    ensureFloat(arg);
+                } else {
+                    arg.accept(this);
+                }
             }
             mv.visitMethodInsn(INVOKESTATIC, "StdFunc", funcName, standardFunctions.get(funcName), false);
             return null;
@@ -550,8 +560,13 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         List<ArithmeticExpressionNode> arguments = node.getArguments();
         for (int i = 0; i < arguments.size(); i++) {
             ArithmeticExpressionNode argument = arguments.get(i);
-            argument.accept(this);
-            cloneIfReference(argument.getType());
+            if (isFloatExactly(f.getFormalArguments().get(i).getTypeNode().getType())) {
+                ensureFloat(argument);
+                argument.setType(new FloatType());
+            } else {
+                argument.accept(this);
+                cloneIfReference(argument.getType());
+            }
             emitStore(f.getFormalArguments().get(i).getName().getName(), argument.getType(), 1);
         }
 
@@ -666,14 +681,16 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
     }
 
     private void compareNumerals(int cmp, InfixExpressionNode node) {
-        node.getLeft().accept(this);
-        node.getRight().accept(this);
         Label True = new Label();
         Label False = new Label();
         Label done = new Label();
         if (node.getLeft().getType() instanceof IntType && node.getRight().getType() instanceof IntType) {
+            node.getLeft().accept(this);
+            node.getRight().accept(this);
             mv.visitInsn(LCMP);
         } else {
+            ensureFloat(node.getLeft());
+            ensureFloat(node.getRight());
             mv.visitInsn(DCMPG);
         }
         mv.visitInsn(ICONST_0);
@@ -734,11 +751,13 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(MultiplicationNode node) {
-        node.getLeft().accept(this);
-        node.getRight().accept(this);
         if (node.getType() instanceof IntType) {
+            node.getLeft().accept(this);
+            node.getRight().accept(this);
             mv.visitInsn(LMUL);
         } else {
+            ensureFloat(node.getLeft());
+            ensureFloat(node.getRight());
             mv.visitInsn(DMUL);
         }
         return null;
@@ -1012,11 +1031,13 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     @Override
     public Void visit(SubtractionNode node) {
-        node.getLeft().accept(this);
-        node.getRight().accept(this);
         if (node.getType() instanceof IntType) {
+            node.getLeft().accept(this);
+            node.getRight().accept(this);
             mv.visitInsn(LSUB);
         } else {
+            ensureFloat(node.getLeft());
+            ensureFloat(node.getRight());
             mv.visitInsn(DSUB);
         }
         return null;
@@ -1280,6 +1301,49 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         for (int i = 0; i<n; i++) {
             mv.visitInsn(NOP);
         }
-        return;
+    }
+
+    private void ensureFloat(ArithmeticExpressionNode node) {
+        node.accept(this);
+        if (node.getType() instanceof IntType) {
+            mv.visitInsn(L2D);
+        }
+    }
+
+    private List<Type> getFloatAndIntTypes(String signature) {
+        ArrayList<Type> types = new ArrayList<>();
+        boolean skip = false;
+        for (int i = 0, size = signature.length(); i < size; i++) {
+            char c = signature.charAt(i);
+            switch (c) {
+                case 'J':
+                    if (!skip)
+                        types.add(new IntType());
+                    break;
+                case 'D':
+                    if (!skip)
+                        types.add(new FloatType());
+                    break;
+                case 'L':
+                    skip = true;
+                    break;
+                case ';':
+                    types.add(new OkType());
+                    skip = false;
+                    break;
+                case '(':
+                case ')':
+                    break;
+                default:
+                    if (!skip)
+                        types.add(new OkType());
+                    break;
+            }
+        }
+        return types;
+    }
+
+    private boolean isFloatExactly(Type t) {
+        return t.getClass() == FloatType.class;
     }
 }

@@ -33,3 +33,4 @@ if true {
     *#
 }
 
+print(floatToStr(1))

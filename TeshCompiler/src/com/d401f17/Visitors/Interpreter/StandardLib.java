@@ -7,6 +7,7 @@ import com.d401f17.SymbolTable.SymbolTable;
 import com.d401f17.SymbolTable.VariableAlreadyDeclaredException;
 import com.d401f17.TypeSystem.*;
 
+import java.nio.channels.Channel;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
@@ -46,6 +47,7 @@ public final class StandardLib {
         table.put("floatToStr", StandardLib::LiteralToString);
         table.put("charToStr", StandardLib::LiteralToString);
         table.put("boolToStr", StandardLib::LiteralToString);
+        table.put("floatToStr", StandardLib::LiteralToString);
         table.put("intVal", StandardLib::ParseInt);
         table.put("floatVal", StandardLib::ParseFloat);
         table.put("print", StandardLib::Print);
@@ -54,6 +56,7 @@ public final class StandardLib {
         table.put("rnd", StandardLib::Random);
         table.put("ceil", StandardLib::Ceil);
         table.put("floor", StandardLib::Floor);
+        table.put("empty", StandardLib::Empty);
     }
 
     public static HashMap<String, Function<LiteralNode[], LiteralNode>> InsertFunctions() {
@@ -64,10 +67,7 @@ public final class StandardLib {
 
     public static StringLiteralNode LiteralToString(LiteralNode[] nodes) {
         LiteralNode node = nodes[0];
-        if (node instanceof FloatLiteralNode || node instanceof IntLiteralNode || node instanceof CharLiteralNode) {
-            return new StringLiteralNode(node.getValue().toString());
-        }
-        return null;
+        return new StringLiteralNode(node.getValue().toString());
     }
 
     public static IntLiteralNode ParseInt(LiteralNode[] nodes) {
@@ -124,5 +124,10 @@ public final class StandardLib {
 
     public static IntLiteralNode Floor(LiteralNode[] nodes) {
         return new IntLiteralNode((long)Math.floor((double) nodes[0].getValue()));
+    }
+
+    public static BoolLiteralNode Empty(LiteralNode[] nodes) {
+        ChannelLiteralNode chn = (ChannelLiteralNode)(nodes[0]);
+        return new BoolLiteralNode(chn.getValue().isEmpty());
     }
 }
