@@ -80,7 +80,16 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
             ensureFloat(node.getRight());
             mv.visitInsn(DADD);
         } else if (node.getLeft().getType() instanceof CharType || node.getRight().getType() instanceof CharType) {
-
+            node.getLeft().accept(this);
+            if (node.getLeft().getType() instanceof CharType) {
+                charToInt();
+            }
+            node.getRight().accept(this);
+            if (node.getRight().getType() instanceof CharType) {
+                charToInt();
+            }
+            mv.visitInsn(LADD);
+            intToChar();
         } else {
             mv.visitTypeInsn(NEW, "java/lang/StringBuilder");
             mv.visitInsn(DUP);
@@ -261,8 +270,6 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
     @Override
     public Void visit(AssignmentNode node) {
         ArithmeticExpressionNode child = node.getExpression();
-
-
         Symbol s = null;
         try {
             s = symtab.lookup(node.variable.getName());
@@ -295,6 +302,8 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
             }
         } else {
             child.accept(this);
+            if (child.getType() instanceof IntType && isFloatExactly(node.getVariable().getType()));
+            mv.visitInsn(L2D);
             emitStore(node.getVariable().getName(), s.getType(), 0);
         }
 
@@ -1033,6 +1042,17 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
             node.getLeft().accept(this);
             node.getRight().accept(this);
             mv.visitInsn(LSUB);
+        } else if (node.getLeft().getType() instanceof CharType || node.getRight().getType() instanceof CharType) {
+            node.getLeft().accept(this);
+            if (node.getLeft().getType() instanceof CharType) {
+                charToInt();
+            }
+            node.getRight().accept(this);
+            if (node.getRight().getType() instanceof CharType) {
+                charToInt();
+            }
+            mv.visitInsn(LSUB);
+            intToChar();
         } else {
             ensureFloat(node.getLeft());
             ensureFloat(node.getRight());
@@ -1343,5 +1363,16 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
     private boolean isFloatExactly(Type t) {
         return t.getClass() == FloatType.class;
+    }
+
+    private void charToInt() {
+        mv.visitInsn(ICONST_0);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/String","charAt", "(I)C", false);
+        mv.visitInsn(I2L);
+    }
+
+    private void intToChar() {
+        mv.visitInsn(L2I);
+        mv.visitMethodInsn(INVOKESTATIC, "java/lang/Character", "toString", "(C)Ljava/lang/String;", false);
     }
 }
