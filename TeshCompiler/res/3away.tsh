@@ -1,0 +1,24 @@
+#!/bin/tesh
+
+func awayScript() void {
+    int fiveMinutes = 30000
+    channel c
+    string store
+    int timeInactive
+    while true {
+        c << $"xprintidle"
+        store << c
+        timeInactive = intVal(store)
+
+        if timeInactive > fiveMinutes {
+            #Change chat client status to away
+        } else {
+            #Change chat client status to active
+        }
+        print(intToStr(timeInactive))
+       $"sleep 5"
+    }
+}
+
+fork awayScript()
+#$"./client"
