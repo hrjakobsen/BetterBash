@@ -68,4 +68,7 @@ public class RecordType extends Type {
     public String getJavaType() {
         return null;
     }
+
+    public static RecordType textfile = new RecordType("textfile", new String[]{"error", "directory", "name"}, new Type[]{new IntType(),new StringType(), new StringType()});
+    public static RecordType binfile = new RecordType("binfile", new String[]{"error", "directory", "name"}, new Type[]{new IntType(),new StringType(), new StringType()});
 }

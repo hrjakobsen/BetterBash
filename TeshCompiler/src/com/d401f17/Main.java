@@ -193,7 +193,7 @@ public class Main {
                     fos.write(c.getWriter().toByteArray());
                     fos.close();
                 }
-                String[] Libraries = {"RecursiveSymbolTable.class", "StdFunc.class", "binfile.class"};
+                String[] Libraries = {"RecursiveSymbolTable.class", "StdFunc.class", "binfile.class", "textfile.class"};
                 for (String lib : Libraries) {
                     InputStream stream = Main.class.getResourceAsStream("/" + lib);
                     Path p = Paths.get(tempDir.toString(), lib);
