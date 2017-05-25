@@ -1,5 +1,6 @@
 package com.d401f17.SymbolTable;
 
+import com.d401f17.TypeSystem.IntType;
 import com.d401f17.TypeSystem.RecordType;
 import com.d401f17.TypeSystem.StringType;
 import com.d401f17.TypeSystem.Type;
@@ -59,8 +60,8 @@ public class SymbolTable implements SymTab {
     public static SymbolTable TableWithDefaultRecords() {
         SymbolTable st = new SymbolTable();
         try {
-            st.insert("binfile", new Symbol(new RecordType("binfile", new String[]{"path"}, new Type[]{new StringType()}), null));
-            st.insert("textfile", new Symbol(new RecordType("textfile", new String[]{"path"}, new Type[]{new StringType()}), null));
+            st.insert("binfile", new Symbol(new RecordType("binfile", new String[]{"name", "directory", "error"}, new Type[]{new StringType(), new StringType(), new IntType()}), null));
+            st.insert("textfile", new Symbol(new RecordType("textfile", new String[]{"name", "directory", "error"}, new Type[]{new StringType(), new StringType(), new IntType()}), null));
         } catch (VariableAlreadyDeclaredException e) {
             e.printStackTrace();
         }

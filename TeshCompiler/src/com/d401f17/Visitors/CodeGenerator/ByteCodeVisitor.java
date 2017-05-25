@@ -10,6 +10,7 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.*;
 
 import static org.objectweb.asm.Opcodes.*;
@@ -35,6 +36,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         standardFunctions.put("charToStr", "(Ljava/lang/String;)Ljava/lang/String;");
         standardFunctions.put("boolToStr", "(I)Ljava/lang/String;");
         standardFunctions.put("empty","(Ljava/util/ArrayDeque;)I");
+        standardFunctions.put("getFilesFromDir","(Ljava/lang/String;)Ljava/util/ArrayList;");
         //Set up main class
         cw.visit(52,
                 ACC_PUBLIC + ACC_STATIC,
@@ -172,7 +174,16 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
 
         mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "insert", "(Ljava/lang/String;Ljava/lang/Object;)V", false);
 
+        symtab.openScope();
+        try {
+            symtab.insert(node.getVariable().getName(), new Symbol(((ArrayType)node.getArray().getType()).getChildType(), null));
+        } catch (VariableAlreadyDeclaredException e) {
+            e.printStackTrace();
+        }
+
         node.getExpression().accept(this);
+
+        symtab.closeScope();
 
         mv.visitVarInsn(ALOAD, 0);
         mv.visitMethodInsn(INVOKEVIRTUAL, "RecursiveSymbolTable", "closeScope", "()V", false);
@@ -461,7 +472,16 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         mv.visitVarInsn(ALOAD, 3);
         mv.visitVarInsn(ILOAD, 4);
 
+        symtab.openScope();
+
+        try {
+            symtab.insert(node.getVariable().getName(), new Symbol(((ArrayType)node.getArray().getType()).getChildType(), null));
+        } catch (VariableAlreadyDeclaredException e) {
+            e.printStackTrace();
+        }
+
         node.getStatements().accept(this);
+        symtab.closeScope();
 
         //Restore variables from stack
         mv.visitVarInsn(ISTORE, 4);

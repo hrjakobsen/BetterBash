@@ -1,13 +1,5 @@
-channel c
+binfile[] files = getFilesFromDir("/home/mathias/Desktop")
 
-fork c << $"/home/mathias/Desktop/test.sh"
-
-while true {
-    if !empty(c) {
-        string s
-        s << c
-        print(s)
-    } else {
-        $"sleep 0.1"
-    }
+for x in [y in files | y.name ?= ".*java"] {
+    print(x.name)
 }

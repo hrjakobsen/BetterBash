@@ -534,7 +534,7 @@ public class BuildAstVisitor extends TeshBaseVisitor<AST>{
     }
 
     private String ensureFileTypes(String s) {
-        if (s.equals("textfile") || s.equals("binfile")) {
+        if (s.startsWith("textfile") || s.startsWith("binfile")) {
             return "record" + s;
         }
         return s;

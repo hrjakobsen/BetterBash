@@ -197,9 +197,17 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             //Insert the variable in the symbol table
             //Since we're in a brand new empty scope an exception can't possibly be thrown
             try {
+                if (varType instanceof RecordType) {
+                    RecordType r = (RecordType)varType;
+                    varType = rt.lookup(r.getName()).getType();
+
+                }
+                st.insert(varName, new Symbol(varType, node));
                 st.insert(varName, new Symbol(varType, node));
                 node.setType(varType);
-            } catch (VariableAlreadyDeclaredException e) {}
+            } catch (VariableAlreadyDeclaredException e) {} catch (VariableNotDeclaredException e) {
+                e.printStackTrace();
+            }
 
             //Now that the variable has been declared, we can visit the statements
             node.getExpression().accept(this);
@@ -408,9 +416,17 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
             //Insert the variable in the symbol table
             //Since we're in a brand new empty scope an exception can't possibly be thrown
             try {
+                if (varType instanceof RecordType) {
+                    RecordType r = (RecordType)varType;
+                    varType = rt.lookup(r.getName()).getType();
+
+                }
                 st.insert(varName, new Symbol(varType, node));
+
                 node.setType(varType);
-            } catch (VariableAlreadyDeclaredException e) {}
+            } catch (VariableAlreadyDeclaredException e) {} catch (VariableNotDeclaredException e) {
+                e.printStackTrace();
+            }
 
             //Now that the variable has been declared, we can visit the statements
             node.getStatements().accept(this);
@@ -921,7 +937,6 @@ public class TypeCheckVisitor extends BaseVisitor<Void> {
         if (varType instanceof RecordType) {
             try {
                 varType = rt.lookup(((RecordType)varType).getName()).getType();
-
                 //The typenode of a record doesn't know anything about the members of the record
                 node.getTypeNode().setType(varType);
             } catch (VariableNotDeclaredException e) {
