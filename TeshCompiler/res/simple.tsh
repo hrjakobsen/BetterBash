@@ -1,13 +1,29 @@
-func printArr(int[] input) void {
-    for el in input {
-        print(intToStr(el))
-    }
+func myFun(int input) int {
+    print("HEJ!!!")
+    return 1
 }
 
-int[] a = [1, 2]
+func range(int start, int end) int[] {
+    print(intToStr(start))
+    print(intToStr(end))
 
-int[][] intArray = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10]]
+    int[] result = []
+    int count = start
+    if (start < end) {
+        while count <= end {
+            result ::= count
+            count += 1
+        }
+    } else {
+        while count >= end {
+             result ::= count
+             count -= 1
+         }
+    }
 
-int[][] a2 = [x in intArray | true]
+    return result
+}
 
-printArr(a2[1])
+for el in range(0, myFun(1)) {
+    print("Hej")
+}
