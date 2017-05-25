@@ -89,7 +89,6 @@ public final class StandardLib {
     public static StringLiteralNode Read(LiteralNode[] nodes) {
         Scanner scanner = new Scanner(System.in);
         StringLiteralNode s = new StringLiteralNode(scanner.next());
-        //scanner.close();
         return s;
     }
 
