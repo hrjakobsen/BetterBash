@@ -28,14 +28,14 @@ public class StdFunc {
 		File folder = new File(s);
 		File[] listOfFiles = folder.listFiles();
 		ArrayList files = new ArrayList();
-
-		for (File file : listOfFiles) {
-			binfile b = new binfile();
-			b.directory = file.getAbsolutePath();
-			b.name = file.getName();
-			files.add(b);
+		if (listOfFiles != null) {
+			for (File file : listOfFiles) {
+				binfile b = new binfile();
+				b.directory = file.getAbsolutePath();
+				b.name = file.getName();
+				files.add(b);
+			}
 		}
-
 		return files;
 	}
 
