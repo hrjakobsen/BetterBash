@@ -5,11 +5,9 @@ public class StdFunc {
 	public static void print(String s) {
 		System.out.println(s);
 	}
-	public static String read() {
+	public static String read() throws IOException {
 		Scanner scn = new Scanner(System.in);
-		String result = scn.next();
-		scn.close();
-		return result;
+		return scn.next();
 	}
 
 	public static String intToStr(long i) {

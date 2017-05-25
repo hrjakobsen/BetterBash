@@ -1,0 +1,83 @@
+#!/bin/tesh
+func requestNonZeroInteger(string requestText) int {
+    #Variables to hold input
+    string inputStr
+    int input
+
+    #Keep asking the user to input a valid choice until they do so
+    while input == 0 {
+        #Print to stdout
+        print(requestText)
+
+        #Read input from user
+        inputStr = read()
+        input = intVal(inputStr)
+    }
+
+    return input
+}
+
+func requestAndCalculate(string heightUnit, string weightUnit) float {
+    #Declare variables to store the user's height and weight
+    float height
+    float weight
+
+    #Get input from user
+    height = requestNonZeroInteger("Please enter your height in " + heightUnit) / 100.0
+    weight = requestNonZeroInteger("Please enter you weight in " + weightUnit)
+
+    #return the calculated BMI
+    float bmi = weight / (height * height)
+    return bmi
+}
+
+#Declare variables to store user's choice of units
+string unitChoiceStr
+int unitChoice = 0
+
+#Print to stdout
+print("Please choose which unit you would like to use")
+print("1. Metric")
+print("2. Imperial")
+
+#Read input from user
+unitChoiceStr = read()
+unitChoice = intVal(unitChoiceStr)
+
+#Keep asking the user to input a valid choice until they do so
+while unitChoice != 1 && unitChoice != 2 {
+    print("Please choose a valid option")
+
+    unitChoiceStr = read()
+    unitChoice = intVal(unitChoiceStr)
+}
+
+#Declare variable to hold the calculated BMI
+float BMI
+
+if unitChoice == 1 {
+    BMI = requestAndCalculate("centimeters", "kilos")
+} else {
+    BMI = requestAndCalculate("inches", "pounds") * 703.0
+}
+
+#Declare a variable to hold the category of the BMI
+string category
+
+if BMI < 18.5 {
+    category = "underweight"
+} else {
+    if BMI < 24.9 {
+        category = "normal"
+    } else {
+        if BMI < 29.9 {
+            category = "overweight"
+        } else {
+            category = "obese"
+        }
+    }
+}
+
+#Tell the user his/her BMI and category
+print("Your BMI is " + floatToStr(BMI))
+print("This puts you in the category " + category)

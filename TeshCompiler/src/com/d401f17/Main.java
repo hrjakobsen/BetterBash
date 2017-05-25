@@ -93,16 +93,9 @@ public class Main {
                         Files.copy(stream, p);
                     }
 
-                    ProcessBuilder builder = new ProcessBuilder("java", "-cp", tempDir.toString(), "Main");
-                    builder.redirectErrorStream(true);
+                    ProcessBuilder builder = new ProcessBuilder("java", "-cp", tempDir.toString(), "Main").inheritIO();
 
                     Process p = builder.start();
-                    BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                    String line;
-                    while ((line = b.readLine()) != null) {
-                        System.out.println(line);
-                    }
-
                     p.waitFor();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -207,18 +200,18 @@ public class Main {
                     Files.copy(stream, p);
                 }
 
-                ProcessBuilder builder = new ProcessBuilder("java", "-cp", tempDir.toString(), "Main");
-                builder.redirectErrorStream(true);
+                ProcessBuilder builder = new ProcessBuilder("java", "-cp", tempDir.toString(), "Main").inheritIO();
+                //builder.redirectErrorStream(true);
                 bcTime = (System.nanoTime() - startTime) / 1000000;
                 System.out.println("Bytecode gen took\t\t\t" + bcTime + "ms");
 
                 startTime = System.nanoTime();
                 Process p = builder.start();
-                BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                String line;
-                while ((line = b.readLine()) != null) {
-                    System.out.println(line);
-                }
+                //BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                //String line;
+                //while ((line = b.readLine()) != null) {
+                //    System.out.println(line);
+                //}
 
                 p.waitFor();
 
