@@ -135,8 +135,7 @@ public class Main {
             InputStream is = Main.class.getResourceAsStream(debugFile);
             CharStream input = CharStreams.fromStream(is);
 
-            TeshLexer lexer = new TeshLexer(input);
-            CommonTokenStream tokenStream = new CommonTokenStream(lexer);
+
 
             TeshParser parser = new TeshParser(tokenStream);
             TeshParser.CompileUnitContext unit = parser.compileUnit();

@@ -1,0 +1,11 @@
+#!/bin/tesh
+
+int a = 10
+float b = 10.5
+char c = 'a'
+bool d = false
+
+print(intToStr(a))
+print(floatToStr(b))
+print(charToStr(c))
+print(boolToStr(d))

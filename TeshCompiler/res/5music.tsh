@@ -1,0 +1,4 @@
+#!/bin/tesh
+for f in [x in getFilesFromDirectory("~/Music/mp3") | x.name ?= ".*\.mp3"] {
+    $"ffmpeg --convert " + f.path + " -o ~/Music/ogg/" + f.name + ".ogg"
+}

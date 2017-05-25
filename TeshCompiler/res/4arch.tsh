@@ -1,0 +1,11 @@
+#!/bin/tesh
+channel c 
+c << $"uname -m"
+string arch 
+arch << c
+
+if(arch == "x86_64") {
+    $"./launch64bit.bin"
+} else {
+    $"./launch32bit.bin"
+}
