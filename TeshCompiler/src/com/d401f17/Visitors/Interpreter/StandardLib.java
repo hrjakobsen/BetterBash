@@ -7,7 +7,11 @@ import com.d401f17.SymbolTable.SymbolTable;
 import com.d401f17.SymbolTable.VariableAlreadyDeclaredException;
 import com.d401f17.TypeSystem.*;
 
-import java.nio.channels.Channel;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
@@ -62,6 +66,11 @@ public final class StandardLib {
         table.put("ceil", StandardLib::Ceil);
         table.put("floor", StandardLib::Floor);
         table.put("empty", StandardLib::Empty);
+        table.put("openTextfile", StandardLib::OpenTextFile);
+        table.put("openBinfile", StandardLib::OpenBinFile);
+        table.put("writeText", StandardLib::WriteText);
+        table.put("writeData", StandardLib::WriteData);
+        table.put("getFilesFromDir", StandardLib::GetFilesFromDirectory);
     }
 
     public static HashMap<String, Function<LiteralNode[], LiteralNode>> InsertFunctions() {
@@ -133,5 +142,88 @@ public final class StandardLib {
     public static BoolLiteralNode Empty(LiteralNode[] nodes) {
         ChannelLiteralNode chn = (ChannelLiteralNode)(nodes[0]);
         return new BoolLiteralNode(chn.getValue().isEmpty());
+    }
+
+    public static RecordLiteralNode OpenTextFile(LiteralNode[] nodes) {
+        String path = (String)nodes[0].getValue();
+        File f = new File(path);
+        RecordLiteralNode file = new RecordLiteralNode(new HashMap<>(), RecordType.textfile);
+        file.getValue().put("directory", new StringLiteralNode(path));
+        file.getValue().put("error", new IntLiteralNode(0));
+        file.getValue().put("name", new StringLiteralNode(f.getName()));
+        return file;
+    }
+
+    public static RecordLiteralNode OpenBinFile(LiteralNode[] nodes) {
+        String path = (String)nodes[0].getValue();
+        File f = new File(path);
+        RecordLiteralNode file = new RecordLiteralNode(new HashMap<>(), RecordType.binfile);
+        file.getValue().put("directory", new StringLiteralNode(path));
+        file.getValue().put("error", new IntLiteralNode(0));
+        file.getValue().put("name", new StringLiteralNode(f.getName()));
+        if (!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                file.getValue().put("error", new IntLiteralNode(1));
+            }
+        }
+        return file;
+    }
+
+    public static BoolLiteralNode WriteText(LiteralNode[] nodes) {
+        RecordLiteralNode file = (RecordLiteralNode) nodes[0];
+        String data = (String) nodes[1].getValue();
+
+        String path = String.valueOf(file.getValue().get("directory").getValue());
+        File f = new File(path);
+        if (f.exists() && f.canWrite()) {
+            try {
+                Files.write(Paths.get(path), data.getBytes());
+            } catch (IOException err) {
+                return new BoolLiteralNode(false);
+            }
+            return new BoolLiteralNode(true);
+        } else {
+            return new BoolLiteralNode(false);
+        }
+    }
+
+    public static BoolLiteralNode WriteData(LiteralNode[] nodes) {
+        RecordLiteralNode file = (RecordLiteralNode) nodes[0];
+        ValueArrayLiteralNode arrayData = (ValueArrayLiteralNode) nodes[1];
+
+        byte[] data = new byte[arrayData.getValue().size()];
+
+        for (int i = 0; i < arrayData.getValue().size(); i++) {
+            data[i] = ((Long)arrayData.getValue().get(i).getValue()).byteValue();
+        }
+
+        String path = String.valueOf(file.getValue().get("directory").getValue());
+        File f = new File(path);
+        if (f.exists() && f.canWrite()) {
+            try {
+                Files.write(Paths.get(path), data);
+            } catch (IOException err) {
+                return new BoolLiteralNode(false);
+            }
+            return new BoolLiteralNode(true);
+        } else {
+            return new BoolLiteralNode(false);
+        }
+    }
+
+    public static ValueArrayLiteralNode GetFilesFromDirectory(LiteralNode[] nodes) {
+        String dir = nodes[0].getValue().toString();
+
+        File folder = new File(dir);
+        File[] listOfFiles = folder.listFiles();
+        ArrayList<LiteralNode> files = new ArrayList<>();
+        if (listOfFiles != null) {
+            for (File file : listOfFiles) {
+                files.add(OpenBinFile(new LiteralNode[]{new StringLiteralNode(file.getAbsolutePath())}));
+            }
+        }
+        return new ValueArrayLiteralNode(files);
     }
 }

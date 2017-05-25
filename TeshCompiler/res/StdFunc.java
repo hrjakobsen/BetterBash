@@ -48,7 +48,7 @@ public class StdFunc {
 	public static double floatVal(String str) {
 		return Double.parseDouble(str);
 	}
-	
+
 	public static double sqrt(double input) {
 		return Math.sqrt(input);
 	}
