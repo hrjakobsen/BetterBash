@@ -10,7 +10,6 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 
 import static org.objectweb.asm.Opcodes.*;
@@ -80,6 +79,8 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
             ensureFloat(node.getLeft());
             ensureFloat(node.getRight());
             mv.visitInsn(DADD);
+        } else if (node.getLeft().getType() instanceof CharType || node.getRight().getType() instanceof CharType) {
+
         } else {
             mv.visitTypeInsn(NEW, "java/lang/StringBuilder");
             mv.visitInsn(DUP);
@@ -521,7 +522,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
             List<ArithmeticExpressionNode> arguments = node.getArguments();
             for (int i = 0; i < arguments.size(); i++) {
                 ArithmeticExpressionNode arg = arguments.get(i);
-                if (types.get(i) instanceof FloatType) {
+                if (isFloatExactly(types.get(i))) {
                     ensureFloat(arg);
                 } else {
                     arg.accept(this);
@@ -557,7 +558,7 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
         List<ArithmeticExpressionNode> arguments = node.getArguments();
         for (int i = 0; i < arguments.size(); i++) {
             ArithmeticExpressionNode argument = arguments.get(i);
-            if (f.getFormalArguments().get(i).getTypeNode().getType() instanceof FloatType) {
+            if (isFloatExactly(f.getFormalArguments().get(i).getTypeNode().getType())) {
                 ensureFloat(argument);
                 argument.setType(new FloatType());
             } else {
@@ -1328,8 +1329,19 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
                     types.add(new OkType());
                     skip = false;
                     break;
+                case '(':
+                case ')':
+                    break;
+                default:
+                    if (!skip)
+                        types.add(new OkType());
+                    break;
             }
         }
         return types;
+    }
+
+    private boolean isFloatExactly(Type t) {
+        return t.getClass() == FloatType.class;
     }
 }
