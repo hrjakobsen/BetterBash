@@ -1,5 +1,29 @@
-binfile[] files = getFilesFromDir("/home/mathias/Desktop/test")
+func myFun(int input) int {
+    print("HEJ!!!")
+    return 1
+}
 
-for f in [x in files | x.directory ?= ".*txt"] {
-    writeData(f, [0])
+func range(int start, int end) int[] {
+    print(intToStr(start))
+    print(intToStr(end))
+
+    int[] result = []
+    int count = start
+    if (start < end) {
+        while count <= end {
+            result ::= count
+            count += 1
+        }
+    } else {
+        while count >= end {
+             result ::= count
+             count -= 1
+         }
+    }
+
+    return result
+}
+
+for el in range(0, myFun(1)) {
+    print("Hej")
 }

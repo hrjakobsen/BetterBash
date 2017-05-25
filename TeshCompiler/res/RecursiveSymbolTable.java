@@ -32,34 +32,24 @@ public class RecursiveSymbolTable {
     }
     
     public void insert(String id, Object s) {
-
-        //System.out.println("inserting: " + this);
-
-        //System.out.print("I " + s + " → " + Arrays.asList(entries) + " → ");
         currentTable.entries.put(id, s);
-        //System.out.print(Arrays.asList(entries) + "(" + this.toString() + ")" + "\n");
-        //System.out.println("Entries are now: " + Arrays.asList(entries).toString());
     }
     
     public Object lookup(String id) {
-        //System.out.println("looking for: " + id);
-        //System.out.print("L "+ "(" + currentTable + ")" + id  + " → ");
         Object a =  currentTable.recursiveLookup(id);
-        //System.out.print(a.toString() + " ) " + "\n");
 
         return a;
     }
 
     private Object recursiveLookup(String id) {
-        //System.out.println("Looking in " + this);
         if (entries.containsKey(id)) {
             return entries.get(id);
         }
+        if (parent == null) System.out.println("couldnt find " + id);
         return parent.recursiveLookup(id);
     }
 
     public void change(String name, Object s) {
-        //System.out.println("E (" + name + " → " + s.toString() + ") (" + currentTable + ")" );
         if (!currentTable.recursiveChange(name, s)) {
             currentTable.entries.put(name, s);
         }
