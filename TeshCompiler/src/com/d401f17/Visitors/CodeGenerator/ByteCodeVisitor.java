@@ -304,8 +304,9 @@ public class ByteCodeVisitor extends BaseVisitor<Void> {
             }
         } else {
             child.accept(this);
-            if (child.getType() instanceof IntType && isFloatExactly(node.getVariable().getType()));
-            mv.visitInsn(L2D);
+            if (child.getType() instanceof IntType && isFloatExactly(node.getVariable().getType())) {
+                mv.visitInsn(L2D);
+            }
             emitStore(node.getVariable().getName(), s.getType(), 0);
         }
 
