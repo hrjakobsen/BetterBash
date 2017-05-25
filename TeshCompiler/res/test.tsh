@@ -30,7 +30,7 @@ func random(float max) int {
     return floor(rnd() * max)
 }
 
-int size = 12
+int size = 100
 string[] trees = ["🌳", "🌳", "🌳", "🌳", "🌳", "🌳", "🌳", "🌳", "🌲", "🌲", "🌲", "🌱"]
 string result = ""
 
@@ -41,7 +41,7 @@ for y in range(-size, size) {
         if chance < 1 {
             result += trees[random(sizeStr(trees))]
         } else {
-            for i in range(0, floor(dist)) {
+            for i in range(0, random(dist)) {
                 result += " "
             }
         }

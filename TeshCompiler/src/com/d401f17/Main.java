@@ -21,7 +21,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        String debugFile = "simple.tsh";
+        String debugFile = "test.tsh";
         boolean bc = true;
 
         if (debugFile.isEmpty()) {
@@ -201,17 +201,11 @@ public class Main {
                 }
 
                 ProcessBuilder builder = new ProcessBuilder("java", "-cp", tempDir.toString(), "Main").inheritIO();
-                //builder.redirectErrorStream(true);
                 bcTime = (System.nanoTime() - startTime) / 1000000;
                 System.out.println("Bytecode gen took\t\t\t" + bcTime + "ms");
 
                 startTime = System.nanoTime();
                 Process p = builder.start();
-                //BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                //String line;
-                //while ((line = b.readLine()) != null) {
-                //    System.out.println(line);
-                //}
 
                 p.waitFor();
 
