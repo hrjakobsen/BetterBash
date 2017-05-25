@@ -32,7 +32,12 @@ public final class StandardLib {
             table.insert("ceil", new FunctionSymbol(new FunctionType("ceil", new Type[] {new FloatType()}, new IntType()), null, null));
             table.insert("floor", new FunctionSymbol(new FunctionType("floor", new Type[] {new FloatType()}, new IntType()), null, null));
             table.insert("empty", new FunctionSymbol(new FunctionType("empty", new Type[] {new ChannelType()}, new BoolType()), null, null));
-            table.insert("getFilesFromDir", new FunctionSymbol(new FunctionType("getFilesFromDir", new Type[] {new StringType()}, new ArrayType(new RecordType("binfile", new String[]{"error", "directory", "name"}, new Type[]{new IntType(),new StringType(), new StringType()}))), null, null));
+            table.insert("getFilesFromDir", new FunctionSymbol(new FunctionType("getFilesFromDir", new Type[] {new StringType()}, new ArrayType(RecordType.binfile)), null, null));
+            table.insert("openTextfile", new FunctionSymbol(new FunctionType("openTextfile", new Type[] {new StringType()}, RecordType.textfile), null, null));
+            table.insert("writeText", new FunctionSymbol(new FunctionType("writeText", new Type[] {RecordType.textfile, new StringType()}, new BoolType()), null, null));
+            table.insert("openBinfile", new FunctionSymbol(new FunctionType("openBinFile", new Type[] {new StringType()}, RecordType.binfile), null, null));
+            table.insert("writeData", new FunctionSymbol(new FunctionType("writeData", new Type[] {RecordType.textfile, new ArrayType(new IntType())}, new BoolType()), null, null));
+
         } catch (VariableAlreadyDeclaredException e) {}
     }
 

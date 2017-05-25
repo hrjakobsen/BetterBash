@@ -1,5 +1,8 @@
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.io.*;
+import java.nio.*;
 
 public class StdFunc {
 	public static void print(String s) {
@@ -45,7 +48,7 @@ public class StdFunc {
 	public static double floatVal(String str) {
 		return Double.parseDouble(str);
 	}
-
+	
 	public static double sqrt(double input) {
 		return Math.sqrt(input);
 	}
@@ -60,6 +63,79 @@ public class StdFunc {
 	}
 
 	public static long floor(double input) {
-		return (long)Math.floor(input);
+		return (long) Math.floor(input);
+	}
+
+	public static textfile openTextfile(String str) {
+		textfile t = new textfile();
+		File f = new File(str);
+		if (f.exists()) {
+			t.directory = f.getPath();
+			t.name = f.getName();
+			t.error = 0;
+		} else {
+			try {
+				f.createNewFile();
+			} catch (IOException error) {
+				t.error = 1;
+			}
+			t.directory = f.getPath();
+			t.name = f.getName();
+			t.error = 0;
+		}
+		return t;
+	}
+
+	public static binfile openBinfile(String str) {
+		binfile b = new binfile();
+		File f = new File(str);
+		if (f.exists()) {
+			b.directory = f.getPath();
+			b.name = f.getName();
+			b.error = 0;
+		} else {
+			try {
+				f.createNewFile();
+			} catch (IOException error) {
+				b.error = 1;
+			}
+			b.directory = f.getPath();
+			b.name = f.getName();
+			b.error = 0;
+		}
+		return b;
+	}
+
+	public static int writeData(binfile b, ArrayList<Long> data) {
+		byte[] bytes = new byte[data.size()];
+		for (int i = 0; i < data.size(); i++) {
+			Long d = data.get(i);
+			bytes[i] = d.byteValue();
+		}
+		File f = new File(b.directory);
+		if (f.exists() && f.canWrite()) {
+			try {
+				Files.write(Paths.get(b.directory), bytes);
+			} catch (IOException err) {
+				return 0;
+			}
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+
+	public static int writeText(textfile t, String s) {
+		File f = new File(t.directory);
+		if (f.exists() && f.canWrite()) {
+			try {
+				Files.write(Paths.get(t.directory), s.getBytes());
+			} catch (IOException err) {
+				return 0;
+			}
+			return 1;
+		} else {
+			return 0;
+		}
 	}
 }
