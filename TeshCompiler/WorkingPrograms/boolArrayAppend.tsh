@@ -1,0 +1,7 @@
+#!/bin/tesh
+bool[] array = [true, true, true, true, true]
+
+array ::= false
+for i in array {
+    print(boolToStr(i))
+}

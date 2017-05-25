@@ -1,0 +1,30 @@
+#!/bin/tesh
+
+char[] charArr = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm']
+char appendChar = 'n'
+int i = 13
+
+while i < 26 {
+    charArr ::= appendChar
+    appendChar += 1
+    i += 1
+}
+
+for x in charArr {
+    print(charToStr(x))
+}
+
+string characters
+for x in charArr {
+    characters += charToStr(x)
+}
+print(characters)
+
+
+
+string[] stringArr = ["Hello", ", ", "World!" ]
+string strings
+for x in stringArr {
+    strings += x
+}
+print(strings)
